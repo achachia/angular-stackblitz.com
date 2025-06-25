@@ -1,0 +1,29 @@
+<div class="magazine-viewer">
+  <button class="fullscreen-btn" (click)="openFullscreen()">fullscreen</button>
+  <!-- Image principale -->
+  <div
+    class="main-image-container"
+    (swipeleft)="nextPage()"
+    (swiperight)="prevPage()"
+    [class.zoomed]="isZoomed"
+    (click)="toggleZoom()"
+  >
+    <pinch-zoom>
+      <img [src]="currentPage" alt="Page" class="main-image" [@fadeImage] />
+    </pinch-zoom>
+    <button class="nav-button prev" (click)="prevPage()">‹</button>
+    <button class="nav-button next" (click)="nextPage()">›</button>
+  </div>
+
+  <!-- Slider de miniatures -->
+  <div class="thumbnail-slider">
+    <img
+      *ngFor="let page of listPagesByLivre; let i = index"
+      [src]="page.url"
+      [class.active]="i === currentIndex"
+      (click)="goToPage(i)"
+      class="thumbnail"
+      alt="aperçu page {{ i + 1 }}"
+    />
+  </div>
+</div>

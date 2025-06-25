@@ -21,6 +21,19 @@ export class MagazineService {
   /* getMagazines(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
   }*/
+  
+
+  getLastCyclesMagazines(_keyTheme: any): Observable<any[]> {
+    const body = {keyTheme : _keyTheme };
+    const Url = this.apiUrl + '/getLastCyclesMagazines';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  getLastLivres(): Observable<any[]> {
+    const body = {};
+    const Url = this.apiUrl + '/getLastLivres';
+    return this.http.post<any[]>(Url, body);
+  }
 
   getListeThemes(): Observable<any[]> {
     const body = {};
@@ -49,6 +62,18 @@ export class MagazineService {
   listPagesByCycleMagazine(cycle_magazine_id: any): Observable<any[]> {
     const body = { cycle_magazine_id: cycle_magazine_id };
     const Url = this.apiUrl + '/listPagesByMagazine';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  listLivresByTheme(keyTheme: any): Observable<any[]> {
+    const body = { keyTheme: keyTheme };
+    const Url = this.apiUrl + '/listLivresBytheme';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  listPagesByLivre(livre_id: any): Observable<any[]> {
+    const body = { livre_id: livre_id };
+    const Url = this.apiUrl + '/listPagesByLivre';
     return this.http.post<any[]>(Url, body);
   }
 }

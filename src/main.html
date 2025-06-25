@@ -1,38 +1,61 @@
 <app-header></app-header>
 
 <div *ngIf="router.url === '/'">
-  <!-- Contenu affiché uniquement sur la page d'accueil -->
-  <div class="themes-container">
-    <h1 class="themes-title">Choisissez un thème</h1>
-    <div class="themes-grid">
-      <div
-        class="theme-card"
-        *ngFor="let theme of themes"
-        (click)="selectTheme(theme)"
-      >
-        <div class="theme-icon" [ngStyle]="{'background': theme.gradient}">
-          <div [innerHTML]="theme.icon"></div>
-        </div>
-        <div class="theme-info">
-          <h2 class="theme-name">{{ theme.name }}</h2>
-          <p class="theme-description">{{ theme.description }}</p>
+  <div class="accueil-container">
+    <h1 class="accueil-title">📚 Bienvenue dans votre bibliothèque</h1>
+
+    <div class="slider-block">
+      <h2 class="slider-title">Derniers Livres</h2>
+      <div class="slider">
+        <div class="card" *ngFor="let item of lastLivres"  (click)="selectCycleLivre(item)">
+          <img [src]="item.cover" [alt]="item.titre" />
+          <p>{{ item.titre }}</p>
         </div>
       </div>
+    </div>
 
-      <!-- <div
-        class="theme-card"
-        *ngFor="let magazine of magazines"
-        (click)="selectTheme(magazine)"
-      >
-        <div class="theme-info">
-          <h2 class="theme-name" style="color: red">{{ magazine.titre }}</h2>
+    <div class="slider-block">
+      <h2 class="slider-title">Magazines Scientifiques</h2>
+      <div class="slider">
+        <div
+          class="card"
+          *ngFor="let item of lastMagazinesScience"
+          (click)="selectMagazine(item)"
+        >
+          <img [src]="item.cover" [alt]="item.titre" />
+          <p>{{ item.titre }}</p>
         </div>
-      </div> -->
+      </div>
+    </div>
+
+    <div class="slider-block">
+      <h2 class="slider-title">Magazines Informatiques</h2>
+      <div class="slider">
+        <div
+          class="card"
+          *ngFor="let item of lastMagazinesInformatique"
+          (click)="selectMagazine(item)"
+        >
+          <img [src]="item.cover" [alt]="item.titre" />
+          <p>{{ item.titre }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="slider-block">
+      <h2 class="slider-title">Magazines Financiers</h2>
+      <div class="slider">
+        <div
+          class="card"
+          *ngFor="let item of lastMagazinesFinance"
+          (click)="selectMagazine(item)"
+        >
+          <img [src]="item.cover" [alt]="item.titre" />
+          <p>{{ item.titre }}</p>
+        </div>
+      </div>
     </div>
   </div>
-  <!--  <nav>
-    <a routerLink="/magazines">Magazines</a>
-  </nav>-->
 </div>
 
 <!--<a (click)="goToMagazines()">Voir les magazines</a>-->
