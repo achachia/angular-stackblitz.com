@@ -1,0 +1,14 @@
+<div class="themes-container">
+  <div
+    class="theme-card"
+    *ngFor="let theme of listThemes"
+    [ngStyle]="{ background: theme.gradient }"
+    (click)="selectTheme(theme)"
+  >
+    <div class="icon" [innerHTML]="theme.icon"></div>
+    <div class="info">
+      <h2 class="name">{{ theme.name }}</h2>
+      <p class="description">{{ theme.description }}</p>
+    </div>
+  </div>
+</div>

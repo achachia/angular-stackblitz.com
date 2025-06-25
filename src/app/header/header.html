@@ -1,0 +1,55 @@
+<header class="main-header">
+  <div class="header-container">
+    <div class="brand">
+      <span class="brand-logo">🌟</span>
+      <span class="brand-title">MonApp</span>
+    </div>
+    <nav class="nav-menu">
+      <a
+        routerLink="/"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        >Accueil</a
+      >
+      <a routerLink="/list-themes-magazines" routerLinkActive="active"
+        >Magazines</a
+      >
+      <a routerLink="/list-themes-livres" routerLinkActive="active">Livres</a>
+      <a routerLink="/contact" routerLinkActive="active">Contact</a>
+    </nav>
+    <button
+      class="menu-toggle"
+      (click)="menuOpen = !menuOpen"
+      aria-label="Ouvrir le menu"
+    >
+      <span class="menu-icon"></span>
+    </button>
+  </div>
+  <nav class="nav-menu-mobile" [class.open]="menuOpen">
+    <a
+      routerLink="/"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: true }"
+      (click)="menuOpen = false"
+      >Accueil</a
+    >
+    <a
+      routerLink="/list-themes-magazines"
+      routerLinkActive="active"
+      (click)="menuOpen = false"
+      >Magazines</a
+    >
+    <a
+      routerLink="/list-themes-livres"
+      routerLinkActive="active"
+      (click)="menuOpen = false"
+      >Thèmes</a
+    >
+    <a
+      routerLink="/contact"
+      routerLinkActive="active"
+      (click)="menuOpen = false"
+      >Contact</a
+    >
+  </nav>
+</header>

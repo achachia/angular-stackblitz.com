@@ -1,0 +1,10 @@
+ng g c header --standalone
+
+
+1. Étape 1 : Installer FontAwesome
+npm install @fortawesome/fontawesome-free
+
+ 2. Étape 2 : Ajouter dans angular.json  Ajoute les styles FontAwesome à ton angular.json :
+ "styles": [ "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
+  "src/styles.css"
+]

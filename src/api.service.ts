@@ -10,8 +10,7 @@ export interface Magazine {
 
 @Injectable({ providedIn: 'root' })
 export class MagazineService {
-  private apiUrl =
-    'https://backend-mega-book-theta.vercel.app/api'; // adapte l’URL à ton API
+  private apiUrl = 'https://backend-mega-book-theta.vercel.app/api'; // adapte l’URL à ton API
 
   constructor(private http: HttpClient) {}
 
@@ -23,15 +22,33 @@ export class MagazineService {
     return this.http.get<any[]>(this.apiUrl);
   }*/
 
+  getListeThemes(): Observable<any[]> {
+    const body = {};
+    const Url = this.apiUrl + '/getListeItemsBySectionMenuApp';
+    return this.http.post<any[]>(Url, body);
+  }
+
   getLastMagazinesByTheme(): Observable<any[]> {
     const body = { keyTheme: 'Science' };
-    this.apiUrl = this.apiUrl + '/getLastCyclesMagazines'
-    return this.http.post<any[]>(this.apiUrl, body);
+    const Url = this.apiUrl + '/getLastCyclesMagazines';
+    return this.http.post<any[]>(Url, body);
   }
 
   listMagazines(nomTheme: any): Observable<any[]> {
     const body = { keyTheme: nomTheme };
-    this.apiUrl = this.apiUrl + '/listMagazinesBytheme'
-    return this.http.post<any[]>(this.apiUrl, body);
+    const Url = this.apiUrl + '/listMagazinesBytheme';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  listCyclesMagazine(keyMagazine: any): Observable<any[]> {
+    const body = { keyMagazine: keyMagazine };
+    const Url = this.apiUrl + '/listNumeroMagazine';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  listPagesByCycleMagazine(cycle_magazine_id: any): Observable<any[]> {
+    const body = { cycle_magazine_id: cycle_magazine_id };
+    const Url = this.apiUrl + '/listPagesByMagazine';
+    return this.http.post<any[]>(Url, body);
   }
 }

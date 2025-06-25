@@ -5,18 +5,51 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideRouter, Routes } from '@angular/router';
 import { RouterOutlet, RouterLink } from '@angular/router';
 import { Router } from '@angular/router';
-import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideAnimations} from '@angular/platform-browser/animations';
 
-import { MagazineList } from './app/magazine-list/magazine-list';
+
+import 'hammerjs';
+
+import { FormsModule } from '@angular/forms';
+
+import { Header } from './app/header/header';
 
 import { MagazineService } from './api.service';
 
+import { ListThemesMagazine } from './app/list-themes-magazine/list-themes-magazine';
+
+import { ListThemesLivres } from './app/list-themes-livres/list-themes-livres';
+
 const routes: Routes = [
+  {
+    path: 'list-themes-magazines',
+    component: ListThemesMagazine,
+  },
+  {
+    path: 'list-themes-livres',
+    component: ListThemesLivres,
+  },
   {
     path: 'magazines/:theme',
     // component: MagazineList,
     loadComponent: () =>
       import('./app/magazine-list/magazine-list').then((m) => m.MagazineList),
+  },
+  {
+    path: 'list-numeros-by-magazine/:keyMagazine',
+    // component: MagazineList,
+    loadComponent: () =>
+      import('./app/list-numeros-magazine/list-numeros-magazine').then(
+        (m) => m.ListNumerosMagazine
+      ),
+  },
+  {
+    path: 'list-pages-by-numero-magazine/:cycle_magazine_id',
+    // component: MagazineList,
+    loadComponent: () =>
+      import(
+        './app/list-pages-by-numero-magazine/list-pages-by-numero-magazine'
+      ).then((m) => m.ListPagesByNumeroMagazine),
   },
 
   // tu peux ajouter d'autres routes ici
@@ -26,7 +59,7 @@ const routes: Routes = [
   selector: 'app-root',
   templateUrl: 'main.html',
   styleUrls: ['./main.scss'],
-  imports: [CommonModule, RouterOutlet, RouterLink],
+  imports: [CommonModule, RouterOutlet, RouterLink, FormsModule, Header],
   standalone: true,
 })
 export class App {

@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router, Routes } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 import { MagazineService } from './../../api.service';
@@ -11,11 +12,11 @@ import {
   transition,
   animate,
 } from '@angular/animations';
-import { PinchZoomComponent } from '@meddv/ngx-pinch-zoom';
+import { PinchZoomComponent } from '@meddv/ngx-pinch-zoom'; // https://www.npmjs.com/package/@meddv/ngx-pinch-zoom
 
 @Component({
   selector: 'app-magazine-list',
-  imports: [NgIf, NgFor, PinchZoomComponent], // Ajoute NgIf ici !
+  imports: [NgIf, NgFor, PinchZoomComponent, RouterLink, RouterLinkActive], // Ajoute NgIf ici !
   templateUrl: './magazine-list.html',
   styleUrl: './magazine-list.css',
   animations: [
@@ -32,13 +33,16 @@ import { PinchZoomComponent } from '@meddv/ngx-pinch-zoom';
   ],
 })
 export class MagazineList {
+  public menuOpen = false;
+
   theme: string | null = null;
 
   listMagazines: any[] = [];
 
   constructor(
     private route: ActivatedRoute,
-    private magazineService: MagazineService
+    private magazineService: MagazineService,
+    public router: Router
   ) {
     this.route.paramMap.subscribe((params) => {
       this.theme = params.get('theme');
@@ -61,4 +65,8 @@ export class MagazineList {
   }
 
   goDetailMagazine(magazine: any) {}
+
+  selectMagazine(magazine: any) {
+    this.router.navigate(['/list-numeros-by-magazine', magazine._id]);
+  }
 }

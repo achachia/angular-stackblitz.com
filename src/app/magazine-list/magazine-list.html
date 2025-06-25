@@ -1,27 +1,20 @@
-<div class="magazine-grid" *ngIf="listMagazines.length > 0">
-  <div class="grid-container">
+<div class="container">
+  <h1 class="title">Nos Magazines</h1>
+
+  <div class="magazine-grid">
     <div
       class="magazine-card"
-      *ngFor="let magazine of listMagazines; let i = index"
-      (click)="goDetailMagazine(magazine)"
-      [@itemAnim]="'in'"
+      *ngFor="let mag of listMagazines"
+      (click)="selectMagazine(mag)"
     >
-      <div class="card-image">
-        <img [src]="magazine.cover" alt="Couverture {{magazine.titre}}" />
-        <div class="overlay"></div>
-      </div>
-      <div class="card-content">
-        <h2 class="magazine-title">{{ magazine.titre }}</h2>
-        <p class="magazine-subtitle">{{ magazine.subtitle }}</p>
-        <div class="card-footer">
-          <span class="read-more">Voir le magazine</span>
-          <span class="icon">→</span>
-        </div>
+      <img [src]="mag.cover" alt="{{ mag.titre }}" class="magazine-image" />
+
+      <div class="magazine-content">
+        <h2 class="magazine-title">{{ mag.titre }}</h2>
+        <!--<p class="magazine-theme">{{ mag.keyTheme }}</p>
+      <p class="magazine-date">{{ mag.date | date: 'longDate' }}</p>-->
+        <button class="read-button">Lire maintenant</button>
       </div>
     </div>
   </div>
 </div>
-
-<pinch-zoom>
-  <img src="https://i.gyazo.com/1682f47c282aace99a755c6c84ab9df2.png" />
-</pinch-zoom>

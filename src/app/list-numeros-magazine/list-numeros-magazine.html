@@ -1,0 +1,55 @@
+<div class="container">
+  <h1 class="title">Numéros de Magazine</h1>
+
+  <!-- Filters -->
+  <div class="filters">
+    <!-- Filtres par année -->
+    <select
+      [(ngModel)]="selectedPeriode"
+      placeholder="Filtrer par année"
+      (change)="applyFilters()"
+    >
+      <option value="" selected>-- Filtrer par année --</option>
+      <option *ngFor="let annee of periodes" [value]="annee">
+        {{ annee }}
+      </option>
+    </select>
+
+    <select [(ngModel)]="selectedType" (change)="applyFilters()">
+      <option value="">-- Filtrer par type --</option>
+      <option *ngFor="let t of types" [value]="t">{{ t }}</option>
+    </select>
+  </div>
+
+  <div class="magazine-grid">
+    <div
+      class="magazine-card"
+      *ngFor="let cycleMag of listCyclesMagazine"
+      (click)="selectCycleMagazine(cycleMag)"
+    >
+      <img
+        [src]="cycleMag.cover"
+        alt="{{ cycleMag.titre }}"
+        class="magazine-cover"
+      />
+
+      <div class="magazine-info">
+        <h2 class="magazine-title">
+          <i class="fas fa-book"></i> {{ cycleMag.titre }}
+        </h2>
+        <p class="magazine-periode">
+          <i class="far fa-calendar-alt"></i> {{ cycleMag.periode }}
+        </p>
+        <p class="magazine-type">
+          <i class="fas fa-tag"></i> Type : <strong>{{ cycleMag.type }}</strong>
+        </p>
+        <p class="magazine-pages">
+          <i class="fas fa-file-alt"></i> {{ cycleMag.nbr_pages }} pages
+        </p>
+        <button class="btn-read">
+          <i class="fas fa-book-open"></i> Lire ce numéro
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

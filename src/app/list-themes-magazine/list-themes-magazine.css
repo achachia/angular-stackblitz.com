@@ -1,0 +1,44 @@
+.themes-container {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  padding: 1rem;
+}
+
+.theme-card {
+  border-radius: 16px;
+  color: white;
+  padding: 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+
+.theme-card:hover {
+  transform: translateY(-4px);
+}
+
+.icon svg {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+}
+
+.name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 0 0 4px 0;
+}
+
+.description {
+  font-size: 0.9rem;
+  opacity: 0.9;
+}

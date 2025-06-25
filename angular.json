@@ -26,13 +26,16 @@
             }
           },
           "options": {
-            "assets": [],
+            "assets": ["src/favicon.ico", "src/assets", "src/_redirects"],
             "index": "src/index.html",
             "browser": "src/main.ts",
             "outputPath": "dist/demo",
             "polyfills": ["zone.js"],
             "scripts": [],
-            "styles": ["src/global_styles.css"],
+            "styles": [
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
+              "src/global_styles.css"
+            ],
             "tsConfig": "tsconfig.app.json"
           }
         },
