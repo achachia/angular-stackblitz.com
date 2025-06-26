@@ -1,10 +1,10 @@
 <div class="magazine-viewer">
-<button class="fullscreen-btn" (click)="openFullscreen()">fullscreen</button>
+  <button class="fullscreen-btn" (click)="openFullscreen()">fullscreen</button>
   <!-- Image principale -->
   <div
     class="main-image-container"
     (swipeleft)="nextPage()"
-    (swiperight)="prevPage()" 
+    (swiperight)="prevPage()"
     [class.zoomed]="isZoomed"
     (click)="toggleZoom()"
   >
@@ -26,4 +26,24 @@
       alt="aperçu page {{ i + 1 }}"
     />
   </div>
+</div>
+
+<!-- Bouton flottant pour ouvrir -->
+<button class="chatbot-float-btn" (click)="chatVisible = !chatVisible">
+  💬
+</button>
+
+<!-- Fenêtre popup du chatbot -->
+<div class="chatbot-popup" *ngIf="chatVisible">
+  <div class="chatbot-header">
+    <span class="chatbot-title">Assistant MEGABOOK</span>
+    <button class="chatbot-close-btn" (click)="chatVisible = false">✖</button>
+  </div>
+
+  <iframe
+    [src]="chatbotUrlSafe"
+    class="chatbot-frame-popup"
+    frameborder="0"
+    allow="microphone; camera"
+  ></iframe>
 </div>

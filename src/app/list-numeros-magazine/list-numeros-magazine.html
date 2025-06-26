@@ -1,5 +1,10 @@
-<div class="container">
-  <h1 class="title">Numéros de Magazine</h1>
+<!-- Loader pendant le chargement -->
+<div *ngIf="isLoading" class="loader-container">
+  <div class="spinner"></div>
+</div>
+
+<div class="container" *ngIf="!isLoading">
+  <h1 class="title">Les Numéros de {{nomMagazine}}</h1>
 
   <!-- Filters -->
   <div class="filters">
@@ -22,16 +27,33 @@
   </div>
 
   <div class="magazine-grid">
-    <div
-      class="magazine-card"
-      *ngFor="let cycleMag of listCyclesMagazine"
-      (click)="selectCycleMagazine(cycleMag)"
-    >
-      <img
-        [src]="cycleMag.cover"
-        alt="{{ cycleMag.titre }}"
-        class="magazine-cover"
-      />
+    <div class="magazine-card" *ngFor="let cycleMag of listCyclesMagazine">
+      <div class="cover-container">
+        <img
+          [src]="cycleMag.cover"
+          alt="{{ cycleMag.titre }}"
+          class="magazine-cover"
+        />
+
+        <!-- Icône Favori -->
+
+        <div class="favorite-icon" (click)="toggleFavori(cycleMag)">
+          <!-- SVG étoile (remplie ou vide selon favoris) -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="currentColor"
+            [attr.fill]="isFavori(cycleMag) ? 'red' : '#ffffffcc'"
+            viewBox="0 0 24 24"
+            class="star-icon"
+          >
+            <path
+              d="M12 17.27L18.18 21l-1.63-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.45 4.73L5.82 21z"
+            />
+          </svg>
+        </div>
+      </div>
 
       <div class="magazine-info">
         <h2 class="magazine-title">
@@ -46,7 +68,37 @@
         <p class="magazine-pages">
           <i class="fas fa-file-alt"></i> {{ cycleMag.nbr_pages }} pages
         </p>
-        <button class="btn-read">
+
+        <div
+          class="circular-progress-container"
+          *ngIf="getProgress(cycleMag.token) > 0"
+        >
+          <svg class="progress-ring" width="60" height="60">
+            <circle
+              class="progress-ring__background"
+              stroke="#e5e7eb"
+              stroke-width="6"
+              fill="transparent"
+              r="26"
+              cx="30"
+              cy="30"
+            />
+            <circle
+              class="progress-ring__circle"
+              [attr.stroke-dasharray]="circumference"
+              [attr.stroke-dashoffset]="getDashOffset(cycleMag.token)"
+              stroke="#3b82f6"
+              stroke-width="6"
+              fill="transparent"
+              r="26"
+              cx="30"
+              cy="30"
+            />
+          </svg>
+          <div class="progress-text">{{ getProgress(cycleMag.token) }}%</div>
+        </div>
+
+        <button class="btn-read" (click)="selectCycleMagazine(cycleMag)">
           <i class="fas fa-book-open"></i> Lire ce numéro
         </button>
       </div>

@@ -21,10 +21,16 @@ export class MagazineService {
   /* getMagazines(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
   }*/
-  
+
+  getIdentificationUser(_email: any, _password: any): Observable<any[]> {
+    const objectUser = { email: _email, password: _password };
+    const body = { objectUser };
+    const Url = this.apiUrl + '/auth/signin';
+    return this.http.post<any[]>(Url, body);
+  }
 
   getLastCyclesMagazines(_keyTheme: any): Observable<any[]> {
-    const body = {keyTheme : _keyTheme };
+    const body = { keyTheme: _keyTheme };
     const Url = this.apiUrl + '/getLastCyclesMagazines';
     return this.http.post<any[]>(Url, body);
   }

@@ -5,6 +5,7 @@ import { MagazineService } from './../../api.service';
 import { PinchZoomComponent } from '@meddv/ngx-pinch-zoom'; // https://www.npmjs.com/package/@meddv/ngx-pinch-zoom
 import { NgIf, NgFor } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-list-pages-by-numero-magazine',
@@ -29,10 +30,18 @@ export class ListPagesByNumeroMagazine {
 
   isZoomed = false;
 
+  chatVisible: boolean = false;
+
+  chatbotUrlUnsafe: string =
+    'https://app.vectorshift.ai/chatbots/deployed/685c47a653eb91b72fc8d3e6';
+
+  chatbotUrlSafe!: SafeResourceUrl;
+
   constructor(
     private route: ActivatedRoute,
     private magazineService: MagazineService,
-    public router: Router
+    public router: Router,
+    private sanitizer: DomSanitizer
   ) {
     this.route.paramMap.subscribe((params) => {
       this.cycle_magazine_id = params.get('cycle_magazine_id');
@@ -40,6 +49,12 @@ export class ListPagesByNumeroMagazine {
       this.getListPagesByCycleMagazine();
       // Tu peux maintenant utiliser ce paramètre pour filtrer ou charger les magazines
     });
+  }
+
+  ngOnInit() {
+    this.chatbotUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(
+      this.chatbotUrlUnsafe
+    );
   }
 
   getListPagesByCycleMagazine() {
@@ -59,7 +74,14 @@ export class ListPagesByNumeroMagazine {
   }
 
   get currentPage(): string {
-    return this.listPagesByCycleMagazine[this.currentIndex].url;
+    if (
+      this.listPagesByCycleMagazine[this.currentIndex] &&
+      this.listPagesByCycleMagazine[this.currentIndex].url
+    ) {
+      return this.listPagesByCycleMagazine[this.currentIndex].url;
+    } else {
+      return '';
+    }
   }
 
   nextPage() {

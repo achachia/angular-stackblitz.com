@@ -10,8 +10,6 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { delayWhen } from 'rxjs/operators';
 import { timer } from 'rxjs';
 
-import 'hammerjs';
-
 import { FormsModule } from '@angular/forms';
 
 import { Header } from './app/header/header';
@@ -21,8 +19,20 @@ import { MagazineService } from './api.service';
 import { ListThemesMagazine } from './app/list-themes-magazine/list-themes-magazine';
 
 import { ListThemesLivres } from './app/list-themes-livres/list-themes-livres';
+import { StorageService } from './storage.service';
+import { Login } from './app/login/login';
+import { AuthService } from './auth.service';
+import { FavorisMagazines } from './app/favoris-magazines/favoris-magazines';
 
 const routes: Routes = [
+  {
+    path: 'favoris-magazines',
+    component: FavorisMagazines,
+  },
+  {
+    path: 'login',
+    component: Login,
+  },
   {
     path: 'list-themes-magazines',
     component: ListThemesMagazine,
@@ -46,7 +56,7 @@ const routes: Routes = [
       import('./app/magazine-list/magazine-list').then((m) => m.MagazineList),
   },
   {
-    path: 'list-numeros-by-magazine/:keyMagazine',
+    path: 'list-numeros-by-magazine/:keyMagazine/:nomMagazine',
     // component: MagazineList,
     loadComponent: () =>
       import('./app/list-numeros-magazine/list-numeros-magazine').then(
@@ -89,12 +99,33 @@ export class App {
 
   lastMagazinesInformatique: any[] = [];
 
+  isLoading: boolean = true;
+
   constructor(
     private magazineService: MagazineService,
-    public router: Router
+    public router: Router,
+    private storage: StorageService,
+    private authService: AuthService
   ) {}
 
+  checkUserInStorage(): void {
+    const user = this.storage.get<any>('user');
+
+    if (!user || !user.token) {
+      console.warn('user introuvable.');
+      this.router.navigate(['/login']);
+    } else {
+      console.log('user existant :', user);
+      this.authService.setLoggedIn(true);
+      this.getLastMagazinesLivres();
+    }
+  }
+
   ngOnInit() {
+    this.checkUserInStorage();
+  }
+
+  getLastMagazinesLivres() {
     /************************************************** */
 
     this.magazineService
@@ -158,6 +189,7 @@ export class App {
       });
 
     /******************Finance**************************** */
+    this.isLoading = false;
   }
 
   selectMagazine(magazine: any) {

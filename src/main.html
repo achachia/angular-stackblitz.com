@@ -1,13 +1,22 @@
 <app-header></app-header>
 
-<div *ngIf="router.url === '/'">
+<!-- Loader pendant le chargement -->
+<div *ngIf="isLoading && router.url === '/'" class="loader-container">
+  <div class="spinner"></div>
+</div>
+
+<div *ngIf="router.url === '/' && !isLoading">
   <div class="accueil-container">
     <h1 class="accueil-title">📚 Bienvenue dans votre bibliothèque</h1>
 
     <div class="slider-block">
       <h2 class="slider-title">Derniers Livres</h2>
       <div class="slider">
-        <div class="card" *ngFor="let item of lastLivres"  (click)="selectCycleLivre(item)">
+        <div
+          class="card"
+          *ngFor="let item of lastLivres"
+          (click)="selectCycleLivre(item)"
+        >
           <img [src]="item.cover" [alt]="item.titre" />
           <p>{{ item.titre }}</p>
         </div>

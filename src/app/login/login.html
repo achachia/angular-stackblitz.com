@@ -1,0 +1,37 @@
+<div class="login-container">
+<h2>Connexion à MEGABOOK</h2>
+
+<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+  <div class="form-group">
+    <label for="email">Adresse e-mail</label>
+    <input id="email" type="email" formControlName="email" />
+    <div class="error" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+      Email invalide
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="password">Mot de passe</label>
+    <div class="password-field">
+      <input
+        id="password"
+        [type]="hidePassword ? 'password' : 'text'"
+        formControlName="password"
+      />
+      <button type="button" class="toggle" (click)="hidePassword = !hidePassword">
+        {{ hidePassword ? '👁️' : '🙈' }}
+      </button>
+    </div>
+    <div class="error" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+      Mot de passe requis (min 6 caractères)
+    </div>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+
+  <button type="submit" [disabled]="loginForm.invalid">Se connecter</button>
+</form>
+</div>
+

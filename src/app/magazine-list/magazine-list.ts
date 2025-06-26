@@ -67,6 +67,10 @@ export class MagazineList {
   goDetailMagazine(magazine: any) {}
 
   selectMagazine(magazine: any) {
-    this.router.navigate(['/list-numeros-by-magazine', magazine._id]);
+    this.router.navigate([
+      '/list-numeros-by-magazine',
+      magazine._id,
+      magazine.titre,
+    ]);
   }
 }

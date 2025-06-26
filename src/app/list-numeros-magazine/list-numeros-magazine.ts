@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router, Routes } from '@angular/router';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MagazineService } from './../../api.service';
-import { NgIf, NgFor } from '@angular/common';
+import { NgIf, NgFor, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   trigger,
@@ -14,7 +14,7 @@ import {
 
 @Component({
   selector: 'app-list-numeros-magazine',
-  imports: [NgIf, NgFor, FormsModule],
+  imports: [NgIf, NgFor, NgClass, FormsModule],
   templateUrl: './list-numeros-magazine.html',
   styleUrl: './list-numeros-magazine.css',
   animations: [
@@ -33,6 +33,8 @@ import {
 export class ListNumerosMagazine {
   keyMagazine: string | null = null;
 
+  nomMagazine: string | null = null;
+
   listCyclesMagazine: any[] = [];
 
   listCyclesMagazineTemp: any[] = [];
@@ -47,38 +49,109 @@ export class ListNumerosMagazine {
 
   filteredMagazines: any[] = [];
 
+  isLoading: boolean = true;
+
+  hasError: boolean = false;
+
+  favorites: any[] = []; // ou charger depuis localStorage ou un service
+
+  readonly radius = 26;
+
+  readonly circumference = 2 * Math.PI * this.radius;
+
   constructor(
     private route: ActivatedRoute,
     private magazineService: MagazineService,
     public router: Router
   ) {
-    this.route.paramMap.subscribe((params) => {
+    /* this.route.paramMap.subscribe((params) => {
       this.keyMagazine = params.get('keyMagazine');
-      this.getListCyclesMagazine();
-      // Tu peux maintenant utiliser ce paramètre pour filtrer ou charger les magazines
-    });
+      this.getListCyclesMagazine();     
+    });*/
+
+    this.keyMagazine = this.route.snapshot.paramMap.get('keyMagazine');
+    this.nomMagazine = this.route.snapshot.paramMap.get('nomMagazine');
+    this.getListCyclesMagazine();
+  }
+
+  ngOnInit() {
+    const fav = localStorage.getItem('favorites-magazines');
+    this.favorites = fav ? JSON.parse(fav) : [];
+  }
+
+  getProgress(token: string): number {
+    const data = localStorage.getItem('readingProgress');
+    if (data) {
+      const progressMap = JSON.parse(data);
+      return Math.min(100, Math.round(progressMap[token] || 0));
+    }
+    return 0;
+  }
+
+  getDashOffset(token: string): number {
+    const percent = this.getProgress(token);
+    return this.circumference * (1 - percent / 100);
+  }
+
+  updateProgress(token: string, currentPage: number, totalPages: number) {
+    const percent = Math.floor((currentPage / totalPages) * 100);
+    const data = localStorage.getItem('readingProgress');
+    const progressMap = data ? JSON.parse(data) : {};
+    progressMap[token] = percent;
+    localStorage.setItem('readingProgress', JSON.stringify(progressMap));
+  }
+
+  onImageError(event: any) {
+    event.target.src = 'https://img.icons8.com/?size=50&id=123439&format=png';
+  }
+
+  toggleFavori(magazine: any) {
+    // Cherche l'index du magazine dans favorites par token
+    const index = this.favorites.findIndex(
+      (fav: any) => fav.token === magazine.token
+    );
+
+    if (index > -1) {
+      // Supprime l'objet complet si déjà présent
+      this.favorites.splice(index, 1);
+    } else {
+      // Ajoute l'objet complet dans le tableau
+      this.favorites.push(magazine);
+    }
+
+    // Stocker le tableau complet en localStorage
+    localStorage.setItem('favorites-magazines', JSON.stringify(this.favorites));
+  }
+
+  isFavori(magazine: any): boolean {
+    return this.favorites.some((fav: any) => fav.token === magazine.token);
   }
 
   getListCyclesMagazine() {
-    this.magazineService
-      .listCyclesMagazine(this.keyMagazine)
-      .subscribe((response: any) => {
-        console.log('Réponse JSON complète:', response);
-        this.listCyclesMagazine = response.listNumerosMagazine; // si la réponse EST directement un tableau de magazines
+    this.isLoading = true;
+    this.hasError = false; // optionnel si tu veux afficher une erreur à l'écran
 
-        console.log('this.listCyclesMagazine =', this.listCyclesMagazine);
+    this.magazineService.listCyclesMagazine(this.keyMagazine).subscribe({
+      next: (response: any) => {
+        console.log('Réponse JSON complète:', response);
+        this.listCyclesMagazine = response.listNumerosMagazine || [];
 
         this.periodes = [
           ...new Set(
             this.listCyclesMagazine.map((m) => new Date(m.date).getFullYear())
           ),
-        ].sort((a, b) => b - a); // Trie décroissant (facultatif)
+        ].sort((a, b) => b - a);
 
         this.types = [...new Set(this.listCyclesMagazine.map((m) => m.type))];
         this.listCyclesMagazineTemp = [...this.listCyclesMagazine];
-
-        // alert(response.reponse)
-      });
+        this.isLoading = false;
+      },
+      error: (error) => {
+        console.error('Erreur lors du chargement des magazines:', error);
+        this.isLoading = false;
+        this.hasError = true; // à utiliser dans le template si besoin
+      },
+    });
   }
 
   applyFilters(): void {

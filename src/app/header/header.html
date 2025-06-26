@@ -1,9 +1,20 @@
-<header class="main-header">
+<header class="main-header" *ngIf="router.url != '/login'">
   <div class="header-container">
     <div class="brand">
-      <span class="brand-logo">🌟</span>
+      <span class="brand-logo">📚</span>
       <span class="brand-title">MEGABOOK</span>
     </div>
+
+    <!-- Burger menu mobile -->
+    <button
+      class="menu-toggle"
+      (click)="menuOpen = !menuOpen"
+      aria-label="Ouvrir le menu"
+    >
+      <span class="menu-icon"></span>
+    </button>
+
+    <!-- Menu desktop -->
     <nav class="nav-menu">
       <a
         routerLink="/"
@@ -15,16 +26,31 @@
         >Magazines</a
       >
       <a routerLink="/list-themes-livres" routerLinkActive="active">Livres</a>
-      <a routerLink="/contact" routerLinkActive="active">Contact</a>
+
+      <ng-container *ngIf="isLoggedIn; else loginButton">
+        <!-- Dropdown Mon Compte -->
+        <div class="dropdown">
+          <button class="dropbtn">Mon compte ▾</button>
+          <div class="dropdown-content">
+            <a routerLink="/compte/parametres" routerLinkActive="active"
+              >Paramètres</a
+            >
+            <a routerLink="/favoris-magazines" routerLinkActive="active"
+              >Mes favoris (Magazines)</a
+            >
+          </div>
+        </div>
+
+        <button class="logout-btn" (click)="logout()">Déconnexion</button>
+      </ng-container>
+
+      <ng-template #loginButton>
+        <a routerLink="/login" class="login-btn">Connexion</a>
+      </ng-template>
     </nav>
-    <button
-      class="menu-toggle"
-      (click)="menuOpen = !menuOpen"
-      aria-label="Ouvrir le menu"
-    >
-      <span class="menu-icon"></span>
-    </button>
   </div>
+
+  <!-- Menu mobile -->
   <nav class="nav-menu-mobile" [class.open]="menuOpen">
     <a
       routerLink="/"
@@ -43,13 +69,24 @@
       routerLink="/list-themes-livres"
       routerLinkActive="active"
       (click)="menuOpen = false"
-      >Thèmes</a
+      >Livres</a
     >
-    <a
-      routerLink="/contact"
-      routerLinkActive="active"
-      (click)="menuOpen = false"
-      >Contact</a
-    >
+
+    <ng-container *ngIf="isLoggedIn; else mobileLogin">
+      <div class="mobile-submenu">
+        <span class="mobile-subtitle">Mon compte</span>
+        <a routerLink="/compte/parametres" (click)="menuOpen = false"
+          >Paramètres</a
+        >
+        <a routerLink="/favoris-magazines" (click)="menuOpen = false"
+          >Mes favoris (Magazines)</a
+        >
+        <a href="#" (click)="logout(); menuOpen = false">Déconnexion</a>
+      </div>
+    </ng-container>
+
+    <ng-template #mobileLogin>
+      <a routerLink="/login" (click)="menuOpen = false">Connexion</a>
+    </ng-template>
   </nav>
 </header>
