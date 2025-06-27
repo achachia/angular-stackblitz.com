@@ -12,7 +12,7 @@
     <select
       [(ngModel)]="selectedPeriode"
       placeholder="Filtrer par année"
-      (change)="applyFilters()"
+      (change)="applyFiltersYear()"
     >
       <option value="" selected>-- Filtrer par année --</option>
       <option *ngFor="let annee of periodes" [value]="annee">
@@ -20,7 +20,7 @@
       </option>
     </select>
 
-    <select [(ngModel)]="selectedType" (change)="applyFilters()">
+    <select [(ngModel)]="selectedType" (change)="applyFiltersType()">
       <option value="">-- Filtrer par type --</option>
       <option *ngFor="let t of types" [value]="t">{{ t }}</option>
     </select>

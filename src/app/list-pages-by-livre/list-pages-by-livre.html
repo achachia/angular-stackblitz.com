@@ -27,3 +27,36 @@
     />
   </div>
 </div>
+
+<!-- Bouton flottant pour ouvrir -->
+<button class="chatbot-float-btn" (click)="chatVisible = !chatVisible">
+  💬
+</button>
+
+<!-- Fenêtre popup du chatbot -->
+<div class="chatbot-popup" *ngIf="chatVisible">
+  <div class="chatbot-header">
+    <span class="chatbot-title">Assistant MEGABOOK</span>
+    <button class="chatbot-close-btn" (click)="chatVisible = false">✖</button>
+    <!-- Fenêtre popup du chatbot -->
+    <div class="chatbot-model-select">
+      <label for="model-select">Modèle :</label>
+      <select
+        id="model-select"
+        [(ngModel)]="selectedModel"
+        (change)="onModelChange()"
+      >
+        <option *ngFor="let model of chatbotModels" [value]="model.value">
+          {{ model.label }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <iframe
+    [src]="chatbotUrlSafe"
+    class="chatbot-frame-popup"
+    frameborder="0"
+    allow="microphone; camera"
+  ></iframe>
+</div>

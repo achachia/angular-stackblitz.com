@@ -1,0 +1,96 @@
+<div class="magazine-grid">
+  <div class="magazine-card" *ngFor="let livre of favorites">
+    <div class="cover-container">
+      <img [src]="livre.cover" alt="{{ livre.titre }}" class="magazine-cover" />
+
+      <!-- Icône Favori -->
+
+      <div class="favorite-icon" (click)="toggleFavori(livre)">
+        <!-- SVG étoile (remplie ou vide selon favoris) -->
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          fill="currentColor"
+          [attr.fill]="isFavori(livre) ? 'red' : '#ffffffcc'"
+          viewBox="0 0 24 24"
+          class="star-icon"
+        >
+          <path
+            d="M12 17.27L18.18 21l-1.63-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.45 4.73L5.82 21z"
+          />
+        </svg>
+      </div>
+    </div>
+
+    <div class="magazine-info">
+      <h2 class="magazine-title">
+        <i class="fas fa-book"></i> {{ livre.titre }}
+      </h2>
+      <p class="magazine-type">
+        <i class="fas fa-tag"></i> Année : <strong>{{ livre.year }}</strong>
+      </p>
+      <p class="magazine-pages">
+        <i class="fas fa-file-alt"></i> {{ livre.nbr_pages }} pages
+      </p>
+
+      <div
+        class="circular-progress-container"
+        *ngIf="getProgress(livre.token) > 0"
+      >
+        <svg class="progress-ring" width="60" height="60">
+          <circle
+            class="progress-ring__background"
+            stroke="#e5e7eb"
+            stroke-width="6"
+            fill="transparent"
+            r="26"
+            cx="30"
+            cy="30"
+          />
+          <circle
+            class="progress-ring__circle"
+            [attr.stroke-dasharray]="circumference"
+            [attr.stroke-dashoffset]="getDashOffset(livre.token)"
+            stroke="#3b82f6"
+            stroke-width="6"
+            fill="transparent"
+            r="26"
+            cx="30"
+            cy="30"
+          />
+        </svg>
+        <div class="progress-text">{{ getProgress(livre.token) }}%</div>
+      </div>
+
+      <button class="btn-read" (click)="selectLivre(livre)">
+        <i class="fas fa-book-open"></i> Lire ce numéro
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="no-favorites-container" *ngIf="favorites.length === 0">
+  <!-- Illustration simple en SVG -->
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="120"
+    height="120"
+    fill="none"
+    viewBox="0 0 64 64"
+    stroke="#999"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M32 12v40M12 32h40" />
+    <circle cx="32" cy="32" r="30" />
+  </svg>
+
+  <h3>Aucun favori enregistré</h3>
+  <p>Vous n’avez pas encore ajouté de livre à vos favoris.</p>
+
+  <button class="btn-primary" (click)="goToLivresList()">
+    Voir les livres
+  </button>
+</div>

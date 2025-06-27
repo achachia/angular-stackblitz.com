@@ -23,11 +23,16 @@ import { StorageService } from './storage.service';
 import { Login } from './app/login/login';
 import { AuthService } from './auth.service';
 import { FavorisMagazines } from './app/favoris-magazines/favoris-magazines';
+import { FavorisLivres } from './app/favoris-livres/favoris-livres';
 
 const routes: Routes = [
   {
     path: 'favoris-magazines',
     component: FavorisMagazines,
+  },
+  {
+    path: 'favoris-livres',
+    component: FavorisLivres,
   },
   {
     path: 'login',
@@ -134,10 +139,10 @@ export class App {
         delayWhen(() => timer(5000)) // ⏱️ Pause de 5 secondes après réception
       )
       .subscribe((response: any) => {
-        console.log('Réponse JSON complète:', response);
+        // console.log('Réponse JSON complète:', response);
         this.lastLivres = response.lastLivres; // si la réponse EST directement un tableau de magazines
 
-        console.log('lastLivres =', this.lastLivres);
+        // console.log('lastLivres =', this.lastLivres);
 
         // alert(response.reponse)
       });
@@ -148,10 +153,10 @@ export class App {
         delayWhen(() => timer(5000)) // ⏱️ Pause de 5 secondes après réception
       )
       .subscribe((response: any) => {
-        console.log('Réponse JSON complète:', response);
+        // console.log('Réponse JSON complète:', response);
         this.lastMagazinesScience = response.lastCyclesMagazines; // si la réponse EST directement un tableau de magazines
 
-        console.log('lastMagazinesScience =', this.lastMagazinesScience);
+        // console.log('lastMagazinesScience =', this.lastMagazinesScience);
 
         // alert(response.reponse)
       });
@@ -164,10 +169,10 @@ export class App {
         delayWhen(() => timer(5000)) // ⏱️ Pause de 5 secondes après réception
       )
       .subscribe((response: any) => {
-        console.log('Réponse JSON complète:', response);
+        // console.log('Réponse JSON complète:', response);
         this.lastMagazinesInformatique = response.lastCyclesMagazines; // si la réponse EST directement un tableau de magazines
 
-        console.log('magazinesInformatique =', this.lastMagazinesInformatique);
+        // console.log('magazinesInformatique =', this.lastMagazinesInformatique);
 
         // alert(response.reponse)
       });
@@ -180,10 +185,10 @@ export class App {
         delayWhen(() => timer(5000)) // ⏱️ Pause de 5 secondes après réception
       )
       .subscribe((response: any) => {
-        console.log('Réponse JSON complète:', response);
+        // console.log('Réponse JSON complète:', response);
         this.lastMagazinesFinance = response.lastCyclesMagazines; // si la réponse EST directement un tableau de magazines
 
-        console.log('lastMagazinesFinance =', this.lastMagazinesFinance);
+        // console.log('lastMagazinesFinance =', this.lastMagazinesFinance);
 
         // alert(response.reponse)
       });

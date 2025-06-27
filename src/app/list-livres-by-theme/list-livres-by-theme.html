@@ -1,5 +1,10 @@
-<div class="container">
-  <h1 class="title">Numéros de Magazine</h1>
+<!-- Loader pendant le chargement -->
+<div *ngIf="isLoading" class="loader-container">
+  <div class="spinner"></div>
+</div>
+
+<div class="container" *ngIf="!isLoading">
+  <h1 class="title">Les livres</h1>
 
   <!-- Filters -->
   <div class="filters">
@@ -7,7 +12,7 @@
     <select
       [(ngModel)]="selectedPeriode"
       placeholder="Filtrer par année"
-      (change)="applyFilters()"
+      (change)="applyFiltersYear()"
     >
       <option value="" selected>-- Filtrer par année --</option>
       <option *ngFor="let annee of periodes" [value]="annee">
@@ -15,32 +20,86 @@
       </option>
     </select>
 
-    <select [(ngModel)]="selectedType" (change)="applyFilters()">
+    <select [(ngModel)]="selectedType" (change)="applyFiltersType()">
       <option value="">-- Filtrer par type --</option>
       <option *ngFor="let t of types" [value]="t">{{ t }}</option>
     </select>
   </div>
 
   <div class="magazine-grid">
-    <div
-      class="magazine-card"
-      *ngFor="let livre of listLivres"
-      (click)="selectCycleLivre(livre)"
-    >
-      <img [src]="livre.cover" alt="{{ livre.titre }}" class="magazine-cover" />
+    <div class="magazine-card" *ngFor="let livre of listLivres">
+      <div class="cover-container">
+        <img
+          [src]="livre.cover"
+          alt="{{ livre.titre }}"
+          class="magazine-cover"
+        />
+
+        <!-- Icône Favori -->
+
+        <div class="favorite-icon" (click)="toggleFavori(livre)">
+          <!-- SVG étoile (remplie ou vide selon favoris) -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            fill="currentColor"
+            [attr.fill]="isFavori(livre) ? 'red' : '#ffffffcc'"
+            viewBox="0 0 24 24"
+            class="star-icon"
+          >
+            <path
+              d="M12 17.27L18.18 21l-1.63-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.45 4.73L5.82 21z"
+            />
+          </svg>
+        </div>
+      </div>
 
       <div class="magazine-info">
         <h2 class="magazine-title">
           <i class="fas fa-book"></i> {{ livre.titre }}
         </h2>
         <p class="magazine-periode">
-          <i class="far fa-calendar-alt"></i> {{ livre.year }}
+          <i class="far fa-calendar-alt"></i> {{ livre.periode }}
+        </p>
+        <p class="magazine-type">
+          <i class="fas fa-tag"></i> Année : <strong>{{ livre.year }}</strong>
         </p>
         <p class="magazine-pages">
           <i class="fas fa-file-alt"></i> {{ livre.nbr_pages }} pages
         </p>
-        <button class="btn-read">
-          <i class="fas fa-book-open"></i> Lire ce livre
+
+        <div
+          class="circular-progress-container"
+          *ngIf="getProgress(livre.token) > 0"
+        >
+          <svg class="progress-ring" width="60" height="60">
+            <circle
+              class="progress-ring__background"
+              stroke="#e5e7eb"
+              stroke-width="6"
+              fill="transparent"
+              r="26"
+              cx="30"
+              cy="30"
+            />
+            <circle
+              class="progress-ring__circle"
+              [attr.stroke-dasharray]="circumference"
+              [attr.stroke-dashoffset]="getDashOffset(livre.token)"
+              stroke="#3b82f6"
+              stroke-width="6"
+              fill="transparent"
+              r="26"
+              cx="30"
+              cy="30"
+            />
+          </svg>
+          <div class="progress-text">{{ getProgress(livre.token) }}%</div>
+        </div>
+
+        <button class="btn-read" (click)="selectLivre(livre)">
+          <i class="fas fa-book-open"></i> Lire ce numéro
         </button>
       </div>
     </div>

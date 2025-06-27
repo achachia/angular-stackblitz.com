@@ -133,7 +133,7 @@ export class ListNumerosMagazine {
 
     this.magazineService.listCyclesMagazine(this.keyMagazine).subscribe({
       next: (response: any) => {
-        console.log('Réponse JSON complète:', response);
+        // console.log('Réponse JSON complète:', response);
         this.listCyclesMagazine = response.listNumerosMagazine || [];
 
         this.periodes = [
@@ -154,15 +154,15 @@ export class ListNumerosMagazine {
     });
   }
 
-  applyFilters(): void {
-    console.log('this.selectedPeriode =', this.selectedPeriode);
+  applyFiltersYear(): void {
+    // console.log('this.selectedPeriode =', this.selectedPeriode);
     this.listCyclesMagazine = this.listCyclesMagazineTemp;
 
     if (this.selectedPeriode != '') {
       this.listCyclesMagazine = this.listCyclesMagazineTemp.filter((mag) => {
         const annee = new Date(mag.date).getFullYear();
 
-        console.log('annee =', annee);
+        // console.log('annee =', annee);
 
         return annee == Number(this.selectedPeriode);
 
@@ -177,6 +177,17 @@ export class ListNumerosMagazine {
         return matchPeriode && matchType;
   
         return matchPeriode;*/
+      });
+    }
+  }
+
+  applyFiltersType(): void {
+    // console.log('this.selectedPeriode =', this.selectedPeriode);
+    this.listCyclesMagazine = this.listCyclesMagazineTemp;
+
+    if (this.selectedType != '') {
+      this.listCyclesMagazine = this.listCyclesMagazineTemp.filter((mag) => {
+        return mag.type == this.selectedType;
       });
     }
   }

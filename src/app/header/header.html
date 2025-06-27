@@ -38,6 +38,9 @@
             <a routerLink="/favoris-magazines" routerLinkActive="active"
               >Mes favoris (Magazines)</a
             >
+            <a routerLink="/favoris-livres" routerLinkActive="active"
+              >Mes favoris (Livres)</a
+            >
           </div>
         </div>
 
@@ -80,6 +83,9 @@
         >
         <a routerLink="/favoris-magazines" (click)="menuOpen = false"
           >Mes favoris (Magazines)</a
+        >
+        <a routerLink="/favoris-livres" (click)="menuOpen = false"
+          >Mes favoris (Livres)</a
         >
         <a href="#" (click)="logout(); menuOpen = false">Déconnexion</a>
       </div>

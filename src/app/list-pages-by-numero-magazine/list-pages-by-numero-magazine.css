@@ -164,5 +164,26 @@
 
 /*********************************************/
 
+.chatbot-model-select {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 8px 16px;
+  background-color: #f1f5f9;
+  border-bottom: 1px solid #e5e7eb;
+}
 
+.chatbot-model-select label {
+  font-weight: 500;
+  margin-right: 10px;
+  color: #111827;
+}
 
+.chatbot-model-select select {
+  padding: 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  background-color: #ffffff;
+  font-size: 14px;
+  color: #374151;
+}
