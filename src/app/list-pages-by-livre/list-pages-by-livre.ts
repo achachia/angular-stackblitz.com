@@ -7,6 +7,7 @@ import { NgIf, NgFor } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms'; // 👈 à importer ici
+import { AuthService } from '../../auth.service';
 
 @Component({
   selector: 'app-list-pages-by-livre',
@@ -30,6 +31,8 @@ export class ListPagesByLivre {
   currentIndex = 0;
 
   isZoomed = false;
+
+  menuOpen = false;
 
   historique_navigation: any = {
     livre_id: '',
@@ -69,11 +72,12 @@ export class ListPagesByLivre {
     private route: ActivatedRoute,
     private magazineService: MagazineService,
     public router: Router,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private authService: AuthService
   ) {
     this.route.paramMap.subscribe((params) => {
       this.livre_id = params.get('livre_id');
-      console.log('this.livre_id =', this.livre_id);
+      console.log('this.livre_id=', this.livre_id);
 
       /******************************************************* */
 
@@ -139,6 +143,9 @@ export class ListPagesByLivre {
       /************************************************ */
 
       this.getListPagesByLivre();
+
+      this.getDataPageNavigationLecture();
+
       // Tu peux maintenant utiliser ce paramètre pour filtrer ou charger les magazines
     });
   }
@@ -147,6 +154,74 @@ export class ListPagesByLivre {
     this.chatbotUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(
       this.chatbotUrlUnsafe
     );
+  }
+
+  getDataPageNavigationLecture() {
+    const _token = this.authService.getTokenStorage;
+
+    const ObjectNavigationPage: any = {
+      token: _token,
+      document_id: this.livre_id,
+    };
+
+    this.magazineService
+      .getDataPageNavigationLecture(ObjectNavigationPage)
+      .subscribe((response: any) => {
+        console.log(
+          'Réponse JSON complète-getDataPageNavigationLecture:',
+          response
+        );
+
+        console.log('this.historique_navigation =', this.historique_navigation);
+
+        console.log(
+          'this.historique_navigation.currentIndex =',
+          this.historique_navigation.currentIndex
+        );
+
+        console.log(
+          'this.historique_navigation.currentIndexMax =',
+          this.historique_navigation.currentIndexMax
+        );
+
+        /*********************************************************** */
+
+        if (response.data) {
+          if (
+            response.data.compteurPage > this.historique_navigation.currentIndex
+          ) {
+            this.historique_navigation.currentIndex =
+              response.data.compteurPage;
+
+            this.hist_nav_json[this.indexLivreHistNav].currentIndex =
+              this.historique_navigation.currentIndex;
+
+            this.hist_nav_json[this.indexLivreHistNav].date = new Date();
+          }
+
+          if (
+            response.data.compteurPageMaxi >
+            this.historique_navigation.currentIndexMax
+          ) {
+            this.historique_navigation.currentIndex =
+              response.data.compteurPageMaxi;
+
+            this.hist_nav_json[this.indexLivreHistNav].currentIndexMax =
+              this.currentIndex;
+
+            this.hist_nav_json[this.indexLivreHistNav].date = new Date();
+          }
+
+          localStorage.setItem(
+            'historique-navigation-livres',
+            JSON.stringify(this.hist_nav_json)
+          );
+        }
+
+        /*********************************************************** */
+
+        // alert(response.reponse)
+      });
   }
 
   getListPagesByLivre() {
@@ -230,6 +305,10 @@ export class ListPagesByLivre {
 
   goToPage(index: number) {
     this.currentIndex = index;
+  }
+
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
   }
 
   openFullscreen() {

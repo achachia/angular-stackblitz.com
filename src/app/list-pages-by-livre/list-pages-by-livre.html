@@ -1,5 +1,17 @@
 <div class="magazine-viewer">
-  <button class="fullscreen-btn" (click)="openFullscreen()">fullscreen</button>
+  <!-- Menu déroulant en haut à droite -->
+  <div class="top-right-menu">
+    <button class="menu-btn" (click)="toggleMenu()">☰</button>
+
+    <div class="menu-dropdown" *ngIf="menuOpen">
+      <ul>
+        <li (click)="openFullscreen()">📺 Plein écran</li>
+        <li (click)="toggleZoom()">🔍 Zoom</li>
+        <li (click)="chatVisible = true">💬 Chatbot</li>
+      </ul>
+    </div>
+  </div>
+
   <!-- Image principale -->
   <div
     class="main-image-container"

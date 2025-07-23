@@ -36,4 +36,9 @@ export class AuthService {
   get isLoggedIn(): boolean {
     return this.loggedIn.getValue();
   }
+
+  get getTokenStorage(): string {
+    const user = this.storage.get<any>('user');
+    return user.token;
+  }
 }

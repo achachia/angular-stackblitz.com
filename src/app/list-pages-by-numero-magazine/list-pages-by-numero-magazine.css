@@ -164,26 +164,50 @@
 
 /*********************************************/
 
-.chatbot-model-select {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 8px 16px;
-  background-color: #f1f5f9;
-  border-bottom: 1px solid #e5e7eb;
+.magazine-viewer {
+  position: relative; /* Important pour positionner le menu à l’intérieur */
 }
 
-.chatbot-model-select label {
-  font-weight: 500;
-  margin-right: 10px;
-  color: #111827;
+.top-right-menu {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 50;
 }
 
-.chatbot-model-select select {
+.menu-btn {
+  background-color: #fff;
+  border: 1px solid #ccc;
   padding: 6px 10px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  background-color: #ffffff;
+  border-radius: 5px;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.menu-dropdown {
+  position: absolute;
+  top: 36px;
+  right: 0;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  width: 150px;
+}
+
+.menu-dropdown ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menu-dropdown li {
+  padding: 10px 16px;
+  cursor: pointer;
   font-size: 14px;
-  color: #374151;
+}
+
+.menu-dropdown li:hover {
+  background-color: #f3f4f6;
 }

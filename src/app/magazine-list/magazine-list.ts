@@ -35,7 +35,9 @@ import { PinchZoomComponent } from '@meddv/ngx-pinch-zoom'; // https://www.npmjs
 export class MagazineList {
   public menuOpen = false;
 
-  theme: string | null = null;
+  nomTheme: string | null = null;
+
+  keyTheme: string | null = null;
 
   listMagazines: any[] = [];
 
@@ -45,7 +47,8 @@ export class MagazineList {
     public router: Router
   ) {
     this.route.paramMap.subscribe((params) => {
-      this.theme = params.get('theme');
+      this.keyTheme = params.get('keyTheme');
+      this.nomTheme = params.get('nomTheme');
       this.getListMagazineByTheme();
       // Tu peux maintenant utiliser ce paramètre pour filtrer ou charger les magazines
     });
@@ -53,7 +56,7 @@ export class MagazineList {
 
   getListMagazineByTheme() {
     this.magazineService
-      .listMagazines(this.theme)
+      .listMagazines(this.keyTheme)
       .subscribe((response: any) => {
         console.log('Réponse JSON complète:', response);
         this.listMagazines = response.listMagazines; // si la réponse EST directement un tableau de magazines
@@ -69,6 +72,8 @@ export class MagazineList {
   selectMagazine(magazine: any) {
     this.router.navigate([
       '/list-numeros-by-magazine',
+      this.keyTheme,
+      this.nomTheme,
       magazine._id,
       magazine.titre,
     ]);

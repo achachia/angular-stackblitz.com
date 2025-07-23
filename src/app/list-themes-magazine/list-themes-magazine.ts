@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
   styleUrl: './list-themes-magazine.css',
 })
 export class ListThemesMagazine {
-  listThemes: any[] = []; 
+  listThemes: any[] = [];
 
   constructor(private magazineService: MagazineService, public router: Router) {
     this.getThemesMagazine();
@@ -28,7 +28,7 @@ export class ListThemesMagazine {
         icon: `<svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M17.5 12C17.5 14.5 15.5 16.5 13 16.5H11C8.5 16.5 6.5 14.5 6.5 12S8.5 7.5 11 7.5H13C15.5 7.5 17.5 9.5 17.5 12ZM12 9C10.3 9 9 10.3 9 12S10.3 15 12 15S15 13.7 15 12S13.7 9 12 9ZM12 2L15.39 5.39C13.71 4.5 11.84 4.5 10.16 5.39L12 2ZM20 12L16.61 15.39C17.5 13.71 17.5 11.84 16.61 10.16L20 12ZM12 22L8.61 18.61C10.29 19.5 12.16 19.5 13.84 18.61L12 22ZM4 12L7.39 8.61C6.5 10.29 6.5 12.16 7.39 13.84L4 12Z" fill="white"/>
           </svg>`,
-        gradient:  this.getRandomGradient()
+        gradient: this.getRandomGradient(),
       }));
 
       console.log('this.listThemes =', this.listThemes);
@@ -38,9 +38,11 @@ export class ListThemesMagazine {
   }
 
   getRandomColor(): string {
-    return `#${Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, '0')}`;
+    return `#${Math.floor(Math.random() * 0xffffff)
+      .toString(16)
+      .padStart(6, '0')}`;
   }
-  
+
   // Fonction pour générer un gradient CSS aléatoire
   getRandomGradient(): string {
     const color1 = this.getRandomColor();
@@ -51,6 +53,7 @@ export class ListThemesMagazine {
   selectTheme(theme: any) {
     // Action à réaliser lors du clic sur un thème
     // alert(`Thème sélectionné : ${theme.name}`);
-    this.router.navigate(['/magazines', theme.keyTheme]);
+    console.log('theme =', theme);
+    this.router.navigate(['/magazines', theme.keyTheme, theme.name]);
   }
 }

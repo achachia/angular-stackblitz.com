@@ -39,10 +39,6 @@ const routes: Routes = [
     component: Login,
   },
   {
-    path: 'list-themes-magazines',
-    component: ListThemesMagazine,
-  },
-  {
     path: 'list-themes-livres',
     component: ListThemesLivres,
   },
@@ -55,13 +51,25 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'magazines/:theme',
+    path: 'list-pages-by-livre/:livre_id',
+    // component: MagazineList,
+    loadComponent: () =>
+      import('./app/list-pages-by-livre/list-pages-by-livre').then(
+        (m) => m.ListPagesByLivre
+      ),
+  },
+  {
+    path: 'list-themes-magazines',
+    component: ListThemesMagazine,
+  },
+  {
+    path: 'magazines/:keyTheme/:nomTheme',
     // component: MagazineList,
     loadComponent: () =>
       import('./app/magazine-list/magazine-list').then((m) => m.MagazineList),
   },
   {
-    path: 'list-numeros-by-magazine/:keyMagazine/:nomMagazine',
+    path: 'list-numeros-by-magazine/:keyTheme/:nomTheme/:keyMagazine/:nomMagazine',
     // component: MagazineList,
     loadComponent: () =>
       import('./app/list-numeros-magazine/list-numeros-magazine').then(
@@ -69,20 +77,12 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'list-pages-by-numero-magazine/:cycle_magazine_id',
+    path: 'list-pages-by-numero-magazine/:keyTheme/:nomTheme/:cycle_magazine_id/:cover_magazine/:nom_magazine',
     // component: MagazineList,
     loadComponent: () =>
       import(
         './app/list-pages-by-numero-magazine/list-pages-by-numero-magazine'
       ).then((m) => m.ListPagesByNumeroMagazine),
-  },
-  {
-    path: 'list-pages-by-livre/:livre_id',
-    // component: MagazineList,
-    loadComponent: () =>
-      import('./app/list-pages-by-livre/list-pages-by-livre').then(
-        (m) => m.ListPagesByLivre
-      ),
   },
 
   // tu peux ajouter d'autres routes ici

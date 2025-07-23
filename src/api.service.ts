@@ -82,4 +82,10 @@ export class MagazineService {
     const Url = this.apiUrl + '/listPagesByLivre';
     return this.http.post<any[]>(Url, body);
   }
+
+  getDataPageNavigationLecture(ObjectNavigationPage: any): Observable<any[]> {
+    const body = { ObjectNavigationPage };
+    const Url = this.apiUrl + '/getDataPageNavigationLecture';
+    return this.http.post<any[]>(Url, body);
+  }
 }

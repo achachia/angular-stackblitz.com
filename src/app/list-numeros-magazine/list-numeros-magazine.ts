@@ -31,6 +31,10 @@ import {
   ],
 })
 export class ListNumerosMagazine {
+  keyTheme: any = '';
+
+  nomTheme: any = '';
+
   keyMagazine: string | null = null;
 
   nomMagazine: string | null = null;
@@ -69,6 +73,8 @@ export class ListNumerosMagazine {
       this.getListCyclesMagazine();     
     });*/
 
+    this.keyTheme = this.route.snapshot.paramMap.get('keyTheme');
+    this.nomTheme = this.route.snapshot.paramMap.get('nomTheme');
     this.keyMagazine = this.route.snapshot.paramMap.get('keyMagazine');
     this.nomMagazine = this.route.snapshot.paramMap.get('nomMagazine');
     this.getListCyclesMagazine();
@@ -193,6 +199,14 @@ export class ListNumerosMagazine {
   }
 
   selectCycleMagazine(cycleMag: any) {
-    this.router.navigate(['/list-pages-by-numero-magazine', cycleMag._id]);
+    console.log('cycleMag =', cycleMag);
+    this.router.navigate([
+      '/list-pages-by-numero-magazine',
+      this.keyTheme,
+      this.nomTheme,
+      cycleMag._id,
+      cycleMag.cover,
+      encodeURIComponent(cycleMag.titre),
+    ]);
   }
 }

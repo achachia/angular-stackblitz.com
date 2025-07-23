@@ -7,6 +7,7 @@ import { NgIf, NgFor } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms'; // 👈 à importer ici
+import { AuthService } from '../../auth.service';
 
 @Component({
   selector: 'app-list-pages-by-numero-magazine',
@@ -25,11 +26,21 @@ import { FormsModule } from '@angular/forms'; // 👈 à importer ici
 export class ListPagesByNumeroMagazine {
   listPagesByCycleMagazine: any[] = [];
 
+  keyTheme: any = '';
+
+  nomTheme: any = '';
+
   cycle_magazine_id: any;
+
+  nom_magazine: any = '';
+
+  cover_magazine: any = '';
 
   currentIndex = 0;
 
   isZoomed = false;
+
+  menuOpen = false;
 
   chatVisible: boolean = false;
 
@@ -69,12 +80,22 @@ export class ListPagesByNumeroMagazine {
     private route: ActivatedRoute,
     private magazineService: MagazineService,
     public router: Router,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    private authService: AuthService
   ) {
     this.route.paramMap.subscribe((params) => {
       /**************************************************************** */
+      this.keyTheme = params.get('keyTheme');
+      this.nomTheme = params.get('nomTheme');
       this.cycle_magazine_id = params.get('cycle_magazine_id');
       console.log('this.cycle_magazine_id =', this.cycle_magazine_id);
+      this.cover_magazine = params.get('cover_magazine');
+      const nomMagazineEncoded = params.get('nom_magazine');
+      if (nomMagazineEncoded !== null) {
+        this.nom_magazine = decodeURIComponent(nomMagazineEncoded);
+      } else {
+        this.nom_magazine = '';
+      }
 
       /******************************************************* */
 
@@ -147,6 +168,7 @@ export class ListPagesByNumeroMagazine {
 
       /************************************************ */
       this.getListPagesByCycleMagazine();
+      this.getDataPageNavigationLecture();
       // Tu peux maintenant utiliser ce paramètre pour filtrer ou charger les magazines
     });
   }
@@ -155,6 +177,78 @@ export class ListPagesByNumeroMagazine {
     this.chatbotUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(
       this.chatbotUrlUnsafe
     );
+  }
+
+  toggleMenu() {
+    this.menuOpen = !this.menuOpen;
+  }
+
+  getDataPageNavigationLecture() {
+    const _token = this.authService.getTokenStorage;
+
+    const ObjectNavigationPage: any = {
+      token: _token,
+      document_id: this.cycle_magazine_id,
+    };
+
+    this.magazineService
+      .getDataPageNavigationLecture(ObjectNavigationPage)
+      .subscribe((response: any) => {
+        console.log(
+          'Réponse JSON complète-getDataPageNavigationLecture:',
+          response
+        );
+
+        console.log('this.historique_navigation =', this.historique_navigation);
+
+        console.log(
+          'this.historique_navigation.currentIndex =',
+          this.historique_navigation.currentIndex
+        );
+
+        console.log(
+          'this.historique_navigation.currentIndexMax =',
+          this.historique_navigation.currentIndexMax
+        );
+
+        /*********************************************************** */
+
+        if (response.data) {
+          if (
+            response.data.compteurPage > this.historique_navigation.currentIndex
+          ) {
+            this.historique_navigation.currentIndex =
+              response.data.compteurPage;
+
+            this.hist_nav_json[this.indexCycleMagHistNav].currentIndex =
+              this.historique_navigation.currentIndex;
+
+            this.hist_nav_json[this.indexCycleMagHistNav].date = new Date();
+          }
+
+          if (
+            response.data.compteurPageMaxi >
+            this.historique_navigation.currentIndexMax
+          ) {
+            this.historique_navigation.currentIndex =
+              response.data.compteurPageMaxi;
+
+            this.hist_nav_json[this.indexCycleMagHistNav].currentIndexMax =
+              this.currentIndex;
+
+            this.hist_nav_json[this.indexCycleMagHistNav].date = new Date();
+          }
+
+          localStorage.setItem(
+            'historique-navigation-cycle-magazines',
+            JSON.stringify(this.hist_nav_json)
+          );
+        }
+
+        /*********************************************************** */
+
+        // alert(response.reponse)
+      });
   }
 
   getListPagesByCycleMagazine() {
@@ -208,6 +302,32 @@ export class ListPagesByNumeroMagazine {
       );
 
       /********************************************************************* */
+
+      const token = this.authService.getTokenStorage;
+
+      console.log('token = ', token);
+      console.log('document_id =', this.cycle_magazine_id);
+      console.log('nom_document =', this.nom_magazine);
+      console.log(
+        'url_page =',
+        this.listPagesByCycleMagazine[this.currentIndex].url
+      );
+      console.log('compteurPage =', this.currentIndex);
+      console.log(
+        'compteurPageMaxi =',
+        this.hist_nav_json[this.indexCycleMagHistNav].currentIndexMax
+      );
+
+      console.log('cover_document =', this.cover_magazine);
+
+      console.log('keyTheme =', this.keyTheme);
+
+      console.log('nomTheme =', this.nomTheme);
+
+      const typeDocument = 'magazine'; // livre
+      const keySection = 'magazines'; // livres
+
+      /******************************************************************* */
     }
   }
 
