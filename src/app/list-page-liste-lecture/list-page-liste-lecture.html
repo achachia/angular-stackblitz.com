@@ -1,0 +1,90 @@
+<div class="magazine-viewer">
+  <div>
+    <h2>{{curentListe.titre}}</h2>
+    <h2>
+      {{curentPage.nom_document}} ({{curentPage.type_document}})(Page :
+      {{curentPage.indexPage}})
+    </h2>
+    <h2 style="text-align: center">page {{(currentIndex+1)}}</h2>
+  </div>
+  <!-- Menu déroulant en haut à droite -->
+  <div class="top-right-menu">
+    <button class="menu-btn" (click)="toggleMenu()">☰</button>
+
+    <div class="menu-dropdown" *ngIf="menuOpen">
+      <ul>
+        <li (click)="openFullscreen()">📺 Plein écran</li>
+        <li (click)="toggleZoom()">🔍 Zoom</li>
+        <li (click)="chatVisible = true">💬 Chatbot</li>
+        <!-- Nouvelle ligne pour ouvrir le modal d'association -->
+        <li (click)="deletePageByListe(); menuOpen = false">
+          📋 Supprimer de la liste
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Image principale -->
+  <div
+    class="main-image-container"
+    (swipeleft)="nextPage()"
+    (swiperight)="prevPage()"
+    [class.zoomed]="isZoomed"
+    (click)="toggleZoom()"
+  >
+    <pinch-zoom>
+      <img [src]="currentPage" alt="Page" class="main-image" [@fadeImage] />
+    </pinch-zoom>
+    <button class="nav-button prev" (click)="prevPage()">‹</button>
+    <button class="nav-button next" (click)="nextPage()">›</button>
+  </div>
+
+  <!-- Slider de miniatures -->
+  <div class="thumbnail-slider">
+    <img
+      *ngFor="let page of curentListe.pagesListe; let i = index"
+      [src]="page.url"
+      [class.active]="i === currentIndex"
+      (click)="goToPage(i)"
+      class="thumbnail"
+      alt="aperçu page {{ i + 1 }}"
+    />
+  </div>
+
+  <!-- Bouton flottant pour ouvrir -->
+  <button class="chatbot-float-btn" (click)="chatVisible = !chatVisible">
+    💬
+  </button>
+
+  <!-- Fenêtre popup du chatbot -->
+  <div class="chatbot-popup" *ngIf="chatVisible">
+    <div class="chatbot-header">
+      <span class="chatbot-title">Assistant MEGABOOK</span>
+      <button class="chatbot-close-btn" (click)="chatVisible = false">✖</button>
+      <!-- Fenêtre popup du chatbot -->
+      <div class="chatbot-model-select">
+        <label for="model-select">Modèle :</label>
+        <select
+          id="model-select"
+          [(ngModel)]="selectedModel"
+          (change)="onModelChange()"
+        >
+          <option *ngFor="let model of chatbotModels" [value]="model.value">
+            {{ model.label }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <iframe
+      [src]="chatbotUrlSafe"
+      class="chatbot-frame-popup"
+      frameborder="0"
+      allow="microphone; camera"
+    ></iframe>
+  </div>
+</div>
+
+<div class="toast-notification" *ngIf="toastMessage" [@fadeInOut]>
+  {{ toastMessage }}
+</div>

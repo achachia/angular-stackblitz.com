@@ -41,6 +41,7 @@
             <a routerLink="/favoris-livres" routerLinkActive="active"
               >Mes favoris (Livres)</a
             >
+            <a routerLink="/my-listes" routerLinkActive="active">Mes Listes</a>
           </div>
         </div>
 
@@ -87,6 +88,7 @@
         <a routerLink="/favoris-livres" (click)="menuOpen = false"
           >Mes favoris (Livres)</a
         >
+        <a routerLink="/my-listes" (click)="menuOpen = false">Mes listes</a>
         <a href="#" (click)="logout(); menuOpen = false">Déconnexion</a>
       </div>
     </ng-container>

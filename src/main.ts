@@ -24,6 +24,8 @@ import { Login } from './app/login/login';
 import { AuthService } from './auth.service';
 import { FavorisMagazines } from './app/favoris-magazines/favoris-magazines';
 import { FavorisLivres } from './app/favoris-livres/favoris-livres';
+import { MyListes } from './app/my-listes/my-listes';
+import { ListPageListeLecture } from './app/list-page-liste-lecture/list-page-liste-lecture';
 
 const routes: Routes = [
   {
@@ -35,6 +37,14 @@ const routes: Routes = [
     component: FavorisLivres,
   },
   {
+    path: 'my-listes',
+    component: MyListes,
+  },
+  {
+    path: 'liste-pages-my-liste/:nom_liste/:liste_id',
+    component: ListPageListeLecture,
+  },
+  {
     path: 'login',
     component: Login,
   },
@@ -43,7 +53,7 @@ const routes: Routes = [
     component: ListThemesLivres,
   },
   {
-    path: 'livres/:theme',
+    path: 'livres/:keyTheme/:nomTheme',
     // component: MagazineList,
     loadComponent: () =>
       import('./app/list-livres-by-theme/list-livres-by-theme').then(
@@ -51,7 +61,7 @@ const routes: Routes = [
       ),
   },
   {
-    path: 'list-pages-by-livre/:livre_id',
+    path: 'list-pages-by-livre/:keyTheme/:nomTheme/:livre_id/:cover_livre/:nom_livre',
     // component: MagazineList,
     loadComponent: () =>
       import('./app/list-pages-by-livre/list-pages-by-livre').then(

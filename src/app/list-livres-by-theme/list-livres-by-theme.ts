@@ -33,6 +33,8 @@ import {
 export class ListLivresByTheme {
   keyTheme: string | null = null;
 
+  nomTheme: string | null = null;
+
   listLivres: any[] = [];
 
   listLivresTemp: any[] = [];
@@ -59,7 +61,8 @@ export class ListLivresByTheme {
     public router: Router
   ) {
     this.route.paramMap.subscribe((params) => {
-      this.keyTheme = params.get('theme');
+      this.keyTheme = params.get('keyTheme');
+      this.nomTheme = params.get('nomTheme');
       this.getListLivresByTheme();
       // Tu peux maintenant utiliser ce paramètre pour filtrer ou charger les magazines
     });
@@ -128,7 +131,14 @@ export class ListLivresByTheme {
   }
 
   selectLivre(livre: any) {
-    this.router.navigate(['/list-pages-by-livre', livre._id]);
+    this.router.navigate([
+      '/list-pages-by-livre',
+      this.keyTheme,
+      this.nomTheme,
+      livre._id,
+      livre.cover,
+      encodeURIComponent(livre.titre),
+    ]);
   }
 
   applyFiltersType() {}

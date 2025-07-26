@@ -334,7 +334,6 @@
   background-color: #333;
 }
 
-
 /********************** toast-notification *****************************/
 
 .toast-notification {
@@ -352,5 +351,5 @@
   user-select: none;
 
   /* facultatif : un effet léger d'ombre portée dynamique */
-  filter: drop-shadow(0 0 2px rgba(0,0,0,0.12));
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.12));
 }

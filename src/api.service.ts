@@ -88,4 +88,41 @@ export class MagazineService {
     const Url = this.apiUrl + '/getDataPageNavigationLecture';
     return this.http.post<any[]>(Url, body);
   }
+
+  updateDataPageNavigationLecture(ObjectNavigationPage: any): Observable<any[]> {
+    const body = { ObjectNavigationPage };
+    const Url = this.apiUrl + '/postUpdatePageNavigationLecture';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  loadListeLecture(ObjectListeLecture: any): Observable<any[]> {
+    const body = { token : ObjectListeLecture.token};
+    const Url = this.apiUrl + '/getListeLecture';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  loadDataListeLectureById(ObjectListeLecture: any): Observable<any[]> {
+    const body = { token : ObjectListeLecture.token, liste_id: ObjectListeLecture.liste_id};
+    const Url = this.apiUrl + '/getListeLectureById';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  postAddListeLecture(ObjectListeLecture: any): Observable<any[]> {
+    const body = { token : ObjectListeLecture.token, titre :  ObjectListeLecture.titre, pagesListe : ObjectListeLecture.pagesListe, tagsListe: ObjectListeLecture.tagsListe};
+    const Url = this.apiUrl + '/postAddListeLecture';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  postEditListeLecture(ObjectListeLecture: any): Observable<any[]> {
+    const body = { liste_id : ObjectListeLecture._id, token : ObjectListeLecture.token, titre :  ObjectListeLecture.titre, pagesListe : ObjectListeLecture.pagesListe, tagsListe: ObjectListeLecture.tagsListe};
+    const Url = this.apiUrl + '/postEditListeLecture';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  deleteListeLecture(ObjectListeLecture: any): Observable<any[]> {
+    const body = { token : ObjectListeLecture.token , liste_id: ObjectListeLecture._id};
+    const Url = this.apiUrl + '/postDeleteListeLecture';
+    return this.http.post<any[]>(Url, body);
+  }
+
 }

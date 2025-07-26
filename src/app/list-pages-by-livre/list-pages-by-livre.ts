@@ -9,6 +9,14 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms'; // 👈 à importer ici
 import { AuthService } from '../../auth.service';
 
+interface List {
+  _id?: string;
+  titre: string;
+  itemCount?: number; // Exemple: nombre d'éléments dans la liste
+  tagsListe?: [];
+  pagesListe: [];
+}
+
 @Component({
   selector: 'app-list-pages-by-livre',
   imports: [PinchZoomComponent, NgIf, NgFor, FormsModule],
@@ -21,10 +29,33 @@ import { AuthService } from '../../auth.service';
         animate('300ms ease-in', style({ opacity: 1 })),
       ]),
     ]),
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-20px)' }),
+        animate(
+          '300ms ease-out',
+          style({ opacity: 1, transform: 'translateY(0)' })
+        ),
+      ]),
+      transition(':leave', [
+        animate(
+          '300ms ease-in',
+          style({ opacity: 0, transform: 'translateY(-20px)' })
+        ),
+      ]),
+    ]),
   ],
 })
 export class ListPagesByLivre {
   listPagesByLivre: any[] = [];
+
+  keyTheme: string | null = null;
+
+  nomTheme: string | null = null;
+
+  cover_livre: string | null = null;
+
+  nom_livre: string | null = null;
 
   livre_id: any;
 
@@ -33,6 +64,8 @@ export class ListPagesByLivre {
   isZoomed = false;
 
   menuOpen = false;
+
+  toastMessage = '';
 
   historique_navigation: any = {
     livre_id: '',
@@ -68,6 +101,10 @@ export class ListPagesByLivre {
   selectedModel =
     'https://app.vectorshift.ai/chatbots/deployed/685c47a653eb91b72fc8d3e6';
 
+  isListModalOpen = false;
+
+  listsLecture: List[] = []; // Tableau qui contiendra tes listes
+
   constructor(
     private route: ActivatedRoute,
     private magazineService: MagazineService,
@@ -76,8 +113,18 @@ export class ListPagesByLivre {
     private authService: AuthService
   ) {
     this.route.paramMap.subscribe((params) => {
+      /**************************************************************** */
+      this.keyTheme = params.get('keyTheme');
+      this.nomTheme = params.get('nomTheme');
       this.livre_id = params.get('livre_id');
       console.log('this.livre_id=', this.livre_id);
+      this.cover_livre = params.get('cover_livre');
+      const nomLivreEncoded = params.get('nom_livre');
+      if (nomLivreEncoded !== null) {
+        this.nom_livre = decodeURIComponent(nomLivreEncoded);
+      } else {
+        this.nom_livre = '';
+      }
 
       /******************************************************* */
 
@@ -144,7 +191,7 @@ export class ListPagesByLivre {
 
       this.getListPagesByLivre();
 
-      this.getDataPageNavigationLecture();
+      this.loadListeApi();
 
       // Tu peux maintenant utiliser ce paramètre pour filtrer ou charger les magazines
     });
@@ -154,6 +201,29 @@ export class ListPagesByLivre {
     this.chatbotUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(
       this.chatbotUrlUnsafe
     );
+  }
+
+  loadListeApi() {
+    const _token = this.authService.getTokenStorage;
+
+    const ObjectListeLecture = { token: _token };
+
+    this.magazineService
+      .loadListeLecture(ObjectListeLecture)
+      .subscribe((response: any) => {
+        console.log('Réponse JSON complète:', response);
+
+        this.listsLecture = response.data;
+
+        for (let i = 0; i < this.listsLecture.length; i++) {
+          this.listsLecture[i].itemCount =
+            this.listsLecture[i].pagesListe.length;
+        }
+
+        //console.log('this.magazines =', this.magazines)
+
+        // alert(response.reponse)
+      });
   }
 
   getDataPageNavigationLecture() {
@@ -187,6 +257,8 @@ export class ListPagesByLivre {
         /*********************************************************** */
 
         if (response.data) {
+          let checkControl = false;
+
           if (
             response.data.compteurPage > this.historique_navigation.currentIndex
           ) {
@@ -194,9 +266,11 @@ export class ListPagesByLivre {
               response.data.compteurPage;
 
             this.hist_nav_json[this.indexLivreHistNav].currentIndex =
-              this.historique_navigation.currentIndex;
+              response.data.compteurPage;
 
             this.hist_nav_json[this.indexLivreHistNav].date = new Date();
+          } else {
+            checkControl = true;
           }
 
           if (
@@ -207,21 +281,76 @@ export class ListPagesByLivre {
               response.data.compteurPageMaxi;
 
             this.hist_nav_json[this.indexLivreHistNav].currentIndexMax =
-              this.currentIndex;
+              response.data.compteurPageMaxi;
 
             this.hist_nav_json[this.indexLivreHistNav].date = new Date();
+          } else {
+            checkControl = true;
           }
 
           localStorage.setItem(
             'historique-navigation-livres',
             JSON.stringify(this.hist_nav_json)
           );
+
+          if (checkControl) {
+            this.updateDataPageNavigationLecture();
+          }
         }
 
         /*********************************************************** */
 
         // alert(response.reponse)
       });
+  }
+
+  updateDataPageNavigationLecture() {
+    const token = this.authService.getTokenStorage;
+
+    const ObjectNavigationPage: any = {};
+
+    console.log('token = ', token);
+
+    ObjectNavigationPage.token = token;
+
+    console.log('document_id =', this.livre_id);
+    ObjectNavigationPage.document_id = this.livre_id;
+
+    console.log('nom_document =', this.nom_livre);
+    ObjectNavigationPage.nom_document = this.nom_livre;
+
+    console.log('compteurPage =', this.currentIndex);
+    ObjectNavigationPage.compteurPage = this.currentIndex;
+
+    console.log(
+      'compteurPageMaxi =',
+      this.hist_nav_json[this.indexLivreHistNav].currentIndexMax
+    );
+    ObjectNavigationPage.compteurPageMaxi =
+      this.hist_nav_json[this.indexLivreHistNav].currentIndexMax;
+
+    console.log('url_page =', this.listPagesByLivre[this.currentIndex]);
+    ObjectNavigationPage.url_page =
+      this.listPagesByLivre[this.currentIndex].url;
+
+    console.log('cover_document =', this.cover_livre);
+    ObjectNavigationPage.cover_document = this.cover_livre;
+
+    console.log('keyTheme =', this.keyTheme);
+    ObjectNavigationPage.keyTheme = this.keyTheme;
+
+    console.log('nomTheme =', this.nomTheme);
+    ObjectNavigationPage.nomTheme = this.nomTheme;
+
+    ObjectNavigationPage.typeDocument = 'livre';
+    ObjectNavigationPage.keySection = 'livres';
+
+    const typeDocument = 'livre';
+    const keySection = 'livres';
+
+    this.magazineService
+      .updateDataPageNavigationLecture(ObjectNavigationPage)
+      .subscribe((response: any) => {});
   }
 
   getListPagesByLivre() {
@@ -231,7 +360,9 @@ export class ListPagesByLivre {
         console.log('Réponse JSON complète:', response);
         this.listPagesByLivre = response.listPageByLivre; // si la réponse EST directement un tableau de magazines
 
-        console.log('this.listPagesByLivre =', this.listPagesByLivre);
+        this.getDataPageNavigationLecture();
+
+        // console.log('this.listPagesByLivre =', this.listPagesByLivre);
 
         // alert(response.reponse)
       });
@@ -338,5 +469,70 @@ export class ListPagesByLivre {
     this.chatbotUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(
       this.selectedModel
     );
+  }
+
+  openListModal() {
+    this.isListModalOpen = true;
+  }
+
+  closeListModal() {
+    this.isListModalOpen = false;
+  }
+
+  assignPageToList(selectedList: any): void {
+    // Exemple : console.log l'affectation — tu peux modifier selon ta logique métier
+    console.log(
+      `Page ${this.currentIndex + 1} affectée à la liste:`,
+      selectedList.titre
+    );
+
+    selectedList.pagesListe.push({
+      nom_document: this.nom_livre,
+      type_document: 'livre',
+      url: this.listPagesByLivre[this.currentIndex].url,
+      indexPage: this.currentIndex,
+    });
+
+    // Ici tu peux appeler un service, modifier un état, etc.
+    // Par exemple : this.listeService.assignPage(this.currentIndex, selectedList.id);
+
+    // Fermer le modal après l’affectation (optionnel)
+    this.editListeApi(selectedList);
+  }
+
+  editListeApi(selectedList: List) {
+    const _token = this.authService.getTokenStorage;
+
+    const ObjectListeLecture = {
+      token: _token,
+      titre: selectedList.titre,
+      _id: selectedList._id,
+      pagesListe: selectedList.pagesListe,
+      tagsListe: selectedList.tagsListe,
+    };
+
+    this.magazineService
+      .postEditListeLecture(ObjectListeLecture)
+      .subscribe((response: any) => {
+        console.log('Réponse JSON complète:', response);
+
+        this.loadListeApi();
+
+        this.closeListModal(); // Ferme le modal après sauvegarde
+
+        this.showToast(`La liste "${selectedList.titre}" a été à jour.`);
+
+        //console.log('this.magazines =', this.magazines)
+
+        // alert(response.reponse)
+      });
+  }
+
+   // Nouvelle méthode pour afficher une notification
+   showToast(message: string, duration: number = 3000) {
+    this.toastMessage = message;
+    setTimeout(() => {
+      this.toastMessage = '';
+    }, duration);
   }
 }

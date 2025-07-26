@@ -53,6 +53,6 @@ export class ListThemesLivres {
   selectTheme(theme: any) {
     // Action à réaliser lors du clic sur un thème
     // alert(`Thème sélectionné : ${theme.name}`);
-    this.router.navigate(['/livres', theme.keyTheme]);
+    this.router.navigate(['/livres', theme.keyTheme, theme.name]);
   }
 }

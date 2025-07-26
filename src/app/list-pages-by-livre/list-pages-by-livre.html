@@ -1,4 +1,8 @@
 <div class="magazine-viewer">
+  <div>
+    <h2>{{nom_livre}}</h2>
+    <h2 style="text-align: center">Page {{(currentIndex+1)}}</h2>
+  </div>
   <!-- Menu déroulant en haut à droite -->
   <div class="top-right-menu">
     <button class="menu-btn" (click)="toggleMenu()">☰</button>
@@ -8,6 +12,10 @@
         <li (click)="openFullscreen()">📺 Plein écran</li>
         <li (click)="toggleZoom()">🔍 Zoom</li>
         <li (click)="chatVisible = true">💬 Chatbot</li>
+        <!-- Nouvelle ligne pour ouvrir le modal d'association -->
+        <li (click)="openListModal(); menuOpen = false">
+          📋 Associer à une liste
+        </li>
       </ul>
     </div>
   </div>
@@ -71,4 +79,24 @@
     frameborder="0"
     allow="microphone; camera"
   ></iframe>
+</div>
+
+<!-- Modal -->
+<div class="modal-backdrop" *ngIf="isListModalOpen" (click)="closeListModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3 class="modal-title">Listes Disponibles</h3>
+    <ul class="list-container">
+      <li *ngFor="let list of listsLecture" class="list-item">
+        <span class="list-name">{{ list.titre }}</span>
+        <button class="assign-btn" (click)="assignPageToList(list)">
+          Affecter
+        </button>
+      </li>
+    </ul>
+    <button class="close-btn" (click)="closeListModal()">Fermer</button>
+  </div>
+</div>
+
+<div class="toast-notification" *ngIf="toastMessage" [@fadeInOut]>
+  {{ toastMessage }}
 </div>
