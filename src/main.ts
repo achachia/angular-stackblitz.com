@@ -207,12 +207,26 @@ export class App {
     this.isLoading = false;
   }
 
-  selectMagazine(magazine: any) {
-    this.router.navigate(['/list-pages-by-numero-magazine', magazine._id]);
+  selectMagazine(magazine: any, nom_theme: any, key_theme: any) {
+    this.router.navigate([
+      '/list-pages-by-numero-magazine',
+      nom_theme,
+      key_theme,
+      magazine._id,
+      magazine.cover,
+      magazine.titre,
+    ]);
   }
 
-  selectCycleLivre(livre: any) {
-    this.router.navigate(['/list-pages-by-livre', livre._id]);
+  selectLivre(livre: any) {
+    this.router.navigate([
+      '/list-pages-by-livre',
+      livre.keyTheme,
+      livre.keyTheme,
+      livre._id,
+      livre.cover,
+      livre.titre,
+    ]);
   }
 }
 

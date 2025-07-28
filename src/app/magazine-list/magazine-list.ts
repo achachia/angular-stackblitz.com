@@ -13,10 +13,18 @@ import {
   animate,
 } from '@angular/animations';
 import { PinchZoomComponent } from '@meddv/ngx-pinch-zoom'; // https://www.npmjs.com/package/@meddv/ngx-pinch-zoom
+import { Header } from '../header/header';
 
 @Component({
   selector: 'app-magazine-list',
-  imports: [NgIf, NgFor, PinchZoomComponent, RouterLink, RouterLinkActive], // Ajoute NgIf ici !
+  imports: [
+    NgIf,
+    NgFor,
+    PinchZoomComponent,
+    RouterLink,
+    RouterLinkActive,
+    Header,
+  ], // Ajoute NgIf ici !
   templateUrl: './magazine-list.html',
   styleUrl: './magazine-list.css',
   animations: [

@@ -1,11 +1,10 @@
-<app-header></app-header>
-
 <!-- Loader pendant le chargement -->
 <div *ngIf="isLoading && router.url === '/'" class="loader-container">
   <div class="spinner"></div>
 </div>
 
 <div *ngIf="router.url === '/' && !isLoading">
+  <app-header></app-header>
   <div class="accueil-container">
     <h1 class="accueil-title">📚 Bienvenue dans votre bibliothèque</h1>
 
@@ -15,7 +14,7 @@
         <div
           class="card"
           *ngFor="let item of lastLivres"
-          (click)="selectCycleLivre(item)"
+          (click)="selectLivre(item)"
         >
           <img [src]="item.cover" [alt]="item.titre" />
           <p>{{ item.titre }}</p>
@@ -29,7 +28,7 @@
         <div
           class="card"
           *ngFor="let item of lastMagazinesScience"
-          (click)="selectMagazine(item)"
+          (click)="selectMagazine(item, 'Science', 'Science')"
         >
           <img [src]="item.cover" [alt]="item.titre" />
           <p>{{ item.titre }}</p>
@@ -43,7 +42,7 @@
         <div
           class="card"
           *ngFor="let item of lastMagazinesInformatique"
-          (click)="selectMagazine(item)"
+          (click)="selectMagazine(item, 'Informatique', 'Informatique')"
         >
           <img [src]="item.cover" [alt]="item.titre" />
           <p>{{ item.titre }}</p>
@@ -57,7 +56,7 @@
         <div
           class="card"
           *ngFor="let item of lastMagazinesFinance"
-          (click)="selectMagazine(item)"
+          (click)="selectMagazine(item, 'Finance', 'Finance')"
         >
           <img [src]="item.cover" [alt]="item.titre" />
           <p>{{ item.titre }}</p>

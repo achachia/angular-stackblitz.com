@@ -11,10 +11,11 @@ import {
   transition,
   animate,
 } from '@angular/animations';
+import { Header } from '../header/header';
 
 @Component({
   selector: 'app-list-numeros-magazine',
-  imports: [NgIf, NgFor, NgClass, FormsModule],
+  imports: [NgIf, NgFor, NgClass, FormsModule, Header],
   templateUrl: './list-numeros-magazine.html',
   styleUrl: './list-numeros-magazine.css',
   animations: [

@@ -2,10 +2,11 @@ import { Component } from '@angular/core';
 import { NgStyle, NgIf, NgFor } from '@angular/common';
 import { MagazineService } from './../../api.service';
 import { Router } from '@angular/router';
+import { Header } from '../header/header';
 
 @Component({
   selector: 'app-list-themes-magazine',
-  imports: [NgStyle, NgIf, NgFor],
+  imports: [NgStyle, NgIf, NgFor, Header],
   templateUrl: './list-themes-magazine.html',
   styleUrl: './list-themes-magazine.css',
 })

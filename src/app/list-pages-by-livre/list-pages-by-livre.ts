@@ -8,6 +8,7 @@ import { trigger, transition, style, animate } from '@angular/animations';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms'; // 👈 à importer ici
 import { AuthService } from '../../auth.service';
+import { Header } from '../header/header';
 
 interface List {
   _id?: string;
@@ -19,7 +20,7 @@ interface List {
 
 @Component({
   selector: 'app-list-pages-by-livre',
-  imports: [PinchZoomComponent, NgIf, NgFor, FormsModule],
+  imports: [PinchZoomComponent, NgIf, NgFor, FormsModule, Header],
   templateUrl: './list-pages-by-livre.html',
   styleUrl: './list-pages-by-livre.css',
   animations: [

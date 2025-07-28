@@ -5,6 +5,7 @@ import { StorageService } from '../../storage.service';
 import { AuthService } from '../../auth.service';
 import { Subscription } from 'rxjs';
 
+
 @Component({
   selector: 'app-header',
   imports: [RouterLink, RouterLinkActive, NgIf, NgFor],
@@ -27,10 +28,12 @@ export class Header {
   }
 
   ngOnInit() {
-    this.sub = this.authService.isLoggedIn$.subscribe((status) => {
+     this.sub = this.authService.isLoggedIn$.subscribe((status) => {
       this.isLoggedIn = status;
-      console.log('this.isLoggedIn= ', this.isLoggedIn);
+      console.log('this.isLoggedIn-0= ', this.isLoggedIn);
     });
+
+ 
   }
 
   ngOnDestroy() {
@@ -47,7 +50,7 @@ export class Header {
       this.isLoggedIn = true;
     }
 
-    console.log('this.isLoggedIn =', this.isLoggedIn);
+    console.log('this.isLoggedIn-1 =', this.isLoggedIn);
   }
 
   logout() {

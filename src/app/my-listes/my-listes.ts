@@ -6,6 +6,7 @@ import { trigger, style, animate, transition } from '@angular/animations';
 import { MagazineService } from './../../api.service';
 import { AuthService } from '../../auth.service';
 import { Router } from '@angular/router';
+import { Header } from '../header/header';
 
 interface List {
   _id?: string;
@@ -17,7 +18,7 @@ interface List {
 
 @Component({
   selector: 'app-my-listes',
-  imports: [ReactiveFormsModule, NgIf, NgFor, FormsModule],
+  imports: [ReactiveFormsModule, NgIf, NgFor, FormsModule, Header],
   templateUrl: './my-listes.html',
   styleUrl: './my-listes.css',
   animations: [

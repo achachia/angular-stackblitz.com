@@ -1,3 +1,5 @@
+<app-header></app-header>
+
 <!-- Loader pendant le chargement -->
 <div *ngIf="isLoading" class="loader-container">
   <div class="spinner"></div>
@@ -59,9 +61,6 @@
         <h2 class="magazine-title">
           <i class="fas fa-book"></i> {{ livre.titre }}
         </h2>
-        <p class="magazine-periode">
-          <i class="far fa-calendar-alt"></i> {{ livre.periode }}
-        </p>
         <p class="magazine-type">
           <i class="fas fa-tag"></i> Année : <strong>{{ livre.year }}</strong>
         </p>

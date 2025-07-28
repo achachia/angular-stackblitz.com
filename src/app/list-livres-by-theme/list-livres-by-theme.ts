@@ -11,10 +11,11 @@ import {
   transition,
   animate,
 } from '@angular/animations';
+import { Header } from '../header/header';
 
 @Component({
   selector: 'app-list-livres-by-theme',
-  imports: [NgIf, NgFor, FormsModule],
+  imports: [NgIf, NgFor, FormsModule, Header],
   templateUrl: './list-livres-by-theme.html',
   styleUrl: './list-livres-by-theme.css',
   animations: [

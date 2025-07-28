@@ -10,10 +10,11 @@ import {
   transition,
   animate,
 } from '@angular/animations';
+import { Header } from '../header/header';
 
 @Component({
   selector: 'app-favoris-magazines',
-  imports: [NgIf, NgFor, NgClass],
+  imports: [NgIf, NgFor, NgClass, Header],
   templateUrl: './favoris-magazines.html',
   styleUrl: './favoris-magazines.css',
   animations: [
