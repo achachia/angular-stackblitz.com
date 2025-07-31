@@ -13,14 +13,14 @@ interface List {
   titre: string;
   itemCount?: number; // Exemple: nombre d'éléments dans la liste
   tagsListe?: [];
-  pagesListe: [];
+  livresListe: [];
 }
 
 @Component({
-  selector: 'app-my-listes',
+  selector: 'app-list-lecture-livres',
   imports: [ReactiveFormsModule, NgIf, NgFor, FormsModule, Header],
-  templateUrl: './my-listes.html',
-  styleUrl: './my-listes.css',
+  templateUrl: './list-lecture-livres.html',
+  styleUrl: './list-lecture-livres.css',
   animations: [
     trigger('fadeInOut', [
       transition(':enter', [
@@ -39,7 +39,8 @@ interface List {
     ]),
   ],
 })
-export class MyListes {
+export class ListLectureLivres {
+  
   lists: List[] = []; // Tableau qui contiendra tes listes
 
   isLoading: boolean = true;
@@ -52,7 +53,7 @@ export class MyListes {
     titre: '',
     itemCount: 0,
     tagsListe: [],
-    pagesListe: [],
+    livresListe: [],
   }; // L'objet liste lié au formulaire
   toastMessage = '';
 
@@ -96,14 +97,14 @@ export class MyListes {
     const ObjectListeLecture = { token: _token };
 
     this.magazineService
-      .loadListeLecture(ObjectListeLecture)
+      .loadListeLectureLivre(ObjectListeLecture)
       .subscribe((response: any) => {
         console.log('Réponse JSON complète:', response);
 
         this.lists = response.data;
 
         for (let i = 0; i < this.lists.length; i++) {
-          this.lists[i].itemCount = this.lists[i].pagesListe.length;
+          this.lists[i].itemCount = this.lists[i].livresListe.length;
         }
 
         this.isLoading = false;
@@ -125,12 +126,12 @@ export class MyListes {
     const ObjectListeLecture = {
       token: _token,
       titre: this.currentList.titre,
-      pagesListe: [],
+      livresListe: [],
       tagsListe: [],
     };
 
     this.magazineService
-      .postAddListeLecture(ObjectListeLecture)
+      .postAddListeLectureLivre(ObjectListeLecture)
       .subscribe((response: any) => {
         console.log('Réponse JSON complète:', response);
 
@@ -144,7 +145,7 @@ export class MyListes {
           _id: '',
           titre: '',
           tagsListe: [],
-          pagesListe: [],
+          livresListe: [],
           itemCount: 0,
         }; // Réinitialise pour une nouvelle création
 
@@ -163,12 +164,12 @@ export class MyListes {
       token: _token,
       titre: this.currentList.titre,
       _id: this.currentList._id,
-      pagesListe: this.currentList.pagesListe,
+      livresListe: this.currentList.livresListe,
       tagsListe: this.currentList.tagsListe,
     };
 
     this.magazineService
-      .postEditListeLecture(ObjectListeLecture)
+      .postEditListeLectureLivre(ObjectListeLecture)
       .subscribe((response: any) => {
         console.log('Réponse JSON complète:', response);
 
@@ -195,7 +196,7 @@ export class MyListes {
     };
 
     this.magazineService
-      .deleteListeLecture(ObjectListeLecture)
+      .deleteListeLectureLivre(ObjectListeLecture)
       .subscribe((response: any) => {
         console.log('Réponse JSON complète:', response);
 
@@ -269,7 +270,7 @@ export class MyListes {
     // Implémente ici la logique pour consulter la liste
     // Ex: Naviguer vers une page de détails: this.router.navigate(['/list', list.id]);
 
-    this.router.navigate(['/liste-pages-my-liste', list.titre, list._id]);
+    this.router.navigate(['/view-liste-lecture-livres', list.titre, list._id]);
   }
 
   editList(list: List): void {

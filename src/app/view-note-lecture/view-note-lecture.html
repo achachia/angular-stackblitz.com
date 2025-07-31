@@ -1,0 +1,105 @@
+<app-header></app-header>
+<!-- Loader pendant le chargement -->
+<div *ngIf="isLoading" class="loader-container">
+  <div class="spinner"></div>
+</div>
+
+<div class="container" *ngIf="!isLoading">
+  <!-- Menu déroulant en haut à droite -->
+  <div class="top-right-menu">
+    <button class="menu-btn" (click)="toggleMenu()">☰</button>
+
+    <div class="menu-dropdown" *ngIf="menuOpen">
+      <ul>
+        <li (click)="addNote()">
+          <i class="fas fa-plus-circle" style="margin-right: 0.5em"></i>Ajouter
+          une note
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <h1 class="title">Les notes ({{nom_liste}})</h1>
+
+  <div *ngIf="listNotes.length === 0" class="no-lists-message">
+    <p>Aucune note disponible pour le moment. Créez-en une nouvelle !</p>
+  </div>
+
+  <div class="accueil-description" *ngFor="let objectNote of listNotes">
+    <p>{{ objectNote.note }}</p>
+    <small class="note-source" *ngIf="objectNote.source">
+      Source : {{ objectNote.source }}
+    </small>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal-backdrop" *ngIf="isListModalOpen" (click)="closeListModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3 class="modal-title">Enregistrer une note</h3>
+
+    <form (ngSubmit)="saveNoteApi()" #listForm="ngForm">
+      <div class="form-group">
+        <label for="listName">Source de la note:</label>
+        <input
+          type="text"
+          id="source"
+          name="listName"
+          [(ngModel)]="source"
+          required
+          minlength="3"
+          #nameInput="ngModel"
+          class="form-control"
+        />
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">
+            Le nom de la source est requis.
+          </div>
+          <div *ngIf="nameInput.errors?.['minlength']">
+            Le nom doit contenir au moins 3 caractères.
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="listName">Note&nbsp;:</label>
+        <textarea
+          id="note"
+          name="note"
+          [(ngModel)]="note"
+          required
+          minlength="3"
+          #nameInput="ngModel"
+          class="form-control"
+          rows="10"
+        ></textarea>
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">La note est requise.</div>
+          <div *ngIf="nameInput.errors?.['minlength']">
+            La note doit contenir au moins 3 caractères.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="!listForm.valid" class="save-btn">
+          Enregistrer
+        </button>
+        <button type="button" class="cancel-btn" (click)="closeListModal()">
+          Annuler
+        </button>
+      </div>
+    </form>
+
+    <button class="close-btn" (click)="closeListModal()">Fermer</button>
+  </div>
+</div>
+
+<div class="toast-notification" *ngIf="toastMessage" [@fadeInOut]>
+  {{ toastMessage }}
+</div>

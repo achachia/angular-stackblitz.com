@@ -343,7 +343,7 @@ export class ListPagesByNumeroMagazine {
       this.hist_nav_json[this.indexCycleMagHistNav].currentIndexMax;
 
     console.log('url_page =', this.listPagesByCycleMagazine[this.currentIndex]);
-    ObjectNavigationPage.url_page =
+    ObjectNavigationPage.urlPage =
       this.listPagesByCycleMagazine[this.currentIndex].url;
 
     console.log('cover_document =', this.cover_magazine);

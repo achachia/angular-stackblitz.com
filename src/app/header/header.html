@@ -41,6 +41,10 @@
             <a routerLink="/favoris-livres" routerLinkActive="active"
               >Mes favoris (Livres)</a
             >
+            <a routerLink="/my-liste-lecture-livres" routerLinkActive="active"
+              >Mes liste (Livres)</a
+            >
+            <a routerLink="/my-notes" routerLinkActive="active">Mes notes</a>
             <a routerLink="/my-listes" routerLinkActive="active">Mes Listes</a>
           </div>
         </div>
@@ -88,6 +92,10 @@
         <a routerLink="/favoris-livres" (click)="menuOpen = false"
           >Mes favoris (Livres)</a
         >
+        <a routerLink="/liste-lecture-livres" (click)="menuOpen = false"
+          >Mes liste (Livres)</a
+        >
+        <a routerLink="/my-notes" (click)="menuOpen = false">Mes notes</a>
         <a routerLink="/my-listes" (click)="menuOpen = false">Mes listes</a>
         <a href="#" (click)="logout(); menuOpen = false">Déconnexion</a>
       </div>

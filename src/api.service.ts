@@ -22,6 +22,12 @@ export class MagazineService {
     return this.http.get<any[]>(this.apiUrl);
   }*/
 
+  getOCRPage(infosOcr: any): Observable<any[]> {
+    const body = { urlImage: infosOcr.urlImage, token: infosOcr.token };
+    const Url = this.apiUrl + '/getOcrPageLive';
+    return this.http.post<any[]>(Url, body);
+  }
+
   getIdentificationUser(_email: any, _password: any): Observable<any[]> {
     const objectUser = { email: _email, password: _password };
     const body = { objectUser };
@@ -89,40 +95,152 @@ export class MagazineService {
     return this.http.post<any[]>(Url, body);
   }
 
-  updateDataPageNavigationLecture(ObjectNavigationPage: any): Observable<any[]> {
+  updateDataPageNavigationLecture(
+    ObjectNavigationPage: any
+  ): Observable<any[]> {
     const body = { ObjectNavigationPage };
     const Url = this.apiUrl + '/postUpdatePageNavigationLecture';
     return this.http.post<any[]>(Url, body);
   }
 
+  loadListeNotesLecture(ObjectListeLecture: any): Observable<any[]> {
+    const body = { token: ObjectListeLecture.token };
+    const Url = this.apiUrl + '/getListeNote';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  loadListeNoteLectureById(ObjectListeLecture: any): Observable<any[]> {
+    const body = {
+      token: ObjectListeLecture.token,
+      liste_id: ObjectListeLecture.liste_id,
+    };
+    const Url = this.apiUrl + '/getListeNoteById';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  postAddNoteListeLecture(ObjectListeLecture: any): Observable<any[]> {
+    const body = {
+      token: ObjectListeLecture.token,
+      titre: ObjectListeLecture.titre,
+      notesListe: ObjectListeLecture.notesListe,
+      tagsListe: ObjectListeLecture.tagsListe,
+    };
+    const Url = this.apiUrl + '/postAddListeNote';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  postEditListeNoteLecture(ObjectListeLecture: any): Observable<any[]> {
+    const body = {
+      liste_id: ObjectListeLecture.liste_id,
+      token: ObjectListeLecture.token,
+      titre: ObjectListeLecture.titre,
+      notesListe: ObjectListeLecture.notesListe,
+      tagsListe: ObjectListeLecture.tagsListe,
+    };
+    const Url = this.apiUrl + '/postEditListeNote';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  loadListeLectureLivre(ObjectListeLecture: any): Observable<any[]> {
+    const body = { token: ObjectListeLecture.token };
+    const Url = this.apiUrl + '/getListeLectureLivre';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  loadListeLectureLivreById(ObjectListeLecture: any): Observable<any[]> {
+    const body = {
+      token: ObjectListeLecture.token,
+      liste_id: ObjectListeLecture.liste_id,
+    };
+    const Url = this.apiUrl + '/getListeLectureLivreById';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  postAddListeLectureLivre(ObjectListeLecture: any): Observable<any[]> {
+    const body = {
+      token: ObjectListeLecture.token,
+      titre: ObjectListeLecture.titre,
+      livresListe: ObjectListeLecture.livresListe,
+      tagsListe: ObjectListeLecture.tagsListe,
+    };
+    const Url = this.apiUrl + '/postAddListeLectureLivre';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  postEditListeLectureLivre(ObjectListeLecture: any): Observable<any[]> {
+    const body = {
+      liste_id: ObjectListeLecture._id,
+      token: ObjectListeLecture.token,
+      titre: ObjectListeLecture.titre,
+      livresListe: ObjectListeLecture.livresListe,
+      tagsListe: ObjectListeLecture.tagsListe,
+    };
+    const Url = this.apiUrl + '/postEditListeLectureLivre';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  deleteListeNoteLecture(ObjectListeLecture: any): Observable<any[]> {
+    const body = {
+      token: ObjectListeLecture.token,
+      liste_id: ObjectListeLecture._id,
+    };
+    const Url = this.apiUrl + '/postDeleteListeNote';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  deleteListeLectureLivre(ObjectListeLecture: any): Observable<any[]> {
+    const body = {
+      token: ObjectListeLecture.token,
+      liste_id: ObjectListeLecture._id,
+    };
+    const Url = this.apiUrl + '/postDeleteListeLectureLivre';
+    return this.http.post<any[]>(Url, body);
+  }
+
   loadListeLecture(ObjectListeLecture: any): Observable<any[]> {
-    const body = { token : ObjectListeLecture.token};
+    const body = { token: ObjectListeLecture.token };
     const Url = this.apiUrl + '/getListeLecture';
     return this.http.post<any[]>(Url, body);
   }
 
   loadDataListeLectureById(ObjectListeLecture: any): Observable<any[]> {
-    const body = { token : ObjectListeLecture.token, liste_id: ObjectListeLecture.liste_id};
+    const body = {
+      token: ObjectListeLecture.token,
+      liste_id: ObjectListeLecture.liste_id,
+    };
     const Url = this.apiUrl + '/getListeLectureById';
     return this.http.post<any[]>(Url, body);
   }
 
   postAddListeLecture(ObjectListeLecture: any): Observable<any[]> {
-    const body = { token : ObjectListeLecture.token, titre :  ObjectListeLecture.titre, pagesListe : ObjectListeLecture.pagesListe, tagsListe: ObjectListeLecture.tagsListe};
+    const body = {
+      token: ObjectListeLecture.token,
+      titre: ObjectListeLecture.titre,
+      pagesListe: ObjectListeLecture.pagesListe,
+      tagsListe: ObjectListeLecture.tagsListe,
+    };
     const Url = this.apiUrl + '/postAddListeLecture';
     return this.http.post<any[]>(Url, body);
   }
 
   postEditListeLecture(ObjectListeLecture: any): Observable<any[]> {
-    const body = { liste_id : ObjectListeLecture._id, token : ObjectListeLecture.token, titre :  ObjectListeLecture.titre, pagesListe : ObjectListeLecture.pagesListe, tagsListe: ObjectListeLecture.tagsListe};
+    const body = {
+      liste_id: ObjectListeLecture._id,
+      token: ObjectListeLecture.token,
+      titre: ObjectListeLecture.titre,
+      pagesListe: ObjectListeLecture.pagesListe,
+      tagsListe: ObjectListeLecture.tagsListe,
+    };
     const Url = this.apiUrl + '/postEditListeLecture';
     return this.http.post<any[]>(Url, body);
   }
 
   deleteListeLecture(ObjectListeLecture: any): Observable<any[]> {
-    const body = { token : ObjectListeLecture.token , liste_id: ObjectListeLecture._id};
+    const body = {
+      token: ObjectListeLecture.token,
+      liste_id: ObjectListeLecture._id,
+    };
     const Url = this.apiUrl + '/postDeleteListeLecture';
     return this.http.post<any[]>(Url, body);
   }
-
 }

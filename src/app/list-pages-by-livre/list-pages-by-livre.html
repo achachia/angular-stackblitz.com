@@ -15,8 +15,11 @@
         <li (click)="chatVisible = true">💬 Chatbot</li>
         <!-- Nouvelle ligne pour ouvrir le modal d'association -->
         <li (click)="openListModal(); menuOpen = false">
-          📋 Associer à une liste
+          📋 Associer à une liste (Pages)
         </li>
+        <li (click)="getOCRPage(); menuOpen = false">
+        📋 Récupérer le OCR
+      </li>
       </ul>
     </div>
   </div>
@@ -37,7 +40,7 @@
   </div>
 
   <!-- Slider de miniatures -->
-  <div class="thumbnail-slider">
+  <!--<div class="thumbnail-slider">
     <img
       *ngFor="let page of listPagesByLivre; let i = index"
       [src]="page.url"
@@ -46,6 +49,23 @@
       class="thumbnail"
       alt="aperçu page {{ i + 1 }}"
     />
+  </div>-->
+
+  <!-- Slider de miniatures -->
+  <div class="thumbnail-slider">
+    <div
+      class="thumbnail-container"
+      *ngFor="let page of listPagesByLivre; let i = index"
+      [class.active]="i === currentIndex"
+      (click)="goToPage(i)"
+    >
+      <img
+        [src]="page.url"
+        class="thumbnail"
+        [alt]="'aperçu page ' + (i + 1)"
+      />
+      <div class="thumbnail-page-number">Page {{ i + 1 }}</div>
+    </div>
   </div>
 </div>
 

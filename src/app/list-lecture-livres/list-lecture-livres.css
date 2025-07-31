@@ -1,0 +1,450 @@
+/* Import Font Awesome (si pas déjà fait globalement) */
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css');
+
+:host {
+  display: block;
+  padding: 20px;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.list-container-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+  max-width: 800px;
+  margin: 40px auto;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  color: #343a40;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 15px;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #007bff;
+  margin: 0;
+}
+
+.add-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0 2px 8px rgba(40, 167, 69, 0.2);
+}
+
+.add-button:hover {
+  background-color: #218838;
+  transform: translateY(-2px);
+}
+
+.no-lists-message {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6c757d;
+  font-style: italic;
+  font-size: 1.1rem;
+  background-color: #e9ecef;
+  border-radius: 8px;
+  margin-bottom: 25px;
+}
+
+.list-group {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 15px 20px;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+}
+
+.list-item:hover {
+  background-color: #e2f0ff;
+  border-color: #a0d4ff;
+  box-shadow: 0 4px 15px rgba(0, 123, 255, 0.1);
+  transform: translateY(-3px);
+}
+
+.list-details {
+  flex-grow: 1;
+}
+
+.list-name {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #495057;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.list-meta {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.list-actions {
+  display: flex;
+  gap: 10px; /* Espace entre les boutons */
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  padding: 8px 15px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  border: none;
+}
+
+.action-btn i {
+  margin-right: 8px;
+  font-size: 1rem;
+}
+
+.view-btn {
+  background-color: #007bff;
+  color: white;
+}
+
+.view-btn:hover {
+  background-color: #0056b3;
+}
+
+.edit-btn {
+  background-color: #ffc107; /* Jaune pour éditer */
+  color: #343a40;
+}
+
+.edit-btn:hover {
+  background-color: #e0a800;
+}
+
+.delete-btn {
+  background-color: #dc3545; /* Rouge pour supprimer */
+  color: white;
+}
+
+.delete-btn:hover {
+  background-color: #c82333;
+}
+
+/****************************************************/
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 8px;
+  padding: 2rem;
+  width: 360px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-title {
+  margin: 0 0 1rem 0;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #333;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 0.5rem;
+}
+
+.list-container {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.assign-btn {
+  background-color: #007bff;
+  border: none;
+  color: white;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.assign-btn:hover {
+  background-color: #0056b3;
+}
+
+.close-btn {
+  margin-top: 1rem;
+  align-self: flex-end;
+  background-color: #666;
+  color: white;
+  padding: 0.5rem 1.2rem;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.close-btn:hover {
+  background-color: #333;
+}
+
+.form-actions {
+  margin-top: 15%;
+}
+
+/******************* formulaire ************************/
+
+/*********************** div button formulaire ***************************/
+
+.form-group {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: #343a40;
+  margin-bottom: 0.4rem;
+  user-select: none;
+}
+
+.form-control {
+  padding: 10px 14px;
+  font-size: 1rem;
+  border: 1.8px solid #ced4da;
+  border-radius: 8px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  outline-offset: 2px;
+}
+
+.form-control:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 6px rgba(0, 123, 255, 0.4);
+  outline: none;
+}
+
+.form-control.ng-invalid.ng-touched,
+.form-control.ng-invalid.ng-dirty {
+  border-color: #dc3545;
+}
+
+.validation-message {
+  color: #dc3545;
+  font-size: 0.85rem;
+  margin-top: 0.3rem;
+  font-weight: 500;
+  font-style: italic;
+  user-select: none;
+}
+
+/*********************** div input formulaire ***************************/
+
+.save-btn,
+.cancel-btn {
+  padding: 12px 28px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.15s ease;
+  min-width: 140px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  user-select: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.save-btn {
+  background-color: #28a745; /* Vert vif pour enregistrer */
+  color: white;
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+}
+
+.save-btn:hover:not(:disabled) {
+  background-color: #218838;
+  box-shadow: 0 6px 16px rgba(33, 136, 56, 0.6);
+  transform: translateY(-2px);
+}
+
+.save-btn:disabled {
+  background-color: #94d3a2;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.cancel-btn {
+  background-color: #6c757d; /* Gris pour annuler */
+  color: white;
+  margin-left: 1rem;
+  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.4);
+}
+
+.cancel-btn:hover {
+  background-color: #5a6268;
+  box-shadow: 0 6px 16px rgba(90, 98, 104, 0.6);
+  transform: translateY(-2px);
+}
+
+/* Optionnel : focus visible pour accessibilité */
+.save-btn:focus-visible,
+.cancel-btn:focus-visible {
+  outline: 3px solid #005fcc;
+  outline-offset: 3px;
+  box-shadow: 0 0 8px #005fcc;
+}
+
+/********************** toast-notification *****************************/
+
+.toast-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background-color: #28a745; /* vert style succès */
+  color: white;
+  padding: 14px 22px;
+  border-radius: 25px;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.5);
+  font-weight: 600;
+  font-size: 1rem;
+  z-index: 1100;
+  user-select: none;
+
+  /* facultatif : un effet léger d'ombre portée dynamique */
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.12));
+}
+
+/********************* Modal delete confirmation *************************/
+.confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.confirm-modal {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem 2.5rem;
+  width: 380px;
+  max-width: 90%;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  animation: modalFadeIn 0.35s ease forwards;
+}
+
+.confirm-modal h3 {
+  margin-top: 0;
+  color: #dc3545;
+  font-weight: 700;
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+}
+
+.confirm-modal p {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  color: #444;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1.2rem;
+}
+
+.btn {
+  padding: 10px 28px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.15s ease;
+  user-select: none;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  min-width: 110px;
+}
+
+.btn-cancel {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-cancel:hover {
+  background-color: #5a6268;
+  transform: translateY(-2px);
+}
+
+.btn-confirm {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-confirm:hover {
+  background-color: #b02a37;
+  transform: translateY(-2px);
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

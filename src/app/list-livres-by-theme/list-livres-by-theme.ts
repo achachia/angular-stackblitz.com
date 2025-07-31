@@ -12,6 +12,15 @@ import {
   animate,
 } from '@angular/animations';
 import { Header } from '../header/header';
+import { AuthService } from '../../auth.service';
+
+interface List {
+  _id?: string;
+  titre: string;
+  itemCount?: number; // Exemple: nombre d'éléments dans la liste
+  tagsListe?: [];
+  livresListe: [];
+}
 
 @Component({
   selector: 'app-list-livres-by-theme',
@@ -56,10 +65,21 @@ export class ListLivresByTheme {
 
   readonly circumference = 2 * Math.PI * this.radius;
 
+  selectedLivre: any = null;
+
+  isListModalOpen = false;
+
+  listsLectureLivres: List[] = []; // Tableau qui contiendra tes listes
+
+  toastMessage = '';
+
+  showSessionExpiredModa: any = false;
+
   constructor(
     private route: ActivatedRoute,
     private magazineService: MagazineService,
-    public router: Router
+    public router: Router,
+    private authService: AuthService
   ) {
     this.route.paramMap.subscribe((params) => {
       this.keyTheme = params.get('keyTheme');
@@ -72,6 +92,52 @@ export class ListLivresByTheme {
   ngOnInit() {
     const fav = localStorage.getItem('favorites-livres');
     this.favorites = fav ? JSON.parse(fav) : [];
+  }
+
+  closeListModal() {
+    this.isListModalOpen = false;
+  }
+
+  assignLivreToList(selectedList: any): void {
+    // Exemple : console.log l'affectation — tu peux modifier selon ta logique métier
+
+    console.log('this.selectedLivre-1 =', this.selectedLivre);
+
+    selectedList.livresListe.push(this.selectedLivre);
+
+    // Ici tu peux appeler un service, modifier un état, etc.
+    // Par exemple : this.listeService.assignPage(this.currentIndex, selectedList.id);
+
+    // Fermer le modal après l’affectation (optionnel)
+    this.editListeApi(selectedList);
+  }
+
+  editListeApi(selectedList: any) {
+    const _token = this.authService.getTokenStorage;
+
+    const ObjectListeLecture = {
+      token: _token,
+      titre: selectedList.titre,
+      _id: selectedList._id,
+      livresListe: selectedList.livresListe,
+      tagsListe: selectedList.tagsListe,
+    };
+
+    this.magazineService
+      .postEditListeLectureLivre(ObjectListeLecture)
+      .subscribe((response: any) => {
+        console.log('Réponse JSON complète:', response);
+
+        this.showToast(
+          `La liste "${ObjectListeLecture.titre}" a été mettre à jour avec succées.`
+        );
+
+        this.isListModalOpen = false; // Ferme le modal après sauvegarde
+
+        //console.log('this.magazines =', this.magazines)
+
+        // alert(response.reponse)
+      });
   }
 
   getListLivresByTheme() {
@@ -131,15 +197,51 @@ export class ListLivresByTheme {
     }
   }
 
+  loadListeLectureLivreApi() {
+    const _token = this.authService.getTokenStorage;
+
+    const ObjectListeLecture = { token: _token };
+
+    this.magazineService.loadListeLectureLivre(ObjectListeLecture).subscribe(
+      (response: any) => {
+        console.log('Réponse JSON complète:', response);
+
+        if (response.reponse) {
+          this.listsLectureLivres = response.data;
+
+          for (let i = 0; i < this.listsLectureLivres.length; i++) {
+            this.listsLectureLivres[i].itemCount =
+              this.listsLectureLivres[i].livresListe.length;
+          }
+
+          this.isLoading = false;
+
+          //console.log('this.magazines =', this.magazines)
+        } else {
+          if (response.msg === 'token_not_valid') {
+            this.showSessionExpiredModa = true;
+          }
+        }
+
+        // alert(response.reponse)
+      },
+      (error) => {
+        // Ici, tu interceptes les erreurs réseau ou serveur
+        console.error(error);
+        if (error.error.msg === 'token_not_valid') {
+          this.showSessionExpiredModa = true;
+        }
+        // this.errorMessage = "Impossible d'accéder au service. Veuillez vérifier votre connexion ou réessayer plus tard.";
+      }
+    );
+  }
+
+  goToLogin() {
+    this.router.navigate(['/login']);
+  }
+
   selectLivre(livre: any) {
-    this.router.navigate([
-      '/list-pages-by-livre',
-      this.keyTheme,
-      this.nomTheme,
-      livre._id,
-      livre.cover,
-      encodeURIComponent(livre.titre),
-    ]);
+    this.selectedLivre = livre;
   }
 
   applyFiltersType() {}
@@ -164,5 +266,48 @@ export class ListLivresByTheme {
     const progressMap = data ? JSON.parse(data) : {};
     progressMap[token] = percent;
     localStorage.setItem('readingProgress', JSON.stringify(progressMap));
+  }
+
+  closeActionSheet() {
+    this.selectedLivre = null;
+  }
+
+  actionLire() {
+    // Logique pour lire le livre selectedLivre
+    console.log('Lire', this.selectedLivre);
+    this.router.navigate([
+      '/list-pages-by-livre',
+      this.keyTheme,
+      this.nomTheme,
+      this.selectedLivre._id,
+      this.selectedLivre.cover,
+      encodeURIComponent(this.selectedLivre.titre),
+    ]);
+    this.closeActionSheet();
+  }
+
+  actionPartager() {
+    // Logique partage
+    console.log('Partager', this.selectedLivre);
+    this.closeActionSheet();
+  }
+
+  actionFavori() {
+    this.toggleFavori(this.selectedLivre);
+    this.closeActionSheet();
+  }
+
+  actionListeLectureLivre() {
+    this.isListModalOpen = true;
+    this.loadListeLectureLivreApi();
+    // this.closeActionSheet();
+  }
+
+  // Nouvelle méthode pour afficher une notification
+  showToast(message: string, duration: number = 3000) {
+    this.toastMessage = message;
+    setTimeout(() => {
+      this.toastMessage = '';
+    }, duration);
   }
 }

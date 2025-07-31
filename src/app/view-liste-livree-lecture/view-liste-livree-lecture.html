@@ -6,7 +6,7 @@
 </div>
 
 <div class="container" *ngIf="!isLoading">
-  <h1 class="title">Les livres ({{nomTheme}})</h1>
+  <h1 class="title">Les livres ({{nom_liste}})</h1>
 
   <!-- Filters -->
   <div class="filters">
@@ -36,25 +36,6 @@
           alt="{{ livre.titre }}"
           class="magazine-cover"
         />
-
-        <!-- Icône Favori -->
-
-        <div class="favorite-icon" (click)="toggleFavori(livre)">
-          <!-- SVG étoile (remplie ou vide selon favoris) -->
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            fill="currentColor"
-            [attr.fill]="isFavori(livre) ? 'red' : '#ffffffcc'"
-            viewBox="0 0 24 24"
-            class="star-icon"
-          >
-            <path
-              d="M12 17.27L18.18 21l-1.63-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.45 4.73L5.82 21z"
-            />
-          </svg>
-        </div>
       </div>
 
       <div class="magazine-info">
@@ -125,45 +106,11 @@
   <button (click)="actionPartager()">
     <i class="fas fa-share-alt"></i> Partager
   </button>
-  <button (click)="actionFavori()">
-    <i [class]="isFavori(selectedLivre) ? 'fas fa-star' : 'far fa-star'"></i>
-    {{ isFavori(selectedLivre) ? 'Retirer des favoris' : 'Ajouter aux favoris'
-    }}
+  <button (click)="RetirerByListe()">
+    <i class="fas fa-trash"></i> Retirer de la liste
   </button>
-  <button (click)="actionListeLectureLivre()">
-    <i [class]="isFavori(selectedLivre) ? 'fas fa-star' : 'far fa-star'"></i>
-    {{ isFavori(selectedLivre) ? 'Retirer d\'une liste(Livres)' : 'Ajouter à une
-    liste (Livres)' }}
-  </button>
+
   <button class="btn-cancel" (click)="closeActionSheet()">
     <i class="fas fa-times"></i> Annuler
   </button>
-</div>
-
-<!-- Modal -->
-<div class="modal-backdrop" *ngIf="isListModalOpen" (click)="closeListModal()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
-    <h3 class="modal-title">Listes (Livres) Disponibles</h3>
-    <ul class="list-container">
-      <li *ngFor="let list of listsLectureLivres" class="list-item">
-        <span class="list-name">{{ list.titre }}</span>
-        <button class="assign-btn" (click)="assignLivreToList(list)">
-          Affecter
-        </button>
-      </li>
-    </ul>
-    <button class="close-btn" (click)="closeListModal()">Fermer</button>
-  </div>
-</div>
-
-<div class="toast-notification" *ngIf="toastMessage" [@fadeInOut]>
-  {{ toastMessage }}
-</div>
-
-<!-- Affiche le modal si la session est expirée -->
-<div class="modal-backdrop" *ngIf="showSessionExpiredModa"></div>
-<div class="session-modal" *ngIf="showSessionExpiredModa">
-  <h2>Session expirée</h2>
-  <p>Votre session a expiré.<br />Veuillez vous reconnecter pour continuer.</p>
-  <button (click)="goToLogin()">Se connecter</button>
 </div>

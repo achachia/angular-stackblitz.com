@@ -204,6 +204,27 @@ export class ListPagesByLivre {
     );
   }
 
+  getOCRPage() {
+    const _token = this.authService.getTokenStorage;
+    const infosOcr: any = {
+      urlImage: this.listPagesByLivre[this.currentIndex].url,
+      token: _token,
+    };
+
+    this.magazineService.getOCRPage(infosOcr).subscribe((response: any) => {
+      console.log('Réponse JSON complète-OCR:', response);
+
+      if (!response.ParsedText.IsErroredOnProcessing) {
+        console.log('ocr = ', response.ParsedText.ParsedResults[0].ParsedText);
+        alert(response.ParsedText.ParsedResults[0].ParsedText);
+      }
+
+      //console.log('this.magazines =', this.magazines)
+
+      // alert(response.reponse)
+    });
+  }
+
   loadListeApi() {
     const _token = this.authService.getTokenStorage;
 
@@ -331,7 +352,7 @@ export class ListPagesByLivre {
       this.hist_nav_json[this.indexLivreHistNav].currentIndexMax;
 
     console.log('url_page =', this.listPagesByLivre[this.currentIndex]);
-    ObjectNavigationPage.url_page =
+    ObjectNavigationPage.urlPage =
       this.listPagesByLivre[this.currentIndex].url;
 
     console.log('cover_document =', this.cover_livre);
@@ -529,8 +550,8 @@ export class ListPagesByLivre {
       });
   }
 
-   // Nouvelle méthode pour afficher une notification
-   showToast(message: string, duration: number = 3000) {
+  // Nouvelle méthode pour afficher une notification
+  showToast(message: string, duration: number = 3000) {
     this.toastMessage = message;
     setTimeout(() => {
       this.toastMessage = '';

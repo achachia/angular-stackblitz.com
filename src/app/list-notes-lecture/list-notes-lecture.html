@@ -1,0 +1,165 @@
+<app-header></app-header>
+<div *ngIf="isLoading" class="loader-container">
+  <div class="spinner"></div>
+</div>
+
+<div class="list-container-card">
+  <div class="header">
+    <h2 class="title">Mes notes</h2>
+    <button class="add-button" (click)="addNewList()">+ Nouvelle Liste</button>
+  </div>
+
+  <div *ngIf="lists.length === 0" class="no-lists-message">
+    <p>Aucune liste disponible pour le moment. Créez-en une nouvelle !</p>
+  </div>
+
+  <ul class="list-group">
+    <li *ngFor="let list of lists" class="list-item">
+      <div class="list-details">
+        <span class="list-name">{{ list.titre }}</span>
+        <span class="list-meta">{{ list.itemCount }} éléments</span>
+      </div>
+      <div class="list-actions">
+        <button class="action-btn view-btn" (click)="viewList(list)">
+          <i class="fas fa-eye"></i> Consulter
+        </button>
+        <button class="action-btn edit-btn" (click)="editList(list)">
+          <i class="fas fa-edit"></i> Éditer
+        </button>
+        <button class="action-btn delete-btn" (click)="deleteList(list)">
+          <i class="fas fa-trash-alt"></i> Supprimer
+        </button>
+      </div>
+    </li>
+  </ul>
+</div>
+
+<!-- Modal add  -->
+<div
+  class="modal-backdrop"
+  *ngIf="isFormModalOpenAddListe"
+  (click)="closeFormModalAddListe()"
+>
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3 class="modal-form-title">Créer une nouvelle liste</h3>
+
+    <form (ngSubmit)="saveListeApi()" #listForm="ngForm">
+      <div class="form-group">
+        <label for="listName">Nom de la liste:</label>
+        <input
+          type="text"
+          id="listName"
+          name="listName"
+          [(ngModel)]="currentList.titre"
+          required
+          minlength="3"
+          #nameInput="ngModel"
+          class="form-control"
+        />
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">
+            Le nom de la liste est requis.
+          </div>
+          <div *ngIf="nameInput.errors?.['minlength']">
+            Le nom doit contenir au moins 3 caractères.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="!listForm.valid" class="save-btn">
+          Créer la liste
+        </button>
+        <button
+          type="button"
+          class="cancel-btn"
+          (click)="closeFormModalAddListe()"
+        >
+          Annuler
+        </button>
+      </div>
+    </form>
+
+    <button class="close-btn" (click)="closeFormModalAddListe()">Fermer</button>
+  </div>
+</div>
+
+<!-- Modal edit  -->
+<div
+  class="modal-backdrop"
+  *ngIf="isFormModalOpenEditListe"
+  (click)="closeFormModalEditListe()"
+>
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3 class="modal-form-title">Éditer la liste</h3>
+
+    <form (ngSubmit)="editListeApi()" #listForm="ngForm">
+      <div class="form-group">
+        <label for="listName">Nom de la liste:</label>
+        <input
+          type="text"
+          id="listName"
+          name="listName"
+          [(ngModel)]="currentList.titre"
+          required
+          minlength="3"
+          #nameInput="ngModel"
+          class="form-control"
+        />
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">
+            Le nom de la liste est requis.
+          </div>
+          <div *ngIf="nameInput.errors?.['minlength']">
+            Le nom doit contenir au moins 3 caractères.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="!listForm.valid" class="save-btn">
+          Sauvegarder les modifications
+        </button>
+        <button
+          type="button"
+          class="cancel-btn"
+          (click)="closeFormModalEditListe()"
+        >
+          Annuler
+        </button>
+      </div>
+    </form>
+
+    <button class="close-btn" (click)="closeFormModalEditListe()">
+      Fermer
+    </button>
+  </div>
+</div>
+
+<!-- Modal confirmation suppression -->
+<div class="confirm-backdrop" *ngIf="isConfirmOpen" (click)="cancelDelete()">
+  <div class="confirm-modal" (click)="$event.stopPropagation()">
+    <h3>Confirmation</h3>
+    <p>
+      Êtes-vous sûr de vouloir supprimer la liste
+      <strong>"{{ listToDelete?.titre }}"</strong> ?
+    </p>
+    <div class="confirm-actions">
+      <button class="btn btn-cancel" (click)="cancelDelete()">Annuler</button>
+      <button class="btn btn-confirm" (click)="confirmDelete()">
+        Supprimer
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-notification" *ngIf="toastMessage" [@fadeInOut]>
+  {{ toastMessage }}
+</div>
+

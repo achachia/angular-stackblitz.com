@@ -25,7 +25,11 @@ import { AuthService } from './auth.service';
 import { FavorisMagazines } from './app/favoris-magazines/favoris-magazines';
 import { FavorisLivres } from './app/favoris-livres/favoris-livres';
 import { MyListes } from './app/my-listes/my-listes';
+import { ListLectureLivres } from './app/list-lecture-livres/list-lecture-livres';
 import { ListPageListeLecture } from './app/list-page-liste-lecture/list-page-liste-lecture';
+import { ViewListeLivreeLecture } from './app/view-liste-livree-lecture/view-liste-livree-lecture';
+import { ListNotesLecture } from './app/list-notes-lecture/list-notes-lecture';
+import { ViewNoteLecture } from './app/view-note-lecture/view-note-lecture';
 
 const routes: Routes = [
   {
@@ -39,6 +43,22 @@ const routes: Routes = [
   {
     path: 'my-listes',
     component: MyListes,
+  },
+  {
+    path: 'my-notes',
+    component: ListNotesLecture,
+  },
+  {
+    path: 'view-liste-note-lecture/:nom_liste/:liste_id',
+    component: ViewNoteLecture,
+  },
+  {
+    path: 'my-liste-lecture-livres',
+    component: ListLectureLivres,
+  },
+  {
+    path: 'view-liste-lecture-livres/:nom_liste/:liste_id',
+    component: ViewListeLivreeLecture,
   },
   {
     path: 'liste-pages-my-liste/:nom_liste/:liste_id',
