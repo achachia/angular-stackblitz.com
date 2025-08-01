@@ -3,13 +3,27 @@
   <div class="spinner"></div>
 </div>
 
-<div class="list-container-card">
+<div class="list-container-card" *ngIf="!isLoading">
   <div class="header">
     <h2 class="title">Mes notes</h2>
     <button class="add-button" (click)="addNewList()">+ Nouvelle Liste</button>
   </div>
 
   <div *ngIf="lists.length === 0" class="no-lists-message">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="120"
+      height="120"
+      fill="none"
+      viewBox="0 0 64 64"
+      stroke="#999"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M32 12v40M12 32h40" />
+      <circle cx="32" cy="32" r="30" />
+    </svg>
     <p>Aucune liste disponible pour le moment. Créez-en une nouvelle !</p>
   </div>
 
@@ -163,3 +177,10 @@
   {{ toastMessage }}
 </div>
 
+<!-- Affiche le modal si la session est expirée -->
+<div class="modal-backdrop" *ngIf="showSessionExpiredModa"></div>
+<div class="session-modal" *ngIf="showSessionExpiredModa">
+  <h2>Session expirée</h2>
+  <p>Votre session a expiré.<br />Veuillez vous reconnecter pour continuer.</p>
+  <button (click)="goToLogin()">Se connecter</button>
+</div>

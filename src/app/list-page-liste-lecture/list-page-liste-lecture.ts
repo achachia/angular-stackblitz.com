@@ -83,6 +83,8 @@ export class ListPageListeLecture {
   selectedModel =
     'https://app.vectorshift.ai/chatbots/deployed/685c47a653eb91b72fc8d3e6';
 
+  showSessionExpiredModa: any = false;
+
   constructor(
     private route: ActivatedRoute,
     private magazineService: MagazineService,
@@ -107,6 +109,10 @@ export class ListPageListeLecture {
     );
   }
 
+  goToLogin() {
+    this.router.navigate(['/login']);
+  }
+
   getDataListeLectureById() {
     const _token = this.authService.getTokenStorage;
 
@@ -115,29 +121,39 @@ export class ListPageListeLecture {
       liste_id: this.curentListe._id,
     };
 
-    this.magazineService
-      .loadDataListeLectureById(ObjectListeLecture)
-      .subscribe((response: any) => {
+    this.magazineService.loadDataListeLectureById(ObjectListeLecture).subscribe(
+      (response: any) => {
         console.log('Réponse JSON complète:', response);
 
-        this.curentListe.pagesListe = response.data.pagesListe;
+        if (response.reponse) {
+          this.curentListe.pagesListe = response.data.pagesListe;
 
-        this.curentListe.tagsListe = response.data.tagsListe;
+          this.curentListe.tagsListe = response.data.tagsListe;
 
-        this.curentListe.titre = response.data.titre;
+          this.curentListe.titre = response.data.titre;
 
-        this.curentListe._id = response.data._id;
+          this.curentListe._id = response.data._id;
 
-        this.curentPage = this.curentListe.pagesListe[0];
+          this.curentPage = this.curentListe.pagesListe[0];
 
-        console.log('this.curentPage =', this.curentPage);
+          console.log('this.curentPage =', this.curentPage);
 
-        // console.log('this.curentListe.pagesListe =', this.curentListe.pagesListe );
+          // console.log('this.curentListe.pagesListe =', this.curentListe.pagesListe );
 
-        //console.log('this.magazines =', this.magazines)
+          //console.log('this.magazines =', this.magazines)
 
-        // alert(response.reponse)
-      });
+          // alert(response.reponse)
+        }
+      },
+      (error) => {
+        // Ici, tu interceptes les erreurs réseau ou serveur
+        console.error(error);
+        if (error.error.msg === 'token_not_valid') {
+          this.showSessionExpiredModa = true;
+        }
+        // this.errorMessage = "Impossible d'accéder au service. Veuillez vérifier votre connexion ou réessayer plus tard.";
+      }
+    );
   }
 
   deletePageByListe() {

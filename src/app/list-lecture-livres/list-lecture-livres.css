@@ -448,3 +448,74 @@
     transform: translateY(0);
   }
 }
+
+/*********************** Modal login ***********************************/
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 2000;
+}
+.session-modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90vw;
+  max-width: 350px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 2em 1em 1.5em 1em;
+  box-shadow: 0 2px 16px rgba(30, 30, 50, 0.2);
+  text-align: center;
+  z-index: 2001;
+}
+.session-modal h2 {
+  margin-bottom: 1em;
+}
+.session-modal p {
+  margin-bottom: 2em;
+  color: #444;
+}
+.session-modal button {
+  background: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75em 2em;
+  font-size: 1.1em;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+.session-modal button:hover {
+  background: #1e40af;
+}
+
+/****************** Loader **************************/
+
+.loader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 6px solid #e5e7eb;
+  border-top-color: #3b82f6;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

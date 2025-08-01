@@ -55,6 +55,8 @@ export class ViewNoteLecture {
 
   source: any = '';
 
+  showSessionExpiredModa: any = false;
+
   constructor(
     private route: ActivatedRoute,
     private magazineService: MagazineService,
@@ -71,6 +73,10 @@ export class ViewNoteLecture {
 
   ngOnInit() {}
 
+  goToLogin() {
+    this.router.navigate(['/login']);
+  }
+
   getListNotesLectureById() {
     const _token = this.authService.getTokenStorage;
 
@@ -79,21 +85,31 @@ export class ViewNoteLecture {
       liste_id: this.liste_id,
     };
 
-    this.magazineService
-      .loadListeNoteLectureById(ObjectListeLecture)
-      .subscribe((response: any) => {
-        this.isLoading = false;
-        console.log('Réponse JSON complète:', response);
-        this.listNotes = response.data.notesListe; // si la réponse EST directement un tableau de magazines
+    this.magazineService.loadListeNoteLectureById(ObjectListeLecture).subscribe(
+      (response: any) => {
+        if (response.reponse) {
+          this.isLoading = false;
+          console.log('Réponse JSON complète:', response);
+          this.listNotes = response.data.notesListe; // si la réponse EST directement un tableau de magazines
 
-        this.selectedListe = response.data;
+          this.selectedListe = response.data;
 
-        console.log('this.listNotes =', this.listNotes);
+          console.log('this.listNotes =', this.listNotes);
 
-        this.listNotesTemp = [...this.listNotes];
+          this.listNotesTemp = [...this.listNotes];
 
-        // alert(response.reponse)
-      });
+          // alert(response.reponse)
+        }
+      },
+      (error) => {
+        // Ici, tu interceptes les erreurs réseau ou serveur
+        console.error(error);
+        if (error.error.msg === 'token_not_valid') {
+          this.showSessionExpiredModa = true;
+        }
+        // this.errorMessage = "Impossible d'accéder au service. Veuillez vérifier votre connexion ou réessayer plus tard.";
+      }
+    );
   }
 
   addNote() {

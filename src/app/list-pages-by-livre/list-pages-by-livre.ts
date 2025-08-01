@@ -106,6 +106,8 @@ export class ListPagesByLivre {
 
   listsLecture: List[] = []; // Tableau qui contiendra tes listes
 
+  showSessionExpiredModa: any = false;
+
   constructor(
     private route: ActivatedRoute,
     private magazineService: MagazineService,
@@ -192,8 +194,6 @@ export class ListPagesByLivre {
 
       this.getListPagesByLivre();
 
-      this.loadListeApi();
-
       // Tu peux maintenant utiliser ce paramètre pour filtrer ou charger les magazines
     });
   }
@@ -225,27 +225,41 @@ export class ListPagesByLivre {
     });
   }
 
+  goToLogin() {
+    this.router.navigate(['/login']);
+  }
+
   loadListeApi() {
     const _token = this.authService.getTokenStorage;
 
     const ObjectListeLecture = { token: _token };
 
-    this.magazineService
-      .loadListeLecture(ObjectListeLecture)
-      .subscribe((response: any) => {
+    this.magazineService.loadListeLecture(ObjectListeLecture).subscribe(
+      (response: any) => {
         console.log('Réponse JSON complète:', response);
 
-        this.listsLecture = response.data;
+        if (response.reponse) {
+          this.listsLecture = response.data;
 
-        for (let i = 0; i < this.listsLecture.length; i++) {
-          this.listsLecture[i].itemCount =
-            this.listsLecture[i].pagesListe.length;
+          for (let i = 0; i < this.listsLecture.length; i++) {
+            this.listsLecture[i].itemCount =
+              this.listsLecture[i].pagesListe.length;
+          }
+
+          //console.log('this.magazines =', this.magazines)
+
+          // alert(response.reponse)
         }
-
-        //console.log('this.magazines =', this.magazines)
-
-        // alert(response.reponse)
-      });
+      },
+      (error) => {
+        // Ici, tu interceptes les erreurs réseau ou serveur
+        console.error(error);
+        if (error.error.msg === 'token_not_valid') {
+          this.showSessionExpiredModa = true;
+        }
+        // this.errorMessage = "Impossible d'accéder au service. Veuillez vérifier votre connexion ou réessayer plus tard.";
+      }
+    );
   }
 
   getDataPageNavigationLecture() {
@@ -352,8 +366,7 @@ export class ListPagesByLivre {
       this.hist_nav_json[this.indexLivreHistNav].currentIndexMax;
 
     console.log('url_page =', this.listPagesByLivre[this.currentIndex]);
-    ObjectNavigationPage.urlPage =
-      this.listPagesByLivre[this.currentIndex].url;
+    ObjectNavigationPage.urlPage = this.listPagesByLivre[this.currentIndex].url;
 
     console.log('cover_document =', this.cover_livre);
     ObjectNavigationPage.cover_document = this.cover_livre;
@@ -494,6 +507,7 @@ export class ListPagesByLivre {
   }
 
   openListModal() {
+    this.loadListeApi();
     this.isListModalOpen = true;
   }
 

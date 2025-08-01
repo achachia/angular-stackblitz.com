@@ -114,3 +114,11 @@
     <i class="fas fa-times"></i> Annuler
   </button>
 </div>
+
+<!-- Affiche le modal si la session est expirée -->
+<div class="modal-backdrop" *ngIf="showSessionExpiredModa"></div>
+<div class="session-modal" *ngIf="showSessionExpiredModa">
+  <h2>Session expirée</h2>
+  <p>Votre session a expiré.<br />Veuillez vous reconnecter pour continuer.</p>
+  <button (click)="goToLogin()">Se connecter</button>
+</div>

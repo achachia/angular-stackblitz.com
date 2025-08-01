@@ -40,7 +40,6 @@ interface List {
   ],
 })
 export class ListLectureLivres {
-  
   lists: List[] = []; // Tableau qui contiendra tes listes
 
   isLoading: boolean = true;
@@ -61,15 +60,56 @@ export class ListLectureLivres {
 
   listToDelete: List | null = null; // La liste sélectionnée à supprimer
 
+  showSessionExpiredModa: any = false;
+
   constructor(
     private magazineService: MagazineService,
     private authService: AuthService,
     public router: Router
-  ) {}
+  ) {
+    this.loadListeApi();
+  }
 
   ngOnInit(): void {
     // Initialisation des données (ex: appel à un service pour récupérer les listes)
-    this.loadListeApi();
+  }
+
+  goToLogin() {
+    this.router.navigate(['/login']);
+  }
+
+  loadListeApi() {
+    const _token = this.authService.getTokenStorage;
+
+    const ObjectListeLecture = { token: _token };
+
+    this.magazineService.loadListeLectureLivre(ObjectListeLecture).subscribe(
+      (response: any) => {
+        console.log('Réponse JSON complète:', response);
+
+        if (response.reponse) {
+          this.lists = response.data;
+
+          for (let i = 0; i < this.lists.length; i++) {
+            this.lists[i].itemCount = this.lists[i].livresListe.length;
+          }
+
+          this.isLoading = false;
+
+          //console.log('this.magazines =', this.magazines)
+
+          // alert(response.reponse)
+        }
+      },
+      (error) => {
+        // Ici, tu interceptes les erreurs réseau ou serveur
+        console.error(error);
+        if (error.error.msg === 'token_not_valid') {
+          this.showSessionExpiredModa = true;
+        }
+        // this.errorMessage = "Impossible d'accéder au service. Veuillez vérifier votre connexion ou réessayer plus tard.";
+      }
+    );
   }
 
   // --- Méthodes pour le modal de formulaire ---
@@ -89,30 +129,6 @@ export class ListLectureLivres {
 
   closeFormModalEditListe(): void {
     this.isFormModalOpenEditListe = false;
-  }
-
-  loadListeApi() {
-    const _token = this.authService.getTokenStorage;
-
-    const ObjectListeLecture = { token: _token };
-
-    this.magazineService
-      .loadListeLectureLivre(ObjectListeLecture)
-      .subscribe((response: any) => {
-        console.log('Réponse JSON complète:', response);
-
-        this.lists = response.data;
-
-        for (let i = 0; i < this.lists.length; i++) {
-          this.lists[i].itemCount = this.lists[i].livresListe.length;
-        }
-
-        this.isLoading = false;
-
-        //console.log('this.magazines =', this.magazines)
-
-        // alert(response.reponse)
-      });
   }
 
   addNewList(): void {

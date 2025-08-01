@@ -63,6 +63,8 @@ export class ViewListeLivreeLecture {
 
   selectedListe: any = null;
 
+  showSessionExpiredModa: any = false;
+
   constructor(
     private route: ActivatedRoute,
     private magazineService: MagazineService,
@@ -79,6 +81,10 @@ export class ViewListeLivreeLecture {
 
   ngOnInit() {}
 
+  goToLogin() {
+    this.router.navigate(['/login']);
+  }
+
   getListLectureLivresById() {
     const _token = this.authService.getTokenStorage;
 
@@ -89,27 +95,39 @@ export class ViewListeLivreeLecture {
 
     this.magazineService
       .loadListeLectureLivreById(ObjectListeLecture)
-      .subscribe((response: any) => {
-        this.isLoading = false;
-        console.log('Réponse JSON complète:', response);
-        this.listLivres = response.data.livresListe; // si la réponse EST directement un tableau de magazines
+      .subscribe(
+        (response: any) => {
+          if (response.reponse) {
+            this.isLoading = false;
+            console.log('Réponse JSON complète:', response);
+            this.listLivres = response.data.livresListe; // si la réponse EST directement un tableau de magazines
 
-        this.selectedListe = response.data;
+            this.selectedListe = response.data;
 
-        console.log('this.listLivres =', this.listLivres);
+            console.log('this.listLivres =', this.listLivres);
 
-        this.listLivresTemp = [...this.listLivres];
+            this.listLivresTemp = [...this.listLivres];
 
-        this.periodes = [
-          ...new Set(
-            this.listLivres.map((livre: any) =>
-              new Date(livre.year).getFullYear()
-            )
-          ),
-        ].sort((a, b) => b - a); // Trie décroissant (facultatif)
+            this.periodes = [
+              ...new Set(
+                this.listLivres.map((livre: any) =>
+                  new Date(livre.year).getFullYear()
+                )
+              ),
+            ].sort((a, b) => b - a); // Trie décroissant (facultatif)
 
-        // alert(response.reponse)
-      });
+            // alert(response.reponse)
+          }
+        },
+        (error) => {
+          // Ici, tu interceptes les erreurs réseau ou serveur
+          console.error(error);
+          if (error.error.msg === 'token_not_valid') {
+            this.showSessionExpiredModa = true;
+          }
+          // this.errorMessage = "Impossible d'accéder au service. Veuillez vérifier votre connexion ou réessayer plus tard.";
+        }
+      );
   }
 
   selectLivre(livre: any) {
