@@ -113,6 +113,17 @@
   min-width: 200px;
 }
 
+.no-lists-message {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6c757d;
+  font-style: italic;
+  font-size: 1.1rem;
+  background-color: #e9ecef;
+  border-radius: 8px;
+  margin-bottom: 25px;
+}
+
 /****************** Loader **************************/
 
 .loader-container {
@@ -371,19 +382,24 @@
 
 .modal-backdrop {
   position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
-  background: rgba(0,0,0,0.6);
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
   z-index: 2000;
 }
 .session-modal {
   position: fixed;
-  top: 50%; left: 50%;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
-  width: 90vw; max-width: 350px;
+  width: 90vw;
+  max-width: 350px;
   background: #fff;
   border-radius: 8px;
   padding: 2em 1em 1.5em 1em;
-  box-shadow: 0 2px 16px rgba(30,30,50,0.2);
+  box-shadow: 0 2px 16px rgba(30, 30, 50, 0.2);
   text-align: center;
   z-index: 2001;
 }
@@ -395,7 +411,7 @@
   color: #444;
 }
 .session-modal button {
-  background: #2563EB;
+  background: #2563eb;
   color: white;
   border: none;
   border-radius: 4px;
@@ -408,4 +424,3 @@
 .session-modal button:hover {
   background: #1e40af;
 }
-

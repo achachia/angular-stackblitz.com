@@ -113,6 +113,17 @@
   min-width: 200px;
 }
 
+.no-lists-message {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6c757d;
+  font-style: italic;
+  font-size: 1.1rem;
+  background-color: #e9ecef;
+  border-radius: 8px;
+  margin-bottom: 25px;
+}
+
 /****************** Loader **************************/
 
 .loader-container {
@@ -162,7 +173,6 @@
 .star-icon {
   pointer-events: none; /* pour ne pas bloquer le clic sur le parent */
 }
-
 
 /************************************************************/
 

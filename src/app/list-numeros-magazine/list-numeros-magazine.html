@@ -8,8 +8,26 @@
 <div class="container" *ngIf="!isLoading">
   <h1 class="title">Les Numéros de {{nomMagazine}}</h1>
 
+  <div *ngIf="listCyclesMagazine.length === 0" class="no-lists-message">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="120"
+      height="120"
+      fill="none"
+      viewBox="0 0 64 64"
+      stroke="#999"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M32 12v40M12 32h40" />
+      <circle cx="32" cy="32" r="30" />
+    </svg>
+    <p>Aucune magazine disponible pour le moment.</p>
+  </div>
+
   <!-- Filters -->
-  <div class="filters">
+  <div class="filters" *ngIf="listCyclesMagazine.length > 0">
     <!-- Filtres par année -->
     <select
       [(ngModel)]="selectedPeriode"
@@ -28,7 +46,7 @@
     </select>
   </div>
 
-  <div class="magazine-grid">
+  <div class="magazine-grid"  *ngIf="listCyclesMagazine.length > 0">
     <div class="magazine-card" *ngFor="let cycleMag of listCyclesMagazine">
       <div class="cover-container">
         <img
