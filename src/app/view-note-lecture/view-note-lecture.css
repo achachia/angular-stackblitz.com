@@ -233,19 +233,24 @@ button {
 
 .modal-backdrop {
   position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
-  background: rgba(0,0,0,0.6);
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
   z-index: 2000;
 }
 .session-modal {
   position: fixed;
-  top: 50%; left: 50%;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
-  width: 90vw; max-width: 350px;
+  width: 90vw;
+  max-width: 350px;
   background: #fff;
   border-radius: 8px;
   padding: 2em 1em 1.5em 1em;
-  box-shadow: 0 2px 16px rgba(30,30,50,0.2);
+  box-shadow: 0 2px 16px rgba(30, 30, 50, 0.2);
   text-align: center;
   z-index: 2001;
 }
@@ -257,7 +262,7 @@ button {
   color: #444;
 }
 .session-modal button {
-  background: #2563EB;
+  background: #2563eb;
   color: white;
   border: none;
   border-radius: 4px;
@@ -269,4 +274,170 @@ button {
 }
 .session-modal button:hover {
   background: #1e40af;
+}
+
+/***********************************************************/
+
+.note-item {
+  position: relative;
+  margin-bottom: 2em;
+  padding-bottom: 2.2em;
+  border-radius: 8px;
+  padding: 1em;
+}
+
+.note-action-icon {
+  position: absolute;
+  bottom: 0.8em;
+  right: 1em;
+  cursor: pointer;
+  color: #3498db;
+  font-size: 1.5em;
+  transition: color 0.2s;
+}
+
+.note-action-icon:hover {
+  color: #2d6094;
+}
+
+/****************** action sheet ********************************/
+
+.actionsheet {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30%;
+  background: white;
+  border-radius: 12px 12px 0 0;
+  padding: 1em;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.25);
+  z-index: 1001;
+}
+
+.actionsheet-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.actionsheet button {
+  display: block;
+  width: 100%;
+  padding: 1em;
+  font-size: 1.2em;
+  border: none;
+  border-top: 1px solid #ddd;
+  background: none;
+  cursor: pointer;
+}
+
+.actionsheet .btn-cancel {
+  font-weight: bold;
+  color: red;
+}
+
+@media (max-width: 480px) {
+  .actionsheet {
+    width: 90%; /* plus large sur mobile */
+    max-width: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .actionsheet {
+    width: 70%; /* plus large sur mobile */
+    max-width: none;
+  }
+}
+
+/********************* Modal delete confirmation *************************/
+.confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.confirm-modal {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem 2.5rem;
+  width: 380px;
+  max-width: 90%;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  animation: modalFadeIn 0.35s ease forwards;
+}
+
+.confirm-modal h3 {
+  margin-top: 0;
+  color: #dc3545;
+  font-weight: 700;
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+}
+
+.confirm-modal p {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  color: #444;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1.2rem;
+}
+
+.btn {
+  padding: 10px 28px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.15s ease;
+  user-select: none;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  min-width: 110px;
+}
+
+.btn-cancel {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-cancel:hover {
+  background-color: #5a6268;
+  transform: translateY(-2px);
+}
+
+.btn-confirm {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-confirm:hover {
+  background-color: #b02a37;
+  transform: translateY(-2px);
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

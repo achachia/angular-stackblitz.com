@@ -25,11 +25,18 @@
     <p>Aucune note disponible pour le moment. Créez-en une nouvelle !</p>
   </div>
 
-  <div class="accueil-description" *ngFor="let objectNote of listNotes">
+  <div
+    class="accueil-description note-item"
+    *ngFor="let objectNote of listNotes; index as i"
+  >
     <p>{{ objectNote.note }}</p>
     <small class="note-source" *ngIf="objectNote.source">
       Source : {{ objectNote.source }}
     </small>
+    <!-- Icône en bas à droite -->
+    <span class="note-action-icon" (click)="onNoteAction(objectNote,i)">
+      <i class="fa fa-edit"></i>
+    </span>
   </div>
 </div>
 
@@ -50,6 +57,7 @@
           minlength="3"
           #nameInput="ngModel"
           class="form-control"
+          [value]="source"
         />
         <div
           *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
@@ -110,4 +118,112 @@
   <h2>Session expirée</h2>
   <p>Votre session a expiré.<br />Veuillez vous reconnecter pour continuer.</p>
   <button (click)="goToLogin()">Se connecter</button>
+</div>
+
+<!-- Menu d'actions ActionSheet -->
+<div
+  class="actionsheet-backdrop"
+  *ngIf="selectedNote"
+  (click)="closeActionSheet()"
+></div>
+<div class="actionsheet" *ngIf="selectedNote">
+  <h3>Actions :</h3>
+
+  <button (click)="actionEdierNote()">
+    <i class="fas fa-edit"></i> Modifier
+  </button>
+
+  <button (click)="openModalConfirmation()">
+    <i class="fas fa-trash"></i> Supprimer
+  </button>
+
+  <button class="btn-cancel" (click)="closeActionSheet()">
+    <i class="fas fa-times"></i> Annuler
+  </button>
+</div>
+
+<!-- Modal -->
+<div
+  class="modal-backdrop"
+  *ngIf="isListModalOpenEdit"
+  (click)="closeListModalEdit()"
+>
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3 class="modal-title">Modifier une note</h3>
+
+    <form (ngSubmit)="editNoteForm()" #listForm="ngForm">
+      <div class="form-group">
+        <label for="listName">Source de la note:</label>
+        <input
+          type="text"
+          id="source"
+          name="listName"
+          [(ngModel)]="source"
+          required
+          minlength="3"
+          #nameInput="ngModel"
+          class="form-control"
+          [value]="source"
+        />
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">
+            Le nom de la source est requis.
+          </div>
+          <div *ngIf="nameInput.errors?.['minlength']">
+            Le nom doit contenir au moins 3 caractères.
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="listName">Note&nbsp;:</label>
+        <textarea
+          id="note"
+          name="note"
+          [(ngModel)]="note"
+          required
+          minlength="3"
+          #nameInput="ngModel"
+          class="form-control"
+          rows="10"
+        ></textarea>
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">La note est requise.</div>
+          <div *ngIf="nameInput.errors?.['minlength']">
+            La note doit contenir au moins 3 caractères.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="!listForm.valid" class="save-btn">
+          Enregistrer
+        </button>
+        <button type="button" class="cancel-btn" (click)="closeListModalEdit()">
+          Annuler
+        </button>
+      </div>
+    </form>
+
+    <button class="close-btn" (click)="closeListModalEdit()">Fermer</button>
+  </div>
+</div>
+
+<!-- Modal confirmation suppression -->
+<div class="confirm-backdrop" *ngIf="isConfirmOpen" (click)="cancelDelete()">
+  <div class="confirm-modal" (click)="$event.stopPropagation()">
+    <h3>Confirmation</h3>
+    <p>Êtes-vous sûr de vouloir supprimer la note ?</p>
+    <div class="confirm-actions">
+      <button class="btn btn-cancel" (click)="cancelDelete()">Annuler</button>
+      <button class="btn btn-confirm" (click)="actionDeleteNote()">
+        Supprimer
+      </button>
+    </div>
+  </div>
 </div>

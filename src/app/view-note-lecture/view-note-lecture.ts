@@ -33,7 +33,7 @@ import { AuthService } from '../../auth.service';
   ],
 })
 export class ViewNoteLecture {
-  isLoading: boolean = false;
+  isLoading: boolean = true;
 
   nom_liste: any = '';
 
@@ -57,6 +57,14 @@ export class ViewNoteLecture {
 
   showSessionExpiredModa: any = false;
 
+  selectedNote: any = null;
+
+  indexNote: number = 0;
+
+  isListModalOpenEdit: boolean = false;
+
+  isConfirmOpen: boolean = false;
+
   constructor(
     private route: ActivatedRoute,
     private magazineService: MagazineService,
@@ -66,6 +74,7 @@ export class ViewNoteLecture {
     this.route.paramMap.subscribe((params) => {
       this.nom_liste = params.get('nom_liste');
       this.liste_id = params.get('liste_id');
+      this.source = params.get('nom_liste');
       this.getListNotesLectureById();
       // Tu peux maintenant utiliser ce paramètre pour filtrer ou charger les magazines
     });
@@ -73,8 +82,70 @@ export class ViewNoteLecture {
 
   ngOnInit() {}
 
+  onNoteAction(objectNote: any, index: number): void {
+    // Ton action : ouvrir une modal, ajouter une note, etc.
+    console.log('Note sélectionnée:', objectNote);
+
+    this.selectedNote = objectNote;
+    this.indexNote = index;
+  }
+
   goToLogin() {
     this.router.navigate(['/login']);
+  }
+
+  closeListModalEdit() {
+    this.isListModalOpenEdit = false;
+  }
+
+  actionEdierNote() {
+    console.log('this.selectedNote =', this.selectedNote);
+    console.log('this.indexNote =', this.indexNote);
+    this.source = this.selectedNote.source;
+    this.note = this.selectedNote.note;
+    this.isListModalOpenEdit = true;
+  }
+
+  editNoteForm() {
+    this.selectedListe.notesListe[this.indexNote].source = this.source;
+
+    this.selectedListe.notesListe[this.indexNote].note = this.note;
+
+    this.updateDataListe();
+
+    this.isListModalOpenEdit = false;
+  }
+
+  // Annuler la suppression (fermer le modal)
+  cancelDelete(): void {
+    this.selectedNote = null;
+    this.isConfirmOpen = false;
+  }
+
+  openModalConfirmation() {
+    this.isConfirmOpen = true;
+  }
+
+  actionDeleteNote() {
+    // console.log('this.selectedNote =', this.selectedNote)
+
+    this.listNotes = this.listNotes.filter(
+      (objectNote: any) => objectNote.note !== this.selectedNote.note
+    );
+
+    // console.log('this.listNotes =', this.listNotes)
+
+    this.selectedListe.notesListe = this.listNotes;
+
+    // console.log('this.selectedListe.notesListe =', this.selectedListe.notesListe)
+
+    this.isConfirmOpen = false;
+
+    this.updateDataListe();
+  }
+
+  closeActionSheet() {
+    this.selectedNote = null;
   }
 
   getListNotesLectureById() {
@@ -88,7 +159,6 @@ export class ViewNoteLecture {
     this.magazineService.loadListeNoteLectureById(ObjectListeLecture).subscribe(
       (response: any) => {
         if (response.reponse) {
-          this.isLoading = false;
           console.log('Réponse JSON complète:', response);
           this.listNotes = response.data.notesListe; // si la réponse EST directement un tableau de magazines
 
@@ -97,6 +167,8 @@ export class ViewNoteLecture {
           console.log('this.listNotes =', this.listNotes);
 
           this.listNotesTemp = [...this.listNotes];
+
+          this.isLoading = false;
 
           // alert(response.reponse)
         }
@@ -124,6 +196,34 @@ export class ViewNoteLecture {
     this.isListModalOpen = false;
   }
 
+  updateDataListe() {
+    const _token = this.authService.getTokenStorage;
+
+    const ObjectListeNote = {
+      token: _token,
+      titre: this.selectedListe.titre,
+      notesListe: this.selectedListe.notesListe,
+      tagsListe: this.selectedListe.tagsListe,
+      liste_id: this.selectedListe._id,
+    };
+
+    // console.log('ObjectListeNote =', ObjectListeNote);
+
+    this.magazineService
+      .postEditListeNoteLecture(ObjectListeNote)
+      .subscribe((response: any) => {
+        console.log('Réponse JSON complète:', response);
+
+        this.showToast(
+          `La liste "${ObjectListeNote.titre}" a été enregistré avec succées.`
+        );
+
+        this.getListNotesLectureById();
+
+        this.closeActionSheet(); // Ferme le modal après sauvegarde
+      });
+  }
+
   saveNoteApi() {
     // console.log('note =', this.note)
 
@@ -142,7 +242,7 @@ export class ViewNoteLecture {
       liste_id: this.selectedListe._id,
     };
 
-    console.log('ObjectListeNote =', ObjectListeNote);
+    // console.log('ObjectListeNote =', ObjectListeNote);
 
     this.magazineService
       .postEditListeNoteLecture(ObjectListeNote)
