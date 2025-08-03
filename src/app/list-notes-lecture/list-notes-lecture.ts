@@ -104,7 +104,8 @@ export class ListNotesLecture {
       (error) => {
         // Ici, tu interceptes les erreurs réseau ou serveur
         console.error(error);
-        if (error.error.msg === 'token_not_valid') {
+        if (error.error.msg === 'token_not_valid' ||
+        error.error.msg === 'token_required') {
           this.showSessionExpiredModa = true;
         }
         // this.errorMessage = "Impossible d'accéder au service. Veuillez vérifier votre connexion ou réessayer plus tard.";

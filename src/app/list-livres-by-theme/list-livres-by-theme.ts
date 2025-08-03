@@ -85,17 +85,45 @@ export class ListLivresByTheme {
       this.keyTheme = params.get('keyTheme');
       this.nomTheme = params.get('nomTheme');
       this.getListLivresByTheme();
+      this.getDataUser();
       // Tu peux maintenant utiliser ce paramètre pour filtrer ou charger les magazines
     });
   }
 
   ngOnInit() {
-    const fav = localStorage.getItem('favorites-livres');
-    this.favorites = fav ? JSON.parse(fav) : [];
+    // const fav = localStorage.getItem('favorites-livres');
+    // this.favorites = fav ? JSON.parse(fav) : [];
   }
 
   goToLogin() {
     this.router.navigate(['/login']);
+  }
+
+  getDataUser() {
+    const _token = this.authService.getTokenStorage;
+
+    const objectUser = { token: _token };
+
+    this.magazineService.getDataUser(objectUser).subscribe(
+      (response: any) => {
+        console.log('Réponse JSON complète:', response);
+
+        this.favorites = response.data.favoris_livres;
+
+        // alert(response.reponse)
+      },
+      (error) => {
+        // Ici, tu interceptes les erreurs réseau ou serveur
+        console.error(error);
+        if (
+          error.error.msg === 'token_not_valid' ||
+          error.error.msg === 'token_required'
+        ) {
+          // this.showSessionExpiredModa = true;
+        }
+        // this.errorMessage = "Impossible d'accéder au service. Veuillez vérifier votre connexion ou réessayer plus tard.";
+      }
+    );
   }
 
   loadListeLectureLivreApi() {
@@ -125,7 +153,10 @@ export class ListLivresByTheme {
       (error) => {
         // Ici, tu interceptes les erreurs réseau ou serveur
         console.error(error);
-        if (error.error.msg === 'token_not_valid') {
+        if (
+          error.error.msg === 'token_not_valid' ||
+          error.error.msg === 'token_required'
+        ) {
           this.showSessionExpiredModa = true;
         }
         // this.errorMessage = "Impossible d'accéder au service. Veuillez vérifier votre connexion ou réessayer plus tard.";
@@ -204,25 +235,63 @@ export class ListLivresByTheme {
   }
 
   toggleFavori(livre: any) {
-    // Cherche l'index du livre dans favorites par token
-    const index = this.favorites.findIndex(
-      (fav: any) => fav.token === livre.token
-    );
+    if (this.favorites && this.favorites.length > 0) {
+      // Cherche l'index du livre dans favorites par token
+      const index = this.favorites.findIndex(
+        (fav: any) => fav.token === livre.token
+      );
 
-    if (index > -1) {
-      // Supprime l'objet complet si déjà présent
-      this.favorites.splice(index, 1);
+      if (index > -1) {
+        // Supprime l'objet complet si déjà présent
+        this.favorites.splice(index, 1);
+      } else {
+        // Ajoute l'objet complet dans le tableau
+        this.favorites.push(livre);
+      }
     } else {
-      // Ajoute l'objet complet dans le tableau
       this.favorites.push(livre);
     }
 
+    this.updateDataUser();
+
     // Stocker le tableau complet en localStorage
-    localStorage.setItem('favorites-livres', JSON.stringify(this.favorites));
+    // localStorage.setItem('favorites-livres', JSON.stringify(this.favorites));
   }
 
   isFavori(livre: any): boolean {
-    return this.favorites.some((fav: any) => fav.token === livre.token);
+    if (this.favorites && this.favorites.length > 0) {
+      return this.favorites.some((fav: any) => fav.token === livre.token);
+    }
+    return false;
+  }
+
+  updateDataUser() {
+    const _token = this.authService.getTokenStorage;
+
+    const objectUser = { token: _token, favoris_livres: this.favorites };
+
+    this.magazineService.updateDataUser(objectUser).subscribe(
+      (response: any) => {
+        console.log('Réponse JSON complète:', response);
+
+        if (response.reponse) {
+          this.showToast('la mise a jour à été éffectué avec succées');
+        }
+
+        // alert(response.reponse)
+      },
+      (error) => {
+        // Ici, tu interceptes les erreurs réseau ou serveur
+        console.error(error);
+        if (
+          error.error.msg === 'token_not_valid' ||
+          error.error.msg === 'token_required'
+        ) {
+          this.showSessionExpiredModa = true;
+        }
+        // this.errorMessage = "Impossible d'accéder au service. Veuillez vérifier votre connexion ou réessayer plus tard.";
+      }
+    );
   }
 
   applyFiltersYear() {

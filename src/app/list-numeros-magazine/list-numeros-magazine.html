@@ -46,7 +46,7 @@
     </select>
   </div>
 
-  <div class="magazine-grid"  *ngIf="listCyclesMagazine.length > 0">
+  <div class="magazine-grid" *ngIf="listCyclesMagazine.length > 0">
     <div class="magazine-card" *ngFor="let cycleMag of listCyclesMagazine">
       <div class="cover-container">
         <img
@@ -123,5 +123,29 @@
         </button>
       </div>
     </div>
+    <div
+      class="magazine-grid"
+      style="margin-left: 25%; margin-right: 25%"
+    ></div>
+    <div
+      class="magazine-grid"
+      style="margin-left: 25%; margin-right: 25%"
+    ></div>
+    <div
+      class="magazine-grid"
+      style="margin-left: 25%; margin-right: 25%"
+    ></div>
   </div>
+</div>
+
+<div class="toast-notification" *ngIf="toastMessage" [@fadeInOut]>
+  {{ toastMessage }}
+</div>
+
+<!-- Affiche le modal si la session est expirée -->
+<div class="modal-backdrop" *ngIf="showSessionExpiredModa"></div>
+<div class="session-modal" *ngIf="showSessionExpiredModa">
+  <h2>Session expirée</h2>
+  <p>Votre session a expiré.<br />Veuillez vous reconnecter pour continuer.</p>
+  <button (click)="goToLogin()">Se connecter</button>
 </div>

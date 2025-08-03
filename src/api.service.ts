@@ -35,6 +35,35 @@ export class MagazineService {
     return this.http.post<any[]>(Url, body);
   }
 
+  getDataUser(objectUser: any): Observable<any[]> {
+    const body = { token: objectUser.token };
+    const Url = this.apiUrl + '/getDataUserApp';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  updateDataUser(objectUser: any): Observable<any[]> {
+    let body: any = {};
+
+    if (objectUser.token && objectUser.token != '') {
+      body.token = objectUser.token;
+    }
+
+    if (objectUser.email && objectUser.email != '') {
+      body.email = objectUser.email;
+    }
+
+    if (objectUser.favoris_magazines) {
+      body.favoris_magazines = objectUser.favoris_magazines;
+    }
+
+    if (objectUser.favoris_livres) {
+      body.favoris_livres = objectUser.favoris_livres;
+    }
+
+    const Url = this.apiUrl + '/postUpdateUserApp';
+    return this.http.post<any[]>(Url, body);
+  }
+
   getLastCyclesMagazines(_keyTheme: any): Observable<any[]> {
     const body = { keyTheme: _keyTheme };
     const Url = this.apiUrl + '/getLastCyclesMagazines';

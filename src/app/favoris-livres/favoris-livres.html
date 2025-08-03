@@ -1,6 +1,6 @@
 <app-header></app-header>
 
-<div class="magazine-grid">
+<div class="magazine-grid"  style="margin-left : 25%;margin-right :25%">
   <div class="magazine-card" *ngFor="let livre of favorites">
     <div class="cover-container">
       <img [src]="livre.cover" alt="{{ livre.titre }}" class="magazine-cover" />
@@ -70,6 +70,9 @@
       </button>
     </div>
   </div>
+  <div class="magazine-grid" style="margin-left : 25%;margin-right :25%"  ></div>
+  <div class="magazine-grid" style="margin-left : 25%;margin-right :25%"  ></div>
+  <div class="magazine-grid" style="margin-left : 25%;margin-right :25%"  ></div>
 </div>
 
 <div class="no-favorites-container" *ngIf="favorites.length === 0">
@@ -95,4 +98,17 @@
   <button class="btn-primary" (click)="goToLivresList()">
     Voir les livres
   </button>
+</div>
+
+
+<div class="toast-notification" *ngIf="toastMessage" [@fadeInOut]>
+{{ toastMessage }}
+</div>
+
+<!-- Affiche le modal si la session est expirée -->
+<div class="modal-backdrop" *ngIf="showSessionExpiredModa"></div>
+<div class="session-modal" *ngIf="showSessionExpiredModa">
+<h2>Session expirée</h2>
+<p>Votre session a expiré.<br />Veuillez vous reconnecter pour continuer.</p>
+<button (click)="goToLogin()">Se connecter</button>
 </div>
