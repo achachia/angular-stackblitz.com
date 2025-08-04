@@ -3,7 +3,7 @@ import { ActivatedRoute, Router, Routes } from '@angular/router';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MagazineService } from './../../api.service';
 import { PinchZoomComponent } from '@meddv/ngx-pinch-zoom'; // https://www.npmjs.com/package/@meddv/ngx-pinch-zoom
-import { NgIf, NgFor } from '@angular/common';
+import { NgIf, NgFor, NgClass } from '@angular/common';
 import { trigger, transition, style, animate } from '@angular/animations';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms'; // 👈 à importer ici
@@ -28,7 +28,7 @@ interface ListNote {
 
 @Component({
   selector: 'app-list-pages-by-numero-magazine',
-  imports: [PinchZoomComponent, NgIf, NgFor, FormsModule, Header],
+  imports: [PinchZoomComponent, NgIf, NgFor, NgClass, FormsModule, Header],
   templateUrl: './list-pages-by-numero-magazine.html',
   styleUrl: './list-pages-by-numero-magazine.css',
   animations: [
@@ -75,6 +75,8 @@ export class ListPagesByNumeroMagazine {
   menuOpen = false;
 
   toastMessage = '';
+
+  toastType: 'success' | 'error' | 'warning' = 'success';
 
   chatVisible: boolean = false;
 
@@ -346,9 +348,9 @@ export class ListPagesByNumeroMagazine {
         this.note = this.note + response.ParsedText.ParsedResults[0].ParsedText;
 
         this.source = this.nom_magazine + ' (magazine)';
-
-        this.isListModalOpenEdit = true;
       }
+
+      this.isListModalOpenEdit = true;
 
       //console.log('this.magazines =', this.magazines)
 
@@ -712,8 +714,18 @@ export class ListPagesByNumeroMagazine {
   }
 
   // Nouvelle méthode pour afficher une notification
-  showToast(message: string, duration: number = 3000) {
+   /*
+  this.showToast('Enregistré avec succès!', 'success');
+    this.showToast('Une erreur est survenue.', 'error');
+    this.showToast('Attention : saisie incomplète.', 'warning');
+  */
+  showToast(
+    message: string,
+    type: 'success' | 'error' | 'warning' = 'success',
+    duration: number = 3000
+  ) {
     this.toastMessage = message;
+    this.toastType = type;
     setTimeout(() => {
       this.toastMessage = '';
     }, duration);

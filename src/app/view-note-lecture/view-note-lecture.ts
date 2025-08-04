@@ -1,9 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router, Routes } from '@angular/router';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MagazineService } from './../../api.service';
 import { NgIf, NgFor } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import {
   trigger,
   state,
@@ -14,11 +15,17 @@ import {
 import { Header } from '../header/header';
 import { AuthService } from '../../auth.service';
 
+import {
+  AngularEditorConfig,
+  AngularEditorModule,
+} from '@kolkov/angular-editor';
+
 @Component({
   selector: 'app-view-note-lecture',
-  imports: [NgIf, NgFor, FormsModule, Header],
+  imports: [NgIf, NgFor, FormsModule, Header, AngularEditorModule],
   templateUrl: './view-note-lecture.html',
   styleUrl: './view-note-lecture.css',
+  encapsulation: ViewEncapsulation.None,
   animations: [
     trigger('itemAnim', [
       state('in', style({ opacity: 1, transform: 'translateY(0)' })),
@@ -65,11 +72,39 @@ export class ViewNoteLecture {
 
   isConfirmOpen: boolean = false;
 
+  config: AngularEditorConfig = {
+    editable: true,
+    spellcheck: true,
+    height: '15rem',
+    minHeight: '5rem',
+    placeholder: 'Enter text here...',
+    translate: 'no',
+    defaultParagraphSeparator: 'p',
+    defaultFontName: 'Arial',
+    toolbarHiddenButtons: [['bold']],
+    customClasses: [
+      {
+        name: 'quote',
+        class: 'quote',
+      },
+      {
+        name: 'redText',
+        class: 'redText',
+      },
+      {
+        name: 'titleText',
+        class: 'titleText',
+        tag: 'h1',
+      },
+    ],
+  };
+
   constructor(
     private route: ActivatedRoute,
     private magazineService: MagazineService,
     public router: Router,
-    private authService: AuthService
+    private authService: AuthService,
+    private sanitizer: DomSanitizer
   ) {
     this.route.paramMap.subscribe((params) => {
       this.nom_liste = params.get('nom_liste');
@@ -102,6 +137,7 @@ export class ViewNoteLecture {
     console.log('this.selectedNote =', this.selectedNote);
     console.log('this.indexNote =', this.indexNote);
     this.source = this.selectedNote.source;
+    // this.note = this.sanitizer.bypassSecurityTrustHtml(this.selectedNote.note);
     this.note = this.selectedNote.note;
     this.isListModalOpenEdit = true;
   }
@@ -162,6 +198,10 @@ export class ViewNoteLecture {
           console.log('Réponse JSON complète:', response);
           this.listNotes = response.data.notesListe; // si la réponse EST directement un tableau de magazines
 
+          for (let i = 0; i < this.listNotes.length; i++) {
+            // this.listNotes[i].note = this.sanitizer.bypassSecurityTrustHtml(this.listNotes[i].note)
+          }
+
           this.selectedListe = response.data;
 
           console.log('this.listNotes =', this.listNotes);
@@ -176,8 +216,10 @@ export class ViewNoteLecture {
       (error) => {
         // Ici, tu interceptes les erreurs réseau ou serveur
         console.error(error);
-        if (error.error.msg === 'token_not_valid' ||
-        error.error.msg === 'token_required') {
+        if (
+          error.error.msg === 'token_not_valid' ||
+          error.error.msg === 'token_required'
+        ) {
           this.showSessionExpiredModa = true;
         }
         // this.errorMessage = "Impossible d'accéder au service. Veuillez vérifier votre connexion ou réessayer plus tard.";

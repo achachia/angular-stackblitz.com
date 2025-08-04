@@ -340,7 +340,6 @@
   position: fixed;
   top: 20px;
   right: 20px;
-  background-color: #28a745; /* vert style succès */
   color: white;
   padding: 14px 22px;
   border-radius: 25px;
@@ -349,9 +348,27 @@
   font-size: 1rem;
   z-index: 1100;
   user-select: none;
-
-  /* facultatif : un effet léger d'ombre portée dynamique */
   filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.12));
+  transition: background-color 0.2s;
+}
+
+/* Succès (vert) */
+.toast-success {
+  background-color: #28a745;
+  box-shadow: 0 4px 15px rgba(40, 167, 69, 0.5);
+}
+
+/* Erreur (rouge) */
+.toast-error {
+  background-color: #dc3545;
+  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.5);
+}
+
+/* Avertissement (jaune/orangé) */
+.toast-warning {
+  background-color: #ffc107;
+  color: #212529;
+  box-shadow: 0 4px 15px rgba(255, 193, 7, 0.5);
 }
 
 /*******************************************************/

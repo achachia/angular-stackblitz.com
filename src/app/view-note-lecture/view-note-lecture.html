@@ -29,7 +29,7 @@
     class="accueil-description note-item"
     *ngFor="let objectNote of listNotes; index as i"
   >
-    <p>{{ objectNote.note }}</p>
+    <div [innerHTML]="objectNote.note"></div>
     <small class="note-source" *ngIf="objectNote.source">
       Source : {{ objectNote.source }}
     </small>
@@ -73,7 +73,7 @@
       </div>
       <div class="form-group">
         <label for="listName">Note&nbsp;:</label>
-        <textarea
+        <!--  <textarea
           id="note"
           name="note"
           [(ngModel)]="note"
@@ -82,7 +82,13 @@
           #nameInput="ngModel"
           class="form-control"
           rows="10"
-        ></textarea>
+        ></textarea>-->
+
+        <angular-editor
+          [(ngModel)]="note"
+          [config]="config"
+          name="note"
+        ></angular-editor>
         <div
           *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
           class="validation-message"
@@ -179,7 +185,7 @@
       </div>
       <div class="form-group">
         <label for="listName">Note&nbsp;:</label>
-        <textarea
+        <!--<textarea
           id="note"
           name="note"
           [(ngModel)]="note"
@@ -188,7 +194,12 @@
           #nameInput="ngModel"
           class="form-control"
           rows="10"
-        ></textarea>
+        ></textarea>-->
+        <angular-editor
+          [(ngModel)]="note"
+          [config]="config"
+          name="note"
+        ></angular-editor>
         <div
           *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
           class="validation-message"

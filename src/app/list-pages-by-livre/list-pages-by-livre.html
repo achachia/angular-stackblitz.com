@@ -116,7 +116,12 @@
   </div>
 </div>
 
-<div class="toast-notification" *ngIf="toastMessage" [@fadeInOut]>
+<div
+  class="toast-notification"
+  *ngIf="toastMessage"
+  [ngClass]="['toast-' + toastType]"
+  [@fadeInOut]
+>
   {{ toastMessage }}
 </div>
 
@@ -215,7 +220,12 @@
         <button type="submit" [disabled]="!listForm.valid" class="save-btn">
           Enregistrer
         </button>
-        <button type="button" (click)="confirmActionOcrNote()" class="save-btn" style="margin-left: 2%">
+        <button
+          type="button"
+          (click)="confirmActionOcrNote()"
+          class="save-btn"
+          style="margin-left: 2%"
+        >
           Continuer OCR
         </button>
         <button type="button" class="cancel-btn" (click)="closeListModalEdit()">

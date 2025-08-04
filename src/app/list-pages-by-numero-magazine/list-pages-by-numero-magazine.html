@@ -127,7 +127,12 @@
   </div>
 </div>
 
-<div class="toast-notification" *ngIf="toastMessage" [@fadeInOut]>
+<div
+  class="toast-notification"
+  *ngIf="toastMessage"
+  [ngClass]="['toast-' + toastType]"
+  [@fadeInOut]
+>
   {{ toastMessage }}
 </div>
 
