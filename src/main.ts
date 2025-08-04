@@ -13,6 +13,7 @@ import { timer } from 'rxjs';
 import { FormsModule } from '@angular/forms';
 
 import { Header } from './app/header/header';
+import { Footer } from './app/footer/footer';
 
 import { MagazineService } from './api.service';
 
@@ -122,7 +123,7 @@ const routes: Routes = [
   selector: 'app-root',
   templateUrl: 'main.html',
   styleUrls: ['./main.scss'],
-  imports: [CommonModule, RouterOutlet, RouterLink, FormsModule, Header],
+  imports: [CommonModule, RouterOutlet, RouterLink, FormsModule, Header, Footer],
   standalone: true,
 })
 export class App {

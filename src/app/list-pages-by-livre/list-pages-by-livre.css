@@ -334,7 +334,6 @@
   background-color: #333;
 }
 
-
 /********************** toast-notification *****************************/
 
 .toast-notification {
@@ -352,7 +351,7 @@
   user-select: none;
 
   /* facultatif : un effet léger d'ombre portée dynamique */
-  filter: drop-shadow(0 0 2px rgba(0,0,0,0.12));
+  filter: drop-shadow(0 0 2px rgba(0, 0, 0, 0.12));
 }
 
 /*******************************************************/
@@ -373,25 +372,25 @@
 }
 
 .thumbnail {
-  width: 90px;      /* augmente la largeur pour agrandir */
-  height: 120px;    /* augmente la hauteur pour agrandir */
+  width: 90px; /* augmente la largeur pour agrandir */
+  height: 120px; /* augmente la hauteur pour agrandir */
   object-fit: cover;
   border-radius: 8px;
   border: 2px solid transparent;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
   transition: border 0.2s;
 }
 
 .thumbnail-container.active .thumbnail,
 .thumbnail.active {
-  border-color: #2563EB; /* couleur pour la miniature active */
+  border-color: #2563eb; /* couleur pour la miniature active */
 }
 
 .thumbnail-page-number {
   margin-top: 0.2em;
   font-size: 1em;
   color: #3d3d3d;
-  background: rgba(255,255,255,0.8);
+  background: rgba(255, 255, 255, 0.8);
   border-radius: 4px;
   padding: 0.1em 0.5em;
   font-weight: 500;
@@ -402,19 +401,24 @@
 
 .modal-backdrop {
   position: fixed;
-  top: 0; left: 0; width: 100vw; height: 100vh;
-  background: rgba(0,0,0,0.6);
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.6);
   z-index: 2000;
 }
 .session-modal {
   position: fixed;
-  top: 50%; left: 50%;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
-  width: 90vw; max-width: 350px;
+  width: 90vw;
+  max-width: 350px;
   background: #fff;
   border-radius: 8px;
   padding: 2em 1em 1.5em 1em;
-  box-shadow: 0 2px 16px rgba(30,30,50,0.2);
+  box-shadow: 0 2px 16px rgba(30, 30, 50, 0.2);
   text-align: center;
   z-index: 2001;
 }
@@ -426,7 +430,7 @@
   color: #444;
 }
 .session-modal button {
-  background: #2563EB;
+  background: #2563eb;
   color: white;
   border: none;
   border-radius: 4px;
@@ -438,4 +442,200 @@
 }
 .session-modal button:hover {
   background: #1e40af;
+}
+
+/************************* Modal ***************************/
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 8px;
+  padding: 2rem;
+  width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.modal-title {
+  margin: 0 0 1rem 0;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #333;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 0.5rem;
+}
+
+.close-btn {
+  margin-top: 1rem;
+  align-self: flex-end;
+  background-color: #666;
+  color: white;
+  padding: 0.5rem 1.2rem;
+  border-radius: 6px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.close-btn:hover {
+  background-color: #333;
+}
+
+.form-control {
+  width: 90%;
+  padding: 0.8em 1em;
+  font-size: 1rem;
+  font-family: inherit;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  resize: vertical; /* autorise redimension verticale */
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 6px rgba(37, 99, 235, 0.5);
+  background: #f9fbff;
+}
+
+.form-actions button {
+  font-weight: 600;
+  padding: 0.6em 1.6em;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.15s;
+  user-select: none;
+}
+
+/* Bouton Enregistrer (style principal) */
+.save-btn {
+  background-color: #2563eb;
+  color: white;
+}
+
+.save-btn:disabled {
+  background-color: #a5b4fc;
+  cursor: not-allowed;
+}
+
+.save-btn:hover:not(:disabled) {
+  background-color: #1e40af;
+  transform: scale(1.05);
+}
+
+/* Bouton Annuler (secondaire) */
+.cancel-btn {
+  background-color: #f3f4f6;
+  color: #374151;
+  margin-left: 1em;
+  border: 1px solid #d1d5db;
+}
+
+.cancel-btn:hover {
+  background-color: #e5e7eb;
+}
+
+/********************* Modal suivi ocr  confirmation *************************/
+.confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1100;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.confirm-modal {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem 2.5rem;
+  width: 380px;
+  max-width: 90%;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  text-align: center;
+  animation: modalFadeIn 0.35s ease forwards;
+}
+
+.confirm-modal h3 {
+  margin-top: 0;
+  color: #dc3545;
+  font-weight: 700;
+  font-size: 1.6rem;
+  margin-bottom: 1rem;
+}
+
+.confirm-modal p {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  color: #444;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1.2rem;
+}
+
+.btn {
+  padding: 10px 28px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.15s ease;
+  user-select: none;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  min-width: 110px;
+}
+
+.btn-cancel {
+  background-color: #6c757d;
+  color: white;
+}
+
+.btn-cancel:hover {
+  background-color: #5a6268;
+  transform: translateY(-2px);
+}
+
+.btn-confirm {
+  background-color: #dc3545;
+  color: white;
+}
+
+.btn-confirm:hover {
+  background-color: #b02a37;
+  transform: translateY(-2px);
+}
+
+@keyframes modalFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

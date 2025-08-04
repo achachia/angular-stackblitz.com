@@ -1,22 +1,23 @@
 <app-header></app-header>
-<div class="magazine-viewer">
+<div class="magazine-viewer" style="margin-left: 25%; margin-right: 25%">
   <div>
     <h2>{{nom_magazine}}</h2>
     <h2 style="text-align: center">Page {{(currentIndex+1)}}</h2>
   </div>
-  
+
   <!-- Menu déroulant en haut à droite -->
   <div class="top-right-menu">
     <button class="menu-btn" (click)="toggleMenu()">☰</button>
 
     <div class="menu-dropdown" *ngIf="menuOpen">
-      <ul>
+      <ul style="width: 500px">
         <li (click)="openFullscreen()">📺 Plein écran</li>
         <li (click)="toggleZoom()">🔍 Zoom</li>
         <li (click)="chatVisible = true">💬 Chatbot</li>
         <li (click)="openListModal(); menuOpen = false">
-        📋 Associer à une liste
-      </li>
+          📋 Associer à une liste
+        </li>
+        <li (click)="getOCRPage(); menuOpen = false">📋 Récupérer le OCR</li>
       </ul>
     </div>
   </div>
@@ -99,7 +100,7 @@
 </div>
 
 <div class="toast-notification" *ngIf="toastMessage" [@fadeInOut]>
-{{ toastMessage }}
+  {{ toastMessage }}
 </div>
 
 <!-- Affiche le modal si la session est expirée -->
@@ -108,4 +109,154 @@
   <h2>Session expirée</h2>
   <p>Votre session a expiré.<br />Veuillez vous reconnecter pour continuer.</p>
   <button (click)="goToLogin()">Se connecter</button>
+</div>
+
+<!-- Modal -->
+<div class="modal-backdrop" *ngIf="isListModalOpen" (click)="closeListModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3 class="modal-title">Listes Disponibles</h3>
+    <ul class="list-container">
+      <li *ngFor="let list of listsLecture" class="list-item">
+        <span class="list-name">{{ list.titre }}</span>
+        <button class="assign-btn" (click)="assignPageToList(list)">
+          Affecter
+        </button>
+      </li>
+    </ul>
+    <button class="close-btn" (click)="closeListModal()">Fermer</button>
+  </div>
+</div>
+
+<div class="toast-notification" *ngIf="toastMessage" [@fadeInOut]>
+  {{ toastMessage }}
+</div>
+
+<!-- Affiche le modal si la session est expirée -->
+<div class="modal-backdrop" *ngIf="showSessionExpiredModa"></div>
+<div class="session-modal" *ngIf="showSessionExpiredModa">
+  <h2>Session expirée</h2>
+  <p>Votre session a expiré.<br />Veuillez vous reconnecter pour continuer.</p>
+  <button (click)="goToLogin()">Se connecter</button>
+</div>
+
+<!-- Modal -->
+<div
+  class="modal-backdrop"
+  *ngIf="isListModalOpenEdit"
+  (click)="closeListModalEdit()"
+>
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3 class="modal-title">Ajouter une note</h3>
+
+    <form (ngSubmit)="editNoteForm()" #listForm="ngForm">
+      <div class="form-group">
+        <label for="NoteIdSelect">La note :</label>
+        <select
+          id="NoteIdSelect"
+          name="NoteIdSelect"
+          [(ngModel)]="note_id"
+          required
+          #nameInput="ngModel"
+          class="form-control"
+          (change)="onSelectNoteChange($event)"
+        >
+          <option value="" disabled selected>Sélectionnez une note</option>
+          <option *ngFor="let note of listsNotes" [value]="note._id">
+            {{ note.titre }}
+          </option>
+        </select>
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">La note est requise.</div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="listName">Source de la note:</label>
+        <input
+          type="text"
+          id="source"
+          name="listName"
+          [(ngModel)]="source"
+          required
+          minlength="3"
+          #nameInput="ngModel"
+          class="form-control"
+          [value]="source"
+        />
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">
+            Le nom de la source est requis.
+          </div>
+          <div *ngIf="nameInput.errors?.['minlength']">
+            Le nom doit contenir au moins 3 caractères.
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="listName">Note&nbsp;:</label>
+        <textarea
+          id="note"
+          name="note"
+          [(ngModel)]="note"
+          required
+          minlength="3"
+          #nameInput="ngModel"
+          class="form-control"
+          rows="10"
+        ></textarea>
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">La note est requise.</div>
+          <div *ngIf="nameInput.errors?.['minlength']">
+            La note doit contenir au moins 3 caractères.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" [disabled]="!listForm.valid" class="save-btn">
+          Enregistrer
+        </button>
+        <button
+          type="button"
+          (click)="confirmActionOcrNote()"
+          class="save-btn"
+          style="margin-left: 2%"
+        >
+          Continuer OCR
+        </button>
+        <button type="button" class="cancel-btn" (click)="closeListModalEdit()">
+          Annuler
+        </button>
+      </div>
+    </form>
+
+    <button class="close-btn" (click)="closeListModalEdit()">Fermer</button>
+  </div>
+</div>
+
+<!-- Modal confirmation Suivi Ocr -->
+<div
+  class="confirm-backdrop"
+  *ngIf="isConfirmOpenOcr"
+  (click)="cancelSuiviOcr()"
+>
+  <div class="confirm-modal" (click)="$event.stopPropagation()">
+    <h3>Confirmation</h3>
+    <p>Vous voulez continuer le OCR des pages ?</p>
+    <div class="confirm-actions">
+      <button class="btn btn-cancel" (click)="cancelSuiviOcr()">Annuler</button>
+      <button class="btn btn-confirm" (click)="confirmActionOcrNote()">
+        Continuer
+      </button>
+    </div>
+  </div>
 </div>

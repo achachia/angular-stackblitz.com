@@ -18,6 +18,14 @@ interface List {
   pagesListe: [];
 }
 
+interface ListNote {
+  _id?: string;
+  titre: string;
+  itemCount?: number; // Exemple: nombre d'éléments dans la liste
+  tagsListe?: [];
+  notesListe: [];
+}
+
 @Component({
   selector: 'app-list-pages-by-numero-magazine',
   imports: [PinchZoomComponent, NgIf, NgFor, FormsModule, Header],
@@ -108,6 +116,20 @@ export class ListPagesByNumeroMagazine {
 
   showSessionExpiredModa: any = false;
 
+  isListModalOpenEdit: boolean = false;
+
+  note: any = '';
+
+  source: any = '';
+
+  note_id: any = '';
+
+  selectedListeNote: any = null;
+
+  listsNotes: ListNote[] = []; // Tableau qui contiendra tes listes
+
+  isConfirmOpenOcr: boolean = false;
+
   constructor(
     private route: ActivatedRoute,
     private magazineService: MagazineService,
@@ -125,6 +147,7 @@ export class ListPagesByNumeroMagazine {
       const nomMagazineEncoded = params.get('nom_magazine');
       if (nomMagazineEncoded !== null) {
         this.nom_magazine = decodeURIComponent(nomMagazineEncoded);
+        this.source = decodeURIComponent(nomMagazineEncoded) + ' (Magazine)';
       } else {
         this.nom_magazine = '';
       }
@@ -200,6 +223,7 @@ export class ListPagesByNumeroMagazine {
 
       /************************************************ */
       this.getListPagesByCycleMagazine();
+      this.loadListeNotesApi();
 
       // Tu peux maintenant utiliser ce paramètre pour filtrer ou charger les magazines
     });
@@ -209,6 +233,127 @@ export class ListPagesByNumeroMagazine {
     this.chatbotUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(
       this.chatbotUrlUnsafe
     );
+  }
+
+  onSelectNoteChange(event: Event) {
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    // Par exemple, retrouver l'objet ListNote sélectionné :
+    const selectedNote = this.listsNotes.find(
+      (note) => note._id === selectedValue
+    );
+    if (selectedNote) {
+      // Vous pouvez aussi mettre à jour d'autres propriétés selon vos besoins
+      console.log('Notes affichées :', selectedNote);
+      this.selectedListeNote = selectedNote;
+    }
+  }
+
+  loadListeNotesApi() {
+    const _token = this.authService.getTokenStorage;
+
+    const ObjectListeLecture = { token: _token };
+
+    this.magazineService.loadListeNotesLecture(ObjectListeLecture).subscribe(
+      (response: any) => {
+        console.log('Réponse JSON complète:', response);
+
+        if (response.reponse) {
+          this.listsNotes = response.data;
+
+          //console.log('this.magazines =', this.magazines)
+
+          // alert(response.reponse)
+        }
+      },
+      (error) => {
+        // Ici, tu interceptes les erreurs réseau ou serveur
+        console.error(error);
+        if (
+          error.error.msg === 'token_not_valid' ||
+          error.error.msg === 'token_required'
+        ) {
+          this.showSessionExpiredModa = true;
+        }
+        // this.errorMessage = "Impossible d'accéder au service. Veuillez vérifier votre connexion ou réessayer plus tard.";
+      }
+    );
+  }
+
+  closeListModalEdit() {
+    this.isListModalOpenEdit = false;
+  }
+
+  editNoteForm() {
+    this.selectedListeNote.notesListe.push({
+      note: this.note,
+      source: this.source,
+    });
+
+    console.log('this.selectedListeNote =', this.selectedListeNote);
+
+    this.updateDataListeNote();
+  }
+
+  // Annuler le suivi ocr (fermer le modal)
+  cancelSuiviOcr(): void {
+    this.editNoteForm();
+  }
+
+  confirmActionOcrNote() {
+    this.isConfirmOpenOcr = false;
+    this.isListModalOpenEdit = false;
+    this.note_id = this.selectedListeNote._id;
+  }
+
+  updateDataListeNote() {
+    const _token = this.authService.getTokenStorage;
+
+    const ObjectListeNote = {
+      token: _token,
+      titre: this.selectedListeNote.titre,
+      notesListe: this.selectedListeNote.notesListe,
+      tagsListe: this.selectedListeNote.tagsListe,
+      liste_id: this.selectedListeNote._id,
+    };
+
+    // console.log('ObjectListeNote =', ObjectListeNote);
+
+    this.magazineService
+      .postEditListeNoteLecture(ObjectListeNote)
+      .subscribe((response: any) => {
+        console.log('Réponse JSON complète:', response);
+
+        this.showToast(
+          `La liste "${ObjectListeNote.titre}" a été enregistré avec succées.`
+        );
+      });
+  }
+
+  getOCRPage() {
+    const _token = this.authService.getTokenStorage;
+    const infosOcr: any = {
+      urlImage: this.listPagesByCycleMagazine[this.currentIndex].url,
+      token: _token,
+    };
+
+    this.magazineService.getOCRPage(infosOcr).subscribe((response: any) => {
+      console.log('Réponse JSON complète-OCR:', response);
+
+      if (!response.ParsedText.IsErroredOnProcessing) {
+        console.log('ocr = ', response.ParsedText.ParsedResults[0].ParsedText);
+        // alert(response.ParsedText.ParsedResults[0].ParsedText);
+
+        this.note = this.note + response.ParsedText.ParsedResults[0].ParsedText;
+
+        this.source = this.nom_magazine + ' (magazine)';
+
+        this.isListModalOpenEdit = true;
+      }
+
+      //console.log('this.magazines =', this.magazines)
+
+      // alert(response.reponse)
+    });
   }
 
   goToLogin() {
@@ -240,8 +385,10 @@ export class ListPagesByNumeroMagazine {
       (error) => {
         // Ici, tu interceptes les erreurs réseau ou serveur
         console.error(error);
-        if (error.error.msg === 'token_not_valid' ||
-        error.error.msg === 'token_required') {
+        if (
+          error.error.msg === 'token_not_valid' ||
+          error.error.msg === 'token_required'
+        ) {
           this.showSessionExpiredModa = true;
         }
         // this.errorMessage = "Impossible d'accéder au service. Veuillez vérifier votre connexion ou réessayer plus tard.";
@@ -340,6 +487,8 @@ export class ListPagesByNumeroMagazine {
     console.log('token = ', token);
 
     ObjectNavigationPage.token = token;
+
+    ObjectNavigationPage.dateConsultation = new Date();
 
     console.log('document_id =', this.cycle_magazine_id);
     ObjectNavigationPage.document_id = this.cycle_magazine_id;

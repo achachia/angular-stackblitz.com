@@ -1,5 +1,5 @@
 <app-header></app-header>
-<div class="themes-container" style="margin-left: 25%; margin-right: 25%">
+<div class="themes-container" style="margin-left: 15%; margin-right: 15%">
   <div
     class="theme-card"
     *ngFor="let theme of listThemes"
@@ -9,7 +9,7 @@
     <div class="icon" [innerHTML]="theme.icon"></div>
     <div class="info">
       <h2 class="name">{{ theme.name }}</h2>
-      <p class="description">{{ theme.description }}</p>
+      <!--<p class="description">{{ theme.description }}</p>-->
     </div>
   </div>
 </div>
