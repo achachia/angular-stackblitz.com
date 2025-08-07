@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router, Routes } from '@angular/router';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MagazineService } from './../../api.service';
@@ -9,6 +9,10 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms'; // 👈 à importer ici
 import { AuthService } from '../../auth.service';
 import { Header } from '../header/header';
+import {
+  AngularEditorConfig,
+  AngularEditorModule,
+} from '@kolkov/angular-editor';
 
 interface List {
   _id?: string;
@@ -20,9 +24,17 @@ interface List {
 
 @Component({
   selector: 'app-list-page-liste-lecture',
-  imports: [PinchZoomComponent, NgIf, NgFor, FormsModule, Header],
+  imports: [
+    PinchZoomComponent,
+    NgIf,
+    NgFor,
+    FormsModule,
+    Header,
+    AngularEditorModule,
+  ],
   templateUrl: './list-page-liste-lecture.html',
   styleUrl: './list-page-liste-lecture.css',
+  encapsulation: ViewEncapsulation.None,
   animations: [
     trigger('fadeImage', [
       transition(':enter', [
@@ -84,6 +96,33 @@ export class ListPageListeLecture {
     'https://app.vectorshift.ai/chatbots/deployed/685c47a653eb91b72fc8d3e6';
 
   showSessionExpiredModa: any = false;
+
+  config: AngularEditorConfig = {
+    editable: true,
+    spellcheck: true,
+    height: '15rem',
+    minHeight: '5rem',
+    placeholder: 'Enter text here...',
+    translate: 'no',
+    defaultParagraphSeparator: 'p',
+    defaultFontName: 'Arial',
+    toolbarHiddenButtons: [['bold']],
+    customClasses: [
+      {
+        name: 'quote',
+        class: 'quote',
+      },
+      {
+        name: 'redText',
+        class: 'redText',
+      },
+      {
+        name: 'titleText',
+        class: 'titleText',
+        tag: 'h1',
+      },
+    ],
+  };
 
   constructor(
     private route: ActivatedRoute,
@@ -148,8 +187,10 @@ export class ListPageListeLecture {
       (error) => {
         // Ici, tu interceptes les erreurs réseau ou serveur
         console.error(error);
-        if (error.error.msg === 'token_not_valid' ||
-        error.error.msg === 'token_required') {
+        if (
+          error.error.msg === 'token_not_valid' ||
+          error.error.msg === 'token_required'
+        ) {
           this.showSessionExpiredModa = true;
         }
         // this.errorMessage = "Impossible d'accéder au service. Veuillez vérifier votre connexion ou réessayer plus tard.";

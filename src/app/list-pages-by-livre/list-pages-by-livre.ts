@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router, Routes } from '@angular/router';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MagazineService } from './../../api.service';
@@ -9,6 +9,10 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms'; // 👈 à importer ici
 import { AuthService } from '../../auth.service';
 import { Header } from '../header/header';
+import {
+  AngularEditorConfig,
+  AngularEditorModule,
+} from '@kolkov/angular-editor';
 
 interface List {
   _id?: string;
@@ -28,9 +32,18 @@ interface ListNote {
 
 @Component({
   selector: 'app-list-pages-by-livre',
-  imports: [PinchZoomComponent, NgIf, NgFor, FormsModule, Header, NgClass],
+  imports: [
+    PinchZoomComponent,
+    NgIf,
+    NgFor,
+    FormsModule,
+    Header,
+    NgClass,
+    AngularEditorModule,
+  ],
   templateUrl: './list-pages-by-livre.html',
   styleUrl: './list-pages-by-livre.css',
+  encapsulation: ViewEncapsulation.None,
   animations: [
     trigger('fadeImage', [
       transition(':enter', [
@@ -57,6 +70,8 @@ interface ListNote {
 })
 export class ListPagesByLivre {
   listPagesByLivre: any[] = [];
+
+  listRocommandationsLivre: any[] = [];
 
   keyTheme: string | null = null;
 
@@ -131,6 +146,49 @@ export class ListPagesByLivre {
   listsNotes: ListNote[] = []; // Tableau qui contiendra tes listes
 
   isConfirmOpenOcr: boolean = false;
+
+  config: AngularEditorConfig = {
+    editable: true,
+    spellcheck: true,
+    height: '15rem',
+    minHeight: '5rem',
+    placeholder: 'Enter text here...',
+    translate: 'no',
+    defaultParagraphSeparator: 'p',
+    defaultFontName: 'Arial',
+    toolbarHiddenButtons: [['bold']],
+    customClasses: [
+      {
+        name: 'quote',
+        class: 'quote',
+      },
+      {
+        name: 'redText',
+        class: 'redText',
+      },
+      {
+        name: 'titleText',
+        class: 'titleText',
+        tag: 'h1',
+      },
+    ],
+  };
+
+  isFormModalOpenAddListe: boolean = false; // Pour contrôler l'affichage du modal ajouter une liste
+
+  currentList: List = {
+    _id: '',
+    titre: '',
+    itemCount: 0,
+    tagsListe: [],
+    pagesListe: [],
+  }; // L'objet liste lié au formulaire
+
+  model: string = 'deepseek-chat'; // deepseek-chat / gemini-2.0-flash / gemini-1.5-flash / grok-beta / claude-sonnet-4 / o3-mini
+
+  answer = '';
+
+  question: any = 'Donne moi la definition de mathematique';
 
   constructor(
     private route: ActivatedRoute,
@@ -221,14 +279,220 @@ export class ListPagesByLivre {
 
       this.loadListeNotesApi();
 
+      this.getListRecomandationsLivres();
+
       // Tu peux maintenant utiliser ce paramètre pour filtrer ou charger les magazines
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.chatbotUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(
       this.chatbotUrlUnsafe
     );
+
+    await this.loadPuterScript();
+
+    if (!(window as any).puter || !(window as any).puter.ai?.chat) {
+      this.showToast('Erreur: Script Puter non chargé.', 'error');
+      return;
+    }
+  }
+
+  // Chargement dynamique du script Puter
+  loadPuterScript(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (document.getElementById('puterjs')) {
+        resolve();
+        return;
+      }
+      const script = document.createElement('script');
+      script.id = 'puterjs';
+      script.src = 'https://js.puter.com/v2/';
+      script.async = true;
+      script.onload = () => resolve();
+      script.onerror = () =>
+        reject(new Error('Chargement du script Puter échoué'));
+      document.body.appendChild(script);
+    });
+  }
+
+  async askQuestion() {
+    try {
+      await this.runDeepseekChat();
+      // await this.runDeepseekReasoner();
+    } catch (error: any) {
+      const msg = error?.message || error || 'Erreur inconnue';
+      // this.deepseekChatOutput = `<span style="color:red;">Erreur: ${msg}</span>`;
+      // this.deepseekReasonerOutput = `<span style="color:red;">Erreur: ${msg}</span>`;
+    }
+  }
+
+  // Appel DeepSeek Chat avec streaming
+  async runDeepseekChat() {
+    const puter = (window as any).puter;
+    // this.deepseekChatOutput = '<h1>DeepSeek Chat:</h1>\n';
+
+    const chatResp = await puter.ai.chat(this.question, {
+      model: this.model,
+      stream: true,
+    });
+    for await (const part of chatResp) {
+      const text = part?.text?.replace(/\n/g, '<br>') ?? '';
+      // this.deepseekChatOutput += text;
+      // For Angular change detection to update view, we can trigger manually if needed.
+      // await this.delay(10); // permet la mise à jour progressive (optionnel)
+    }
+  }
+
+  async extractText() {
+    if (!(window as any).puter) {
+      // this.result =   "Le script Puter n'est pas encore chargé. Veuillez essayer dans un instant.";
+
+      this.showToast(
+        "Le script Puter n'est pas encore chargé. Veuillez essayer dans un instant.",
+        'error'
+      );
+      return;
+    }
+
+    // this.result = 'Extraction en cours...';
+
+    try {
+      const puter = (window as any).puter;
+      // Appel à img2txt avec URL de l'image
+      const texte = await puter.ai.img2txt(
+        this.listPagesByLivre[this.currentIndex].url
+      );
+      this.note = texte;
+      this.isListModalOpenEdit = true;
+    } catch (error: any) {
+      // this.result =  "Erreur lors de l'extraction du texte : " + (error.message || error);
+      this.showToast(
+        "Erreur lors de l'extraction du texte : " + (error.message || error),
+        'error'
+      );
+    }
+  }
+
+  getListRecomandationsLivres() {
+    const _token = this.authService.getTokenStorage;
+    const infos: any = {
+      token: _token,
+    };
+
+    this.magazineService
+      .getListRecomandationsLivres(infos)
+      .subscribe((response: any) => {
+        console.log(
+          'Réponse JSON complète-getListRecomandationsLivres:',
+          response
+        );
+
+        /*
+ 
+         {
+    "date": "2023-03-06T07:07:49.436Z",
+    "activation": 1,
+    "_id": "640591583f61a369304ffe70",
+    "titre": "Univers Bitcoin Lancez vous et investissez",
+    "token": "1dc101a4-086c-4ad3-8aa6-c59d40363828",
+    "cover": "https://i.gyazo.com/fd4f60e23d642812d04a298bd75e2d1f.jpg",
+    "auteur": "Thibault Coussin",
+    "year": "2022",
+    "keyTheme": "Crypto-monnaie/Blockchain",
+    "nbr_pages": 187
+     }
+        */
+
+        this.listRocommandationsLivre = response.listLivres;
+
+        //console.log('this.magazines =', this.magazines)
+
+        // alert(response.reponse)
+      });
+  }
+
+  selectLivreRecommande(livre: any) {
+    this.router.navigate([
+      '/list-pages-by-livre',
+      livre.keyTheme,
+      livre.keyTheme,
+      livre._id,
+      livre.cover,
+      livre.titre,
+    ]);
+  }
+
+  getOCRPage() {
+    const _token = this.authService.getTokenStorage;
+    const infosOcr: any = {
+      urlImage: this.listPagesByLivre[this.currentIndex].url,
+      token: _token,
+    };
+
+    this.magazineService.getOCRPage(infosOcr).subscribe((response: any) => {
+      console.log('Réponse JSON complète-OCR:', response);
+
+      if (!response.ParsedText.IsErroredOnProcessing) {
+        console.log('ocr = ', response.ParsedText.ParsedResults[0].ParsedText);
+        // alert(response.ParsedText.ParsedResults[0].ParsedText);
+
+        this.note = this.note + response.ParsedText.ParsedResults[0].ParsedText;
+
+        this.source = this.nom_livre + ' (livre)';
+      } else {
+        this.extractText();
+      }
+
+      //console.log('this.magazines =', this.magazines)
+
+      // alert(response.reponse)
+    });
+  }
+
+  closeFormModalAddListe(): void {
+    this.isFormModalOpenAddListe = false;
+  }
+
+  goToAddNewList() {
+    this.isFormModalOpenAddListe = true;
+  }
+
+  saveListeApi() {
+    const _token = this.authService.getTokenStorage;
+
+    const ObjectListeLecture = {
+      token: _token,
+      titre: this.currentList.titre,
+      pagesListe: [],
+      tagsListe: [],
+    };
+
+    this.magazineService
+      .postAddListeLecture(ObjectListeLecture)
+      .subscribe((response: any) => {
+        console.log('Réponse JSON complète:', response);
+
+        this.showToast(
+          `La liste "${ObjectListeLecture.titre}" a été enregistré avec succées.`
+        );
+
+        this.loadListeApi();
+
+        this.currentList = {
+          _id: '',
+          titre: '',
+          tagsListe: [],
+          pagesListe: [],
+          itemCount: 0,
+        }; // Réinitialise pour une nouvelle création
+
+        this.closeFormModalAddListe(); // Ferme le modal après sauvegarde
+
+        //console.log('this.magazines =', this.magazines)
+
+        // alert(response.reponse)
+      });
   }
 
   onSelectNoteChange(event: Event) {
@@ -323,33 +587,6 @@ export class ListPagesByLivre {
           `La liste "${ObjectListeNote.titre}" a été enregistré avec succées.`
         );
       });
-  }
-
-  getOCRPage() {
-    const _token = this.authService.getTokenStorage;
-    const infosOcr: any = {
-      urlImage: this.listPagesByLivre[this.currentIndex].url,
-      token: _token,
-    };
-
-    this.magazineService.getOCRPage(infosOcr).subscribe((response: any) => {
-      console.log('Réponse JSON complète-OCR:', response);
-
-      if (!response.ParsedText.IsErroredOnProcessing) {
-        console.log('ocr = ', response.ParsedText.ParsedResults[0].ParsedText);
-        // alert(response.ParsedText.ParsedResults[0].ParsedText);
-
-        this.note = this.note + response.ParsedText.ParsedResults[0].ParsedText;
-
-        this.source = this.nom_livre + ' (livre)';
-      }
-
-      this.isListModalOpenEdit = true;
-
-      //console.log('this.magazines =', this.magazines)
-
-      // alert(response.reponse)
-    });
   }
 
   goToLogin() {
@@ -462,6 +699,8 @@ export class ListPagesByLivre {
           if (checkControl) {
             this.updateDataPageNavigationLecture();
           }
+        } else {
+          alert('toto');
         }
 
         /*********************************************************** */

@@ -64,6 +64,24 @@ export class MagazineService {
     return this.http.post<any[]>(Url, body);
   }
 
+  getListRecomandationsLivres(infos: any): Observable<any[]> {
+    const body = {token : infos.token};
+    const Url = this.apiUrl + '/getListRecommandationsLectureLivre';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  getListRecomandationsMagazines(infos: any): Observable<any[]> {
+    const body = {token : infos.token, keyTheme: infos.keyTheme};
+    const Url = this.apiUrl + '/getListRecommandationsLectureMagazine';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  getListHistoriquesConsultation(infos: any): Observable<any[]> {
+    const body = {token : infos.token};
+    const Url = this.apiUrl + '/getListHistoriqueNavigationLecture';
+    return this.http.post<any[]>(Url, body);
+  }
+
   getLastCyclesMagazines(_keyTheme: any): Observable<any[]> {
     const body = { keyTheme: _keyTheme };
     const Url = this.apiUrl + '/getLastCyclesMagazines';

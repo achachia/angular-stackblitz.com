@@ -42,6 +42,8 @@ export class FavorisLivres {
 
   showSessionExpiredModa: any = false;
 
+  isLoading: boolean = true;
+
   constructor(
     private route: ActivatedRoute,
     private magazineService: MagazineService,
@@ -72,6 +74,8 @@ export class FavorisLivres {
         console.log('Réponse JSON complète:', response);
 
         this.favorites = response.data.favoris_livres;
+
+        this.isLoading = false;
 
         // alert(response.reponse)
       },
@@ -144,6 +148,18 @@ export class FavorisLivres {
         // this.errorMessage = "Impossible d'accéder au service. Veuillez vérifier votre connexion ou réessayer plus tard.";
       }
     );
+  }
+
+  selectCycleLivre(livre: any) {
+    console.log('livre-favoris = ', livre);
+    this.router.navigate([
+      '/list-pages-by-livre',
+      livre.keyTheme,
+      livre.keyTheme,
+      livre._id,
+      livre.cover,
+      encodeURIComponent(livre.titre),
+    ]);
   }
 
   // Nouvelle méthode pour afficher une notification

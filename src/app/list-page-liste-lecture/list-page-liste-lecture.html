@@ -1,5 +1,5 @@
 <app-header></app-header>
-<div class="magazine-viewer">
+<div class="magazine-viewer" *ngIf="curentListe.pagesListe.length > 0">
   <div>
     <h2>{{curentListe.titre}}</h2>
     <h2>
@@ -97,3 +97,5 @@
   <p>Votre session a expiré.<br />Veuillez vous reconnecter pour continuer.</p>
   <button (click)="goToLogin()">Se connecter</button>
 </div>
+
+

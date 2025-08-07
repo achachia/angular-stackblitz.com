@@ -1,4 +1,4 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, ViewEncapsulation } from '@angular/core';
 import { ActivatedRoute, Router, Routes } from '@angular/router';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MagazineService } from './../../api.service';
@@ -9,6 +9,10 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { FormsModule } from '@angular/forms'; // 👈 à importer ici
 import { AuthService } from '../../auth.service';
 import { Header } from '../header/header';
+import {
+  AngularEditorConfig,
+  AngularEditorModule,
+} from '@kolkov/angular-editor';
 
 interface List {
   _id?: string;
@@ -28,9 +32,18 @@ interface ListNote {
 
 @Component({
   selector: 'app-list-pages-by-numero-magazine',
-  imports: [PinchZoomComponent, NgIf, NgFor, NgClass, FormsModule, Header],
+  imports: [
+    PinchZoomComponent,
+    NgIf,
+    NgFor,
+    NgClass,
+    FormsModule,
+    Header,
+    AngularEditorModule,
+  ],
   templateUrl: './list-pages-by-numero-magazine.html',
   styleUrl: './list-pages-by-numero-magazine.css',
+  encapsulation: ViewEncapsulation.None,
   animations: [
     trigger('fadeImage', [
       transition(':enter', [
@@ -57,6 +70,8 @@ interface ListNote {
 })
 export class ListPagesByNumeroMagazine {
   listPagesByCycleMagazine: any[] = [];
+
+  listRocommandationsCycleMag: any[] = [];
 
   keyTheme: any = '';
 
@@ -131,6 +146,43 @@ export class ListPagesByNumeroMagazine {
   listsNotes: ListNote[] = []; // Tableau qui contiendra tes listes
 
   isConfirmOpenOcr: boolean = false;
+
+  config: AngularEditorConfig = {
+    editable: true,
+    spellcheck: true,
+    height: '15rem',
+    minHeight: '5rem',
+    placeholder: 'Enter text here...',
+    translate: 'no',
+    defaultParagraphSeparator: 'p',
+    defaultFontName: 'Arial',
+    toolbarHiddenButtons: [['bold']],
+    customClasses: [
+      {
+        name: 'quote',
+        class: 'quote',
+      },
+      {
+        name: 'redText',
+        class: 'redText',
+      },
+      {
+        name: 'titleText',
+        class: 'titleText',
+        tag: 'h1',
+      },
+    ],
+  };
+
+  isFormModalOpenAddListe: boolean = false; // Pour contrôler l'affichage du modal ajouter une liste
+
+  currentList: List = {
+    _id: '',
+    titre: '',
+    itemCount: 0,
+    tagsListe: [],
+    pagesListe: [],
+  }; // L'objet liste lié au formulaire
 
   constructor(
     private route: ActivatedRoute,
@@ -226,15 +278,143 @@ export class ListPagesByNumeroMagazine {
       /************************************************ */
       this.getListPagesByCycleMagazine();
       this.loadListeNotesApi();
+      this.getListRecomandationsMagazines();
 
       // Tu peux maintenant utiliser ce paramètre pour filtrer ou charger les magazines
     });
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     this.chatbotUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(
       this.chatbotUrlUnsafe
     );
+
+    await this.loadPuterScript();
+
+    if (!(window as any).puter || !(window as any).puter.ai?.chat) {
+      this.showToast('Erreur: Script Puter non chargé.', 'error');
+      return;
+    }
+  }
+
+  // Chargement dynamique du script Puter
+  loadPuterScript(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (document.getElementById('puterjs')) {
+        resolve();
+        return;
+      }
+      const script = document.createElement('script');
+      script.id = 'puterjs';
+      script.src = 'https://js.puter.com/v2/';
+      script.async = true;
+      script.onload = () => resolve();
+      script.onerror = () =>
+        reject(new Error('Chargement du script Puter échoué'));
+      document.body.appendChild(script);
+    });
+  }
+
+  async extractText() {
+    if (!(window as any).puter) {
+      // this.result =   "Le script Puter n'est pas encore chargé. Veuillez essayer dans un instant.";
+
+      this.showToast(
+        "Le script Puter n'est pas encore chargé. Veuillez essayer dans un instant.",
+        'error'
+      );
+      return;
+    }
+
+    // this.result = 'Extraction en cours...';
+
+    try {
+      const puter = (window as any).puter;
+      // Appel à img2txt avec URL de l'image
+      const texte = await puter.ai.img2txt(
+        this.listPagesByCycleMagazine[this.currentIndex].url
+      );
+      this.note = texte;
+      this.isListModalOpenEdit = true;
+    } catch (error: any) {
+      // this.result =  "Erreur lors de l'extraction du texte : " + (error.message || error);
+      this.showToast(
+        "Erreur lors de l'extraction du texte : " + (error.message || error),
+        'error'
+      );
+    }
+  }
+
+  getOCRPage() {
+    const _token = this.authService.getTokenStorage;
+    const infosOcr: any = {
+      urlImage: this.listPagesByCycleMagazine[this.currentIndex].url,
+      token: _token,
+    };
+
+    this.magazineService.getOCRPage(infosOcr).subscribe((response: any) => {
+      console.log('Réponse JSON complète-OCR:', response);
+
+      if (!response.ParsedText.IsErroredOnProcessing) {
+        console.log('ocr = ', response.ParsedText.ParsedResults[0].ParsedText);
+        // alert(response.ParsedText.ParsedResults[0].ParsedText);
+
+        this.note = this.note + response.ParsedText.ParsedResults[0].ParsedText;
+
+        this.source = this.nom_magazine + ' (magazine)';
+      } else {
+        this.extractText();
+      }
+
+      //console.log('this.magazines =', this.magazines)
+
+      // alert(response.reponse)
+    });
+  }
+
+  closeFormModalAddListe(): void {
+    this.isFormModalOpenAddListe = false;
+  }
+
+  goToAddNewList() {
+    this.isFormModalOpenAddListe = true;
+  }
+
+  saveListeApi() {
+    const _token = this.authService.getTokenStorage;
+
+    const ObjectListeLecture = {
+      token: _token,
+      titre: this.currentList.titre,
+      pagesListe: [],
+      tagsListe: [],
+    };
+
+    this.magazineService
+      .postAddListeLecture(ObjectListeLecture)
+      .subscribe((response: any) => {
+        console.log('Réponse JSON complète:', response);
+
+        this.showToast(
+          `La liste "${ObjectListeLecture.titre}" a été enregistré avec succées.`
+        );
+
+        this.loadListeApi();
+
+        this.currentList = {
+          _id: '',
+          titre: '',
+          tagsListe: [],
+          pagesListe: [],
+          itemCount: 0,
+        }; // Réinitialise pour une nouvelle création
+
+        this.closeFormModalAddListe(); // Ferme le modal après sauvegarde
+
+        //console.log('this.magazines =', this.magazines)
+
+        // alert(response.reponse)
+      });
   }
 
   onSelectNoteChange(event: Event) {
@@ -329,33 +509,6 @@ export class ListPagesByNumeroMagazine {
           `La liste "${ObjectListeNote.titre}" a été enregistré avec succées.`
         );
       });
-  }
-
-  getOCRPage() {
-    const _token = this.authService.getTokenStorage;
-    const infosOcr: any = {
-      urlImage: this.listPagesByCycleMagazine[this.currentIndex].url,
-      token: _token,
-    };
-
-    this.magazineService.getOCRPage(infosOcr).subscribe((response: any) => {
-      console.log('Réponse JSON complète-OCR:', response);
-
-      if (!response.ParsedText.IsErroredOnProcessing) {
-        console.log('ocr = ', response.ParsedText.ParsedResults[0].ParsedText);
-        // alert(response.ParsedText.ParsedResults[0].ParsedText);
-
-        this.note = this.note + response.ParsedText.ParsedResults[0].ParsedText;
-
-        this.source = this.nom_magazine + ' (magazine)';
-      }
-
-      this.isListModalOpenEdit = true;
-
-      //console.log('this.magazines =', this.magazines)
-
-      // alert(response.reponse)
-    });
   }
 
   goToLogin() {
@@ -714,7 +867,7 @@ export class ListPagesByNumeroMagazine {
   }
 
   // Nouvelle méthode pour afficher une notification
-   /*
+  /*
   this.showToast('Enregistré avec succès!', 'success');
     this.showToast('Une erreur est survenue.', 'error');
     this.showToast('Attention : saisie incomplète.', 'warning');
@@ -729,5 +882,39 @@ export class ListPagesByNumeroMagazine {
     setTimeout(() => {
       this.toastMessage = '';
     }, duration);
+  }
+
+  getListRecomandationsMagazines() {
+    const _token = this.authService.getTokenStorage;
+    const infos: any = {
+      token: _token,
+      keyTheme: this.keyTheme,
+    };
+
+    this.magazineService
+      .getListRecomandationsMagazines(infos)
+      .subscribe((response: any) => {
+        console.log(
+          'Réponse JSON complète-getListRecomandationsMagazines:',
+          response
+        );
+
+        this.listRocommandationsCycleMag = response.listNumerosMagazine;
+
+        //console.log('this.magazines =', this.magazines)
+
+        // alert(response.reponse)
+      });
+  }
+
+  selectCycleMagRecommande(cycleMag: any) {
+    this.router.navigate([
+      '/list-pages-by-numero-magazine',
+      this.nomTheme,
+      this.keyTheme,
+      cycleMag._id,
+      cycleMag.cover,
+      cycleMag.titre,
+    ]);
   }
 }

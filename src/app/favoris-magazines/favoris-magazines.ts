@@ -42,6 +42,8 @@ export class FavorisMagazines {
 
   showSessionExpiredModa: any = false;
 
+  isLoading: boolean = true;
+
   constructor(
     private route: ActivatedRoute,
     private magazineService: MagazineService,
@@ -72,6 +74,8 @@ export class FavorisMagazines {
         console.log('Réponse JSON complète:', response);
 
         this.favorites = response.data.favoris_magazines;
+
+        this.isLoading = false;
 
         // alert(response.reponse)
       },
@@ -173,7 +177,15 @@ export class FavorisMagazines {
   }
 
   selectCycleMagazine(cycleMag: any) {
-    this.router.navigate(['/list-pages-by-numero-magazine', cycleMag._id]);
+    console.log('cycleMag =', cycleMag);
+    this.router.navigate([
+      '/list-pages-by-numero-magazine',
+      cycleMag.keyTheme,
+      cycleMag.keyTheme,
+      cycleMag._id,
+      cycleMag.cover,
+      encodeURIComponent(cycleMag.titre),
+    ]);
   }
 
   goToMagazinesList() {

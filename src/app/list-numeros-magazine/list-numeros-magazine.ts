@@ -90,7 +90,7 @@ export class ListNumerosMagazine {
 
   ngOnInit() {
     // const fav = localStorage.getItem('favorites-magazines');
-    // this.favorites = fav ? JSON.parse(fav) : [];   
+    // this.favorites = fav ? JSON.parse(fav) : [];
   }
 
   getDataUser() {
@@ -158,10 +158,12 @@ export class ListNumerosMagazine {
         this.favorites.splice(index, 1);
       } else {
         // Ajoute l'objet complet dans le tableau
-        this.favorites.push(magazine);
+        const magazineFav = { ...magazine, keyTheme: this.keyTheme };
+        this.favorites.push(magazineFav);
       }
     } else {
-      this.favorites.push(magazine);
+      const magazineFav = { ...magazine, keyTheme: this.keyTheme };
+      this.favorites.push(magazineFav);
     }
 
     this.updateDataUser();

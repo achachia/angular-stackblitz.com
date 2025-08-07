@@ -65,6 +65,23 @@
       <div class="thumbnail-page-number">Page {{ i + 1 }}</div>
     </div>
   </div>
+
+  <div class="slider-block" *ngIf="listRocommandationsLivre.length > 0 " >
+    <h2 class="slider-title">Recommandations pour vous</h2>
+    <div class="slider">
+      <div
+        class="card"
+        *ngFor="let livre of listRocommandationsLivre; let i = index"
+      >
+        <img [src]="livre.cover" [alt]="livre.titre" class="book-cover" />
+        <p>{{livre.titre}}</p>
+        <p class="book-theme">Thème: {{livre.keyTheme}}</p>
+        <button class="btn-view" (click)="selectLivreRecommande(livre)">
+          Voir le livre
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Bouton flottant pour ouvrir -->
@@ -104,7 +121,7 @@
 <div class="modal-backdrop" *ngIf="isListModalOpen" (click)="closeListModal()">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <h3 class="modal-title">Listes Disponibles</h3>
-    <ul class="list-container">
+    <ul class="list-container" *ngIf="listsLecture.length > 0">
       <li *ngFor="let list of listsLecture" class="list-item">
         <span class="list-name">{{ list.titre }}</span>
         <button class="assign-btn" (click)="assignPageToList(list)">
@@ -112,6 +129,32 @@
         </button>
       </li>
     </ul>
+
+    <div style="text-align: center" *ngIf="listsLecture.length === 0">
+      <!-- Illustration simple en SVG -->
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="120"
+        height="120"
+        fill="none"
+        viewBox="0 0 64 64"
+        stroke="#999"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M32 12v40M12 32h40" />
+        <circle cx="32" cy="32" r="30" />
+      </svg>
+
+      <h3>Aucune liste enregistré</h3>
+      <p>Vous n’avez pas encore ajouté des listes.</p>
+
+      <button type="text" (click)="goToAddNewList()" class="save-btn">
+        Enregistrer une nouvelle liste
+      </button>
+    </div>
+
     <button class="close-btn" (click)="closeListModal()">Fermer</button>
   </div>
 </div>
@@ -195,7 +238,7 @@
 
       <div class="form-group">
         <label for="listName">Note&nbsp;:</label>
-        <textarea
+        <!-- <textarea
           id="note"
           name="note"
           [(ngModel)]="note"
@@ -204,7 +247,12 @@
           #nameInput="ngModel"
           class="form-control"
           rows="10"
-        ></textarea>
+        ></textarea>-->
+        <angular-editor
+          [(ngModel)]="note"
+          [config]="config"
+          name="note"
+        ></angular-editor>
         <div
           *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
           class="validation-message"
@@ -216,7 +264,7 @@
         </div>
       </div>
 
-      <div class="form-actions">
+      <div class="form-actions" style="margin-top: 2%">
         <button type="submit" [disabled]="!listForm.valid" class="save-btn">
           Enregistrer
         </button>
@@ -253,5 +301,58 @@
         Continuer
       </button>
     </div>
+  </div>
+</div>
+
+<!-- Modal add  -->
+<div
+  class="modal-backdrop"
+  *ngIf="isFormModalOpenAddListe"
+  (click)="closeFormModalAddListe()"
+>
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3 class="modal-form-title">Créer une nouvelle liste</h3>
+
+    <form (ngSubmit)="saveListeApi()" #listForm="ngForm">
+      <div class="form-group">
+        <label for="listName">Nom de la liste:</label>
+        <input
+          type="text"
+          id="listName"
+          name="listName"
+          [(ngModel)]="currentList.titre"
+          required
+          minlength="3"
+          #nameInput="ngModel"
+          class="form-control"
+        />
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">
+            Le nom de la liste est requis.
+          </div>
+          <div *ngIf="nameInput.errors?.['minlength']">
+            Le nom doit contenir au moins 3 caractères.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions" style="margin-top: 2%">
+        <button type="submit" [disabled]="!listForm.valid" class="save-btn">
+          Créer la liste
+        </button>
+        <button
+          type="button"
+          class="cancel-btn"
+          (click)="closeFormModalAddListe()"
+        >
+          Annuler
+        </button>
+      </div>
+    </form>
+
+    <button class="close-btn" (click)="closeFormModalAddListe()">Fermer</button>
   </div>
 </div>

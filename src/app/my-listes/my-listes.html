@@ -34,7 +34,11 @@
         <span class="list-meta">{{ list.itemCount }} éléments</span>
       </div>
       <div class="list-actions">
-        <button class="action-btn view-btn" (click)="viewList(list)">
+        <button
+          class="action-btn view-btn"
+          (click)="viewList(list)"
+          *ngIf="list.pagesListe.length > 0"
+        >
           <i class="fas fa-eye"></i> Consulter
         </button>
         <button class="action-btn edit-btn" (click)="editList(list)">

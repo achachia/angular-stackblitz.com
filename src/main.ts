@@ -123,7 +123,14 @@ const routes: Routes = [
   selector: 'app-root',
   templateUrl: 'main.html',
   styleUrls: ['./main.scss'],
-  imports: [CommonModule, RouterOutlet, RouterLink, FormsModule, Header, Footer],
+  imports: [
+    CommonModule,
+    RouterOutlet,
+    RouterLink,
+    FormsModule,
+    Header,
+    Footer,
+  ],
   standalone: true,
 })
 export class App {
@@ -134,6 +141,16 @@ export class App {
   lastMagazinesFinance: any[] = [];
 
   lastMagazinesInformatique: any[] = [];
+
+  lastMagazinesPsychologie: any[] = [];
+
+  lastMagazinesSante: any[] = [];
+
+  lastMagazinesBusiness: any[] = [];
+
+  lastMagazinesActualite: any[] = [];
+
+  historiquesConsultations: any[] = [];
 
   isLoading: boolean = true;
 
@@ -153,6 +170,7 @@ export class App {
     } else {
       console.log('user existant :', user);
       this.authService.setLoggedIn(true);
+      this.getListHistoriquesConsultation();
       this.getLastMagazinesLivres();
     }
   }
@@ -224,8 +242,95 @@ export class App {
         // alert(response.reponse)
       });
 
-    /******************Finance**************************** */
+    /********************************************** */
+
+    this.magazineService
+      .getLastCyclesMagazines('Psychologie')
+      .pipe(
+        delayWhen(() => timer(5000)) // ⏱️ Pause de 5 secondes après réception
+      )
+      .subscribe((response: any) => {
+        // console.log('Réponse JSON complète:', response);
+        this.lastMagazinesPsychologie = response.lastCyclesMagazines; // si la réponse EST directement un tableau de magazines
+
+        // console.log('lastMagazinesFinance =', this.lastMagazinesFinance);
+
+        // alert(response.reponse)
+      });
+
+    /********************************************** */
+
+    this.magazineService
+      .getLastCyclesMagazines('Sante')
+      .pipe(
+        delayWhen(() => timer(5000)) // ⏱️ Pause de 5 secondes après réception
+      )
+      .subscribe((response: any) => {
+        // console.log('Réponse JSON complète:', response);
+        this.lastMagazinesSante = response.lastCyclesMagazines; // si la réponse EST directement un tableau de magazines
+
+        // console.log('lastMagazinesFinance =', this.lastMagazinesFinance);
+
+        // alert(response.reponse)
+      });
+
+    /********************************************** */
+
+    this.magazineService
+      .getLastCyclesMagazines('Business')
+      .pipe(
+        delayWhen(() => timer(5000)) // ⏱️ Pause de 5 secondes après réception
+      )
+      .subscribe((response: any) => {
+        // console.log('Réponse JSON complète:', response);
+        this.lastMagazinesBusiness = response.lastCyclesMagazines; // si la réponse EST directement un tableau de magazines
+
+        // console.log('lastMagazinesFinance =', this.lastMagazinesFinance);
+
+        // alert(response.reponse)
+      });
+
+    /********************************************** */
+
+    this.magazineService
+      .getLastCyclesMagazines('Actualite')
+      .pipe(
+        delayWhen(() => timer(5000)) // ⏱️ Pause de 5 secondes après réception
+      )
+      .subscribe((response: any) => {
+        // console.log('Réponse JSON complète:', response);
+        this.lastMagazinesActualite = response.lastCyclesMagazines; // si la réponse EST directement un tableau de magazines
+
+        // console.log('lastMagazinesFinance =', this.lastMagazinesFinance);
+
+        // alert(response.reponse)
+      });
+
+    /********************************************** */
+
     this.isLoading = false;
+  }
+
+  getListHistoriquesConsultation() {
+    const _token = this.authService.getTokenStorage;
+    const infos: any = {
+      token: _token,
+    };
+
+    this.magazineService
+      .getListHistoriquesConsultation(infos)
+      .subscribe((response: any) => {
+        console.log(
+          'Réponse JSON complète-getListHistoriquesConsultation:',
+          response
+        );
+
+        this.historiquesConsultations = response.data;
+
+        //console.log('this.magazines =', this.magazines)
+
+        // alert(response.reponse)
+      });
   }
 
   selectMagazine(magazine: any, nom_theme: any, key_theme: any) {
@@ -248,6 +353,30 @@ export class App {
       livre.cover,
       livre.titre,
     ]);
+  }
+
+  selectDocumentHistorique(document: any) {
+    if (document.typeDocument === 'livre') {
+      this.router.navigate([
+        '/list-pages-by-livre',
+        document.keyTheme,
+        document.keyTheme,
+        document.document_id,
+        document.cover_document,
+        document.nom_document,
+      ]);
+    }
+
+    if (document.typeDocument === 'magazine') {
+      this.router.navigate([
+        '/list-pages-by-numero-magazine',
+        document.keyTheme,
+        document.keyTheme,
+        document.document_id,
+        document.cover_document,
+        document.nom_document,
+      ]);
+    }
   }
 }
 

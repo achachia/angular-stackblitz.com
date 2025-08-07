@@ -8,8 +8,22 @@
   <div class="accueil-container">
     <h1 class="accueil-title">📚 Bienvenue dans votre bibliothèque</h1>
 
-    <div class="slider-block">
-      <h2 class="slider-title">Derniers Livres</h2>
+    <div class="slider-block" *ngIf="historiquesConsultations.length > 0">
+      <h2 class="slider-title">Derniers consultations</h2>
+      <div class="slider">
+        <div
+          class="card"
+          *ngFor="let item of historiquesConsultations"
+          (click)="selectDocumentHistorique(item)"
+        >
+          <img [src]="item.cover_document" [alt]="item.nom_document" />
+          <p>{{ item.nom_document }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="slider-block" *ngIf="lastLivres.length > 0">
+      <h2 class="slider-title">Derniers Livres ajoutés</h2>
       <div class="slider">
         <div
           class="card"
@@ -22,8 +36,8 @@
       </div>
     </div>
 
-    <div class="slider-block">
-      <h2 class="slider-title">Magazines Scientifiques</h2>
+    <div class="slider-block" *ngIf="lastMagazinesScience.length > 0">
+      <h2 class="slider-title">Derniers Magazines Scientifiques ajoutées</h2>
       <div class="slider">
         <div
           class="card"
@@ -36,8 +50,8 @@
       </div>
     </div>
 
-    <div class="slider-block">
-      <h2 class="slider-title">Magazines Informatiques</h2>
+    <div class="slider-block" *ngIf="lastMagazinesInformatique.length > 0">
+      <h2 class="slider-title">Derniers Magazines Informatiques ajoutées</h2>
       <div class="slider">
         <div
           class="card"
@@ -50,13 +64,69 @@
       </div>
     </div>
 
-    <div class="slider-block">
-      <h2 class="slider-title">Magazines Financiers</h2>
+    <div class="slider-block" *ngIf="lastMagazinesFinance.length > 0">
+      <h2 class="slider-title">Derniers Magazines Financiers ajoutées</h2>
       <div class="slider">
         <div
           class="card"
           *ngFor="let item of lastMagazinesFinance"
           (click)="selectMagazine(item, 'Finance', 'Finance')"
+        >
+          <img [src]="item.cover" [alt]="item.titre" />
+          <p>{{ item.titre }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="slider-block" *ngIf="lastMagazinesPsychologie.length > 0">
+      <h2 class="slider-title">Derniers Magazines Psychologie ajoutées</h2>
+      <div class="slider">
+        <div
+          class="card"
+          *ngFor="let item of lastMagazinesPsychologie"
+          (click)="selectMagazine(item, 'Psychologie', 'Psychologie')"
+        >
+          <img [src]="item.cover" [alt]="item.titre" />
+          <p>{{ item.titre }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="slider-block" *ngIf="lastMagazinesSante.length > 0">
+      <h2 class="slider-title">Derniers Magazines Sante ajoutées</h2>
+      <div class="slider">
+        <div
+          class="card"
+          *ngFor="let item of lastMagazinesSante"
+          (click)="selectMagazine(item, 'Sante', 'Sante')"
+        >
+          <img [src]="item.cover" [alt]="item.titre" />
+          <p>{{ item.titre }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="slider-block" *ngIf="lastMagazinesSante.length > 0">
+      <h2 class="slider-title">Derniers Magazines Business ajoutées</h2>
+      <div class="slider">
+        <div
+          class="card"
+          *ngFor="let item of lastMagazinesSante"
+          (click)="selectMagazine(item, 'Business', 'Business')"
+        >
+          <img [src]="item.cover" [alt]="item.titre" />
+          <p>{{ item.titre }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="slider-block" *ngIf="lastMagazinesActualite.length > 0">
+      <h2 class="slider-title">Derniers Magazines Actualite ajoutées</h2>
+      <div class="slider">
+        <div
+          class="card"
+          *ngFor="let item of lastMagazinesActualite"
+          (click)="selectMagazine(item, 'Actualite', 'Actualite')"
         >
           <img [src]="item.cover" [alt]="item.titre" />
           <p>{{ item.titre }}</p>
