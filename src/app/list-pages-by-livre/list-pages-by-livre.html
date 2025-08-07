@@ -66,7 +66,7 @@
     </div>
   </div>
 
-  <div class="slider-block" *ngIf="listRocommandationsLivre.length > 0 " >
+  <div class="slider-block" *ngIf="listRocommandationsLivre.length > 0 " style="margin-left : 10%;">
     <h2 class="slider-title">Recommandations pour vous</h2>
     <div class="slider">
       <div
@@ -93,7 +93,13 @@
 <div class="chatbot-popup" *ngIf="chatVisible">
   <div class="chatbot-header">
     <span class="chatbot-title">Assistant MEGABOOK</span>
-    <button class="chatbot-close-btn" (click)="chatVisible = false">✖</button>
+    <button
+      class="chatbot-close-btn"
+      (click)="chatVisible = false"
+      style="margin-right: 233px"
+    >
+      ✖
+    </button>
     <!-- Fenêtre popup du chatbot -->
     <div class="chatbot-model-select">
       <label for="model-select">Modèle :</label>
@@ -114,7 +120,54 @@
     class="chatbot-frame-popup"
     frameborder="0"
     allow="microphone; camera"
+    *ngIf="selectedModel === 'https://app.vectorshift.ai/chatbots/deployed/685c47a653eb91b72fc8d3e6' ||  selectedModel === 'https://app.vectorshift.ai/chatbots/deployed/685edb8a20d9549cc6bce368'"
   ></iframe>
+
+  <div
+    *ngIf="selectedModel === 'Custom-ai-deepseek-chat' || selectedModel === 'Custom-ai-gemini-2.0-flash' || selectedModel === 'Custom-ai-gemini-1.5-flash' || selectedModel === 'Custom-ai-grok-beta' || selectedModel === 'Custom-ai-claude-sonnet-4' || selectedModel === 'Custom-ai-o3-mini' "
+  >
+    <div *ngIf="isLoading" class="loader-container">
+      <div class="spinner"></div>
+    </div>
+
+    <!-- Slider scrollable messages -->
+    <div class="chat-messages">
+      <div
+        *ngFor="let msg of messages"
+        [ngClass]="{'message': true, 'bot': msg.from === 'bot', 'user': msg.from === 'user'}"
+      >
+        <img
+          *ngIf="msg.from === 'bot'"
+          src="https://i.postimg.cc/rygf5p76/chatbot.png"
+          alt="Bot"
+          class="avatar"
+        />
+        <img
+          *ngIf="msg.from === 'user'"
+          src="https://i.postimg.cc/6QMGrMCX/user.png"
+          alt="Bot"
+          class="avatar"
+        />
+        <!-- Ici on utilise innerHTML pour injecter msg.text en HTML -->
+        <div class="bubble" [innerHTML]="msg.text"></div>
+        <!-- <span *ngIf="msg.from === 'user'" class="avatar avatar-user">U</span>
+        <div class="timestamp">{{ msg.time }}</div> -->
+      </div>
+    </div>
+
+    <!-- Barre de saisie FIXE EN BAS -->
+    <form class="chat-input" (ngSubmit)="askQuestion()">
+      <input
+        type="text"
+        placeholder="Écrivez un message…"
+        autocomplete="off"
+        [(ngModel)]="questionUser"
+        name="userMessage"
+        required
+      />
+      <button type="submit">Envoyer</button>
+    </form>
+  </div>
 </div>
 
 <!-- Modal -->

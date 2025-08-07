@@ -122,6 +122,30 @@ export class ListPagesByLivre {
         'https://app.vectorshift.ai/chatbots/deployed/685edb8a20d9549cc6bce368',
       label: 'Gemini',
     },
+    {
+      value: 'Custom-ai-deepseek-chat',
+      label: 'Custom-ai (deepseek-chat)',
+    },
+    {
+      value: 'Custom-ai-gemini-2.0-flash',
+      label: 'Custom-ai (gemini-2.0-flash)',
+    },
+    {
+      value: 'Custom-ai-gemini-1.5-flash',
+      label: 'Custom-ai (gemini-1.5-flash)',
+    },
+    {
+      value: 'Custom-ai-grok-beta',
+      label: 'Custom-ai (grok-beta)',
+    },
+    {
+      value: 'Custom-ai-claude-sonnet-4',
+      label: 'Custom-ai (claude-sonnet-4)',
+    },
+    {
+      value: 'Custom-ai-o3-mini',
+      label: 'Custom-ai (o3-mini)',
+    },
   ];
 
   selectedModel =
@@ -186,9 +210,20 @@ export class ListPagesByLivre {
 
   model: string = 'deepseek-chat'; // deepseek-chat / gemini-2.0-flash / gemini-1.5-flash / grok-beta / claude-sonnet-4 / o3-mini
 
-  answer = '';
+  questionUser: any = '';
 
-  question: any = 'Donne moi la definition de mathematique';
+  messages: any[] = [
+    {
+      from: 'bot',
+      text:
+        'Bonjour ! Comment puis-je vous aider ?<span class="timestamp" >' +
+        this.getCurrentTime() +
+        '</span>',
+      time: new Date(),
+    },
+  ];
+
+  isLoading: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -316,8 +351,47 @@ export class ListPagesByLivre {
     });
   }
 
+  getCurrentTime(): string {
+    const now = new Date();
+    const h = now.getHours().toString().padStart(2, '0');
+    const m = now.getMinutes().toString().padStart(2, '0');
+    return `${h}:${m}`;
+  }
+
   async askQuestion() {
     try {
+      // console.log('this.questionUser = ', this.questionUser);
+
+      this.isLoading = true;
+
+      if (this.messages.length > 0) {
+        const filtreMessage = this.messages.filter((msg: any) => {
+          return msg.text === this.questionUser && msg.from === 'user';
+        });
+
+        if (filtreMessage.length <= 0) {
+          this.messages.push({
+            from: 'user',
+            text:
+              this.questionUser +
+              '<span class="timestamp" >' +
+              this.getCurrentTime() +
+              '</span>',
+            time: new Date(),
+          });
+        }
+      } else {
+        this.messages.push({
+          from: 'user',
+          text:
+            this.questionUser +
+            '<span class="timestamp" >' +
+            this.getCurrentTime() +
+            '</span>',
+          time: new Date(),
+        });
+      }
+
       await this.runDeepseekChat();
       // await this.runDeepseekReasoner();
     } catch (error: any) {
@@ -332,16 +406,32 @@ export class ListPagesByLivre {
     const puter = (window as any).puter;
     // this.deepseekChatOutput = '<h1>DeepSeek Chat:</h1>\n';
 
-    const chatResp = await puter.ai.chat(this.question, {
+    const chatResp = await puter.ai.chat(this.questionUser, {
       model: this.model,
       stream: true,
     });
+
+    // console.log('chatResp =', chatResp);
+
+    let objectMessage = { from: 'bot', text: '', time: new Date() };
+
     for await (const part of chatResp) {
       const text = part?.text?.replace(/\n/g, '<br>') ?? '';
-      // this.deepseekChatOutput += text;
+      objectMessage.text += text;
       // For Angular change detection to update view, we can trigger manually if needed.
       // await this.delay(10); // permet la mise à jour progressive (optionnel)
     }
+
+    objectMessage.text +=
+      '<span class="timestamp" >' +
+      this.getCurrentTime() +
+      ' (' +
+      this.model +
+      ')</span>';
+
+    this.messages.push(objectMessage);
+
+    this.isLoading = false;
   }
 
   async extractText() {
@@ -872,9 +962,18 @@ export class ListPagesByLivre {
   }
 
   onModelChange() {
-    this.chatbotUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(
-      this.selectedModel
-    );
+    // console.log('this.selectedModel =', this.selectedModel);
+
+    if (
+      this.selectedModel ===
+        'https://app.vectorshift.ai/chatbots/deployed/685c47a653eb91b72fc8d3e6' ||
+      this.selectedModel ===
+        'https://app.vectorshift.ai/chatbots/deployed/685edb8a20d9549cc6bce368'
+    ) {
+      this.chatbotUrlSafe = this.sanitizer.bypassSecurityTrustResourceUrl(
+        this.selectedModel
+      );
+    }
   }
 
   openListModal() {
