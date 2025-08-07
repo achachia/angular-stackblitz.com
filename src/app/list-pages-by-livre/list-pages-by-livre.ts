@@ -210,7 +210,7 @@ export class ListPagesByLivre {
 
   model: string = 'deepseek-chat'; // deepseek-chat / gemini-2.0-flash / gemini-1.5-flash / grok-beta / claude-sonnet-4 / o3-mini
 
-  questionUser: any = 'Donne moila definition de mathematique';
+  questionUser: any = '';
 
   messages: any[] = [
     {
@@ -530,6 +530,8 @@ export class ListPagesByLivre {
         this.note = this.note + response.ParsedText.ParsedResults[0].ParsedText;
 
         this.source = this.nom_livre + ' (livre)';
+
+        this.isListModalOpenEdit = true;
       } else {
         this.extractText();
       }

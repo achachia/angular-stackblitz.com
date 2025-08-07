@@ -471,6 +471,8 @@ export class ListPagesByNumeroMagazine {
         this.note = this.note + response.ParsedText.ParsedResults[0].ParsedText;
 
         this.source = this.nom_magazine + ' (magazine)';
+
+        this.isListModalOpenEdit = true;
       } else {
         this.extractText();
       }
