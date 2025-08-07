@@ -48,38 +48,38 @@
       alt="aperçu page {{ i + 1 }}"
     />
   </div>-->
+</div>
 
-  <!-- Slider de miniatures -->
-  <div class="thumbnail-slider">
-    <div
-      class="thumbnail-container"
-      *ngFor="let page of listPagesByLivre; let i = index"
-      [class.active]="i === currentIndex"
-      (click)="goToPage(i)"
-    >
-      <img
-        [src]="page.url"
-        class="thumbnail"
-        [alt]="'aperçu page ' + (i + 1)"
-      />
-      <div class="thumbnail-page-number">Page {{ i + 1 }}</div>
-    </div>
+<!-- Slider de miniatures -->
+<div class="thumbnail-slider">
+  <div
+    class="thumbnail-container"
+    *ngFor="let page of listPagesByLivre; let i = index"
+    [class.active]="i === currentIndex"
+    (click)="goToPage(i)"
+  >
+    <img [src]="page.url" class="thumbnail" [alt]="'aperçu page ' + (i + 1)" />
+    <div class="thumbnail-page-number">Page {{ i + 1 }}</div>
   </div>
+</div>
 
-  <div class="slider-block" *ngIf="listRocommandationsLivre.length > 0 " style="margin-left : 10%;">
-    <h2 class="slider-title">Recommandations pour vous</h2>
-    <div class="slider">
-      <div
-        class="card"
-        *ngFor="let livre of listRocommandationsLivre; let i = index"
-      >
-        <img [src]="livre.cover" [alt]="livre.titre" class="book-cover" />
-        <p>{{livre.titre}}</p>
-        <p class="book-theme">Thème: {{livre.keyTheme}}</p>
-        <button class="btn-view" (click)="selectLivreRecommande(livre)">
-          Voir le livre
-        </button>
-      </div>
+<div
+  class="slider-block"
+  *ngIf="listRocommandationsLivre.length > 0 "
+  style="margin-left: 3%"
+>
+  <h2 class="slider-title">Recommandations pour vous</h2>
+  <div class="slider">
+    <div
+      class="card"
+      *ngFor="let livre of listRocommandationsLivre; let i = index"
+    >
+      <img [src]="livre.cover" [alt]="livre.titre" class="book-cover" />
+      <p>{{livre.titre}}</p>
+      <p class="book-theme">Thème: {{livre.keyTheme}}</p>
+      <button class="btn-view" (click)="selectLivreRecommande(livre)">
+        Voir le livre
+      </button>
     </div>
   </div>
 </div>
