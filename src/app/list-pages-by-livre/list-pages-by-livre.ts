@@ -210,7 +210,7 @@ export class ListPagesByLivre {
 
   model: string = 'deepseek-chat'; // deepseek-chat / gemini-2.0-flash / gemini-1.5-flash / grok-beta / claude-sonnet-4 / o3-mini
 
-  questionUser: any = '';
+  questionUser: any = 'Donne moila definition de mathematique';
 
   messages: any[] = [
     {

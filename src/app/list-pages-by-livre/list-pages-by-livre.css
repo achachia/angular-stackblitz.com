@@ -672,49 +672,46 @@
 
 /******************************** Bot ***********************************************/
 
-.chat-container {
-  width: 100%;
-  max-width: 480px;
-  margin: 40px auto;
-  background: #fafbfc;
-  border-radius: 12px;
-  box-shadow: 0 6px 24px rgba(38, 50, 56, 0.1);
+/* Conteneur principal qui englobe les messages et la saisie */
+.parent-container {
   display: flex;
   flex-direction: column;
-  font-family: 'Segoe UI', Arial, sans-serif;
+  height: 80vh; /* ou une hauteur fixe pertinente */
+  max-width: 800px;
+  border-radius: 12px;
+  background: #fafbfc;
   border: 1px solid #e1e4e8;
+  overflow: hidden; /* évite débordements */
 }
 
-.chat-header {
-  display: flex;
-  align-items: center;
-  padding: 20px 18px 14px 18px;
-  border-bottom: 1px solid #ededed;
-  background: linear-gradient(90deg, #f4f7fe 0%, #edf2fc 100%);
-}
-
-.avatar-bot {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
+/* Zone de messages scrollable */
+.chat-messages {
+  flex: 1 1 auto; /* prend tout l’espace restant */
+  min-height: 0; /* important pour permettre le scroll */
+  overflow-y: auto; /* scroll vertical */
+  padding: 18px;
   background: #fff;
-  margin-right: 14px;
-  box-shadow: 0 2px 6px rgba(60, 80, 120, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-.chat-header h2 {
-  font-size: 1.15rem;
-  margin: 0;
-  font-weight: 600;
-  color: #333;
+/* Barre de saisie toujours visible en bas */
+.chat-input {
+  display: flex;
+  gap: 10px;
+  padding: 14px 18px;
+  border-top: 1px solid #ededed;
+  background: #f4f8fb;
+  /* Pas de position absolute/fixed ici - reste dans le flux flex */
 }
 
 .chat-messages {
-  flex: 1;
+  /* flex: 1;
   padding: 18px;
   overflow-y: auto;
   display: flex;
-  flex-direction: column;
+  flex-direction: column;*/
   gap: 14px;
   background: #fff;
 }

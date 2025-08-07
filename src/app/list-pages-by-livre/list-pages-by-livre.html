@@ -124,7 +124,13 @@
   ></iframe>
 
   <div
-    *ngIf="selectedModel === 'Custom-ai-deepseek-chat' || selectedModel === 'Custom-ai-gemini-2.0-flash' || selectedModel === 'Custom-ai-gemini-1.5-flash' || selectedModel === 'Custom-ai-grok-beta' || selectedModel === 'Custom-ai-claude-sonnet-4' || selectedModel === 'Custom-ai-o3-mini' "
+    class="parent-container"
+    *ngIf="selectedModel === 'Custom-ai-deepseek-chat' 
+          || selectedModel === 'Custom-ai-gemini-2.0-flash' 
+          || selectedModel === 'Custom-ai-gemini-1.5-flash' 
+          || selectedModel === 'Custom-ai-grok-beta' 
+          || selectedModel === 'Custom-ai-claude-sonnet-4' 
+          || selectedModel === 'Custom-ai-o3-mini'"
   >
     <div *ngIf="isLoading" class="loader-container">
       <div class="spinner"></div>
@@ -145,13 +151,10 @@
         <img
           *ngIf="msg.from === 'user'"
           src="https://i.postimg.cc/6QMGrMCX/user.png"
-          alt="Bot"
+          alt="User"
           class="avatar"
         />
-        <!-- Ici on utilise innerHTML pour injecter msg.text en HTML -->
         <div class="bubble" [innerHTML]="msg.text"></div>
-        <!-- <span *ngIf="msg.from === 'user'" class="avatar avatar-user">U</span>
-        <div class="timestamp">{{ msg.time }}</div> -->
       </div>
     </div>
 
