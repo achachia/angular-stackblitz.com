@@ -6,10 +6,7 @@
 </div>
 
 <div
-  class="magazine-grid"
-  style="margin-left: 25%; margin-right: 25%"
-  *ngIf="!isLoading"
->
+  class="magazine-grid"  *ngIf="!isLoading" [ngStyle]="getDynamicStyle()">
   <div class="magazine-card" *ngFor="let livre of favorites">
     <div class="cover-container">
       <img [src]="livre.cover" alt="{{ livre.titre }}" class="magazine-cover" />
@@ -78,10 +75,19 @@
         <i class="fas fa-book-open"></i> Lire ce numéro
       </button>
     </div>
+    <div
+      class="magazine-grid"
+      style="margin-left: 25%; margin-right: 25%"
+    ></div>
+    <div
+      class="magazine-grid"
+      style="margin-left: 25%; margin-right: 25%"
+    ></div>
+    <div
+      class="magazine-grid"
+      style="margin-left: 25%; margin-right: 25%"
+    ></div>
   </div>
-  <div class="magazine-grid" style="margin-left: 25%; margin-right: 25%"></div>
-  <div class="magazine-grid" style="margin-left: 25%; margin-right: 25%"></div>
-  <div class="magazine-grid" style="margin-left: 25%; margin-right: 25%"></div>
 </div>
 
 <div

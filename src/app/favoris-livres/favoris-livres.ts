@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { ActivatedRoute, Router, Routes } from '@angular/router';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MagazineService } from './../../api.service';
-import { NgIf, NgFor, NgClass } from '@angular/common';
+import { NgIf, NgFor, NgClass ,NgStyle} from '@angular/common';
 import {
   trigger,
   state,
@@ -15,7 +15,7 @@ import { AuthService } from '../../auth.service';
 
 @Component({
   selector: 'app-favoris-livres',
-  imports: [NgIf, NgFor, NgClass, Header],
+  imports: [NgIf, NgFor, NgClass, NgStyle, Header],
   templateUrl: './favoris-livres.html',
   styleUrl: './favoris-livres.css',
   animations: [
@@ -31,7 +31,10 @@ import { AuthService } from '../../auth.service';
     ]),
   ],
 })
-export class FavorisLivres {
+export class FavorisLivres implements OnInit{
+
+  largeurPage: number = 0;
+
   favorites: any[] = []; // ou charger depuis localStorage ou un service
 
   readonly radius = 26;
@@ -51,9 +54,34 @@ export class FavorisLivres {
     private authService: AuthService
   ) {}
 
+ 
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: Event) {
+    this.largeurPage = window.innerWidth;
+  }
+
+  getDynamicStyle() {
+    if (this.largeurPage > 820) {
+      return {
+        'margin-left': '25%',
+        'margin-right': '25%',
+        'margin-top': '10%'
+      };
+    } else {
+      return {        
+        'margin-top': '10%'
+      };
+    }
+  }
+
   ngOnInit() {
     // const fav = localStorage.getItem('favorites-livres');
     // this.favorites = fav ? JSON.parse(fav) : [];
+
+    this.largeurPage = window.innerWidth;
+
+    console.log('this.largeurPage =', this.largeurPage)
 
     this.getDataUser();
 

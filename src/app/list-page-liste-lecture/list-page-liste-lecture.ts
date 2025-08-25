@@ -274,7 +274,7 @@ export class ListPageListeLecture {
       this.curentPage = this.curentListe.pagesListe[this.currentIndex];
       return this.curentListe.pagesListe[this.currentIndex].url;
     } else {
-      return '';
+      return 'https://i.postimg.cc/g04kQFrv/Pngtree-colorful-loading-icon-5326551.png';
     }
   }
 

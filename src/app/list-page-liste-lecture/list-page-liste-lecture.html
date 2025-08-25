@@ -41,16 +41,23 @@
   </div>
 
   <!-- Slider de miniatures -->
-  <div class="thumbnail-slider">
-    <img
+  <div class="thumbnail-slider"  style="margin-bottom:10%">
+    <div
+      class="thumbnail-container"
       *ngFor="let page of curentListe.pagesListe; let i = index"
-      [src]="page.url"
       [class.active]="i === currentIndex"
       (click)="goToPage(i)"
-      class="thumbnail"
-      alt="aperçu page {{ i + 1 }}"
-    />
+    >
+      <img
+        [src]="page.url"
+        class="thumbnail"
+        [alt]="'aperçu page ' + (i + 1)"
+      />
+      <div class="thumbnail-page-number">Page {{ i + 1 }}</div>
+    </div>
   </div>
+
+
 
   <!-- Bouton flottant pour ouvrir -->
   <button class="chatbot-float-btn" (click)="chatVisible = !chatVisible">
@@ -97,5 +104,3 @@
   <p>Votre session a expiré.<br />Veuillez vous reconnecter pour continuer.</p>
   <button (click)="goToLogin()">Se connecter</button>
 </div>
-
-

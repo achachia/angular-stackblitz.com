@@ -223,6 +223,10 @@ export class ListPagesByLivre {
     },
   ];
 
+  histListObjectBots: any[] = [];
+
+  indexObjectBot = -1;
+
   isLoading: boolean = false;
 
   constructor(
@@ -310,6 +314,35 @@ export class ListPagesByLivre {
 
       /************************************************ */
 
+      const histMessagesBot = localStorage.getItem('historique-messages-bot');
+
+      if (histMessagesBot) {
+        const histMessagesBotJson = JSON.parse(histMessagesBot);
+
+        this.histListObjectBots = histMessagesBotJson;
+
+        const filtreMessagesBotLivre = histMessagesBotJson.filter(
+          (objectBot: any) => {
+            return (
+              objectBot.type === 'livre' && objectBot._id === this.livre_id
+            );
+          }
+        );
+
+        if (filtreMessagesBotLivre.length === 1) {
+          this.messages = filtreMessagesBotLivre[0].messages;
+          this.indexObjectBot = histMessagesBotJson.findIndex(
+            (objectBot: any) => {
+              return (
+                objectBot.type === 'livre' && objectBot._id === this.livre_id
+              );
+            }
+          );
+        }
+      }
+
+      /************************************************ */
+
       this.getListPagesByLivre();
 
       this.loadListeNotesApi();
@@ -358,6 +391,31 @@ export class ListPagesByLivre {
     return `${h}:${m}`;
   }
 
+  backupdataChatBot() {
+    if (this.indexObjectBot >= 0) {
+      this.histListObjectBots[this.indexObjectBot].messages = this.messages;
+    } else {
+      if (this.histListObjectBots.length > 0) {
+        this.indexObjectBot = this.histListObjectBots.length;
+      } else {
+        this.indexObjectBot = 0;
+      }
+
+      const histMessagesBot: any = {
+        type: 'livre',
+        _id: this.livre_id,
+        messages: this.messages,
+      };
+
+      this.histListObjectBots.push(histMessagesBot);
+    }
+
+    localStorage.setItem(
+      'historique-messages-bot',
+      JSON.stringify(this.histListObjectBots)
+    );
+  }
+
   async askQuestion() {
     try {
       // console.log('this.questionUser = ', this.questionUser);
@@ -379,6 +437,8 @@ export class ListPagesByLivre {
               '</span>',
             time: new Date(),
           });
+
+          this.backupdataChatBot();
         }
       } else {
         this.messages.push({
@@ -390,6 +450,8 @@ export class ListPagesByLivre {
             '</span>',
           time: new Date(),
         });
+
+        this.backupdataChatBot();
       }
 
       await this.runDeepseekChat();
@@ -430,6 +492,8 @@ export class ListPagesByLivre {
       ')</span>';
 
     this.messages.push(objectMessage);
+
+    this.backupdataChatBot();
 
     this.isLoading = false;
   }

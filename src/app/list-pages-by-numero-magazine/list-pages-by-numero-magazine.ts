@@ -135,7 +135,6 @@ export class ListPagesByNumeroMagazine {
       value: 'Custom-ai-o3-mini',
       label: 'Custom-ai (o3-mini)',
     },
-   
   ];
 
   selectedModel =
@@ -216,10 +215,17 @@ export class ListPagesByNumeroMagazine {
   messages: any[] = [
     {
       from: 'bot',
-      text: 'Bonjour ! Comment puis-je vous aider ?<span class="timestamp" >' +  this.getCurrentTime() + '</span>',
+      text:
+        'Bonjour ! Comment puis-je vous aider ?<span class="timestamp" >' +
+        this.getCurrentTime() +
+        '</span>',
       time: new Date(),
     },
   ];
+
+  histListObjectBots: any[] = [];
+
+  indexObjectBot = -1;
 
   isLoading: boolean = false;
 
@@ -315,6 +321,37 @@ export class ListPagesByNumeroMagazine {
       }
 
       /************************************************ */
+
+      const histMessagesBot = localStorage.getItem('historique-messages-bot');
+
+      if (histMessagesBot) {
+        const histMessagesBotJson = JSON.parse(histMessagesBot);
+
+        this.histListObjectBots = histMessagesBotJson;
+
+        const filtreeMessagesBotCycleMagazine = histMessagesBotJson.filter(
+          (objectBot: any) => {
+            return (
+              objectBot.type === 'magazine' &&
+              objectBot._id === this.cycle_magazine_id
+            );
+          }
+        );
+
+        if (filtreeMessagesBotCycleMagazine.length === 1) {
+          this.messages = filtreeMessagesBotCycleMagazine[0].messages;
+          this.indexObjectBot = histMessagesBotJson.findIndex(
+            (objectBot: any) => {
+              return (
+                objectBot.type === 'magazine' &&
+                objectBot._id === this.cycle_magazine_id
+              );
+            }
+          );
+        }
+      }
+
+      /************************************************ */
       this.getListPagesByCycleMagazine();
       this.loadListeNotesApi();
       this.getListRecomandationsMagazines();
@@ -361,6 +398,33 @@ export class ListPagesByNumeroMagazine {
     return `${h}:${m}`;
   }
 
+  backupdataChatBot() {
+    if (this.indexObjectBot >= 0) {
+      this.histListObjectBots[this.indexObjectBot].messages = this.messages;
+    } else {
+      if (this.histListObjectBots.length > 0) {
+        this.indexObjectBot = this.histListObjectBots.length;
+      } else {
+        this.indexObjectBot = 0;
+      }
+
+      const histMessagesBot: any = {
+        type: 'magazine',
+        _id: this.cycle_magazine_id,
+        messages: this.messages,
+      };
+
+      this.histListObjectBots.push(histMessagesBot);
+    }
+
+    localStorage.setItem(
+      'historique-messages-bot',
+      JSON.stringify(this.histListObjectBots)
+    );
+
+
+  }
+
   async askQuestion() {
     try {
       // console.log('this.questionUser = ', this.questionUser);
@@ -375,16 +439,30 @@ export class ListPagesByNumeroMagazine {
         if (filtreMessage.length <= 0) {
           this.messages.push({
             from: 'user',
-            text: this.questionUser + '<span class="timestamp" >' + this.getCurrentTime() + '</span>',
+            text:
+              this.questionUser +
+              '<span class="timestamp" >' +
+              this.getCurrentTime() +
+              '</span>',
             time: new Date(),
           });
+
+          this.backupdataChatBot();
         }
       } else {
         this.messages.push({
           from: 'user',
-          text: this.questionUser + '<span class="timestamp" >' + this.getCurrentTime() +'</span>',
+          text:
+            this.questionUser +
+            '<span class="timestamp" >' +
+            this.getCurrentTime() +
+            '</span>',
           time: new Date(),
         });
+
+        this.backupdataChatBot();
+
+      
       }
 
       await this.runDeepseekChat();
@@ -417,9 +495,16 @@ export class ListPagesByNumeroMagazine {
       // await this.delay(10); // permet la mise à jour progressive (optionnel)
     }
 
-    objectMessage.text += '<span class="timestamp" >' + this.getCurrentTime() +' (' +  this.model + ')</span>';
+    objectMessage.text +=
+      '<span class="timestamp" >' +
+      this.getCurrentTime() +
+      ' (' +
+      this.model +
+      ')</span>';
 
     this.messages.push(objectMessage);
+
+    this.backupdataChatBot();
 
     this.isLoading = false;
   }

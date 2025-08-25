@@ -5,11 +5,7 @@
   <div class="spinner"></div>
 </div>
 
-<div
-  class="magazine-grid"
-  style="margin-left: 25%; margin-right: 25%"
-  *ngIf="!isLoading"
->
+<div class="magazine-grid" *ngIf="!isLoading" [ngStyle]="getDynamicStyle()">
   <div class="magazine-card" *ngFor="let cycleMag of favorites">
     <div class="cover-container">
       <img
