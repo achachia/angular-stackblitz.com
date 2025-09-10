@@ -170,11 +170,13 @@ export class ListPagesByLivre {
 
   isListModalOpenTranslate: boolean = false;
 
+  textTranslat: any = '';
+
   langue_id: any = 'anglais';
 
   listsLangues: ListLangue[] = [
     { _id: 'francais', label: 'Francais' },
-    { _id: 'englais', label: 'Englais' },
+    { _id: 'anglais', label: 'Anglais' },
     { _id: 'arabe', label: 'Arabe' },
   ]; // Tableau qui contiendra tes listes
 
@@ -182,9 +184,13 @@ export class ListPagesByLivre {
 
   isLoadingTranslat: boolean = false;
 
-  note: any = '';
+  isListModalOpenSummarizingText: boolean = false;
 
-  textTranslat: any = '';
+  isLoadingSummarizingText: boolean = false;
+
+  summarizingText: any = '';
+
+  note: any = '';
 
   source: any = '';
 
@@ -735,6 +741,51 @@ export class ListPagesByLivre {
     this.updateDataListeNote();
   }
 
+  SummarizingTextByAi() {
+    this.isListModalOpenSummarizingText = true;
+
+    this.isLoadingSummarizingText = true;
+
+    this.runSummarizingTextChatAi();
+  }
+
+  closeListModalSummarizingText() {
+    this.isListModalOpenSummarizingText = false;
+  }
+
+  SummarizingTextForm() {}
+
+  async runSummarizingTextChatAi() {
+    const puter = (window as any).puter;
+    // this.deepseekChatOutput = '<h1>DeepSeek Chat:</h1>\n';
+    // + this.selectedListeLangue + ' : ' + this.note;
+
+    this.summarizingText = '';
+
+    const prompt =
+      "Veuillez lire le texte suivant et en résumer brièvement les points principaux. Concentrez-vous uniquement sur les thèmes, idées ou événements clés présentés. N'incluez aucune explication ou description supplémentaire en dehors du résumé lui-même. Voici le texte.[texte:" +
+      this.note +
+      '] ';
+
+    console.log('prompt = ', prompt);
+
+    const chatResp = await puter.ai.chat(prompt, {
+      model: this.model,
+      stream: true,
+    });
+
+    // console.log('chatResp =', chatResp);
+
+    for await (const part of chatResp) {
+      const text = part?.text?.replace(/\n/g, '<br>') ?? '';
+      this.summarizingText += text;
+      // For Angular change detection to update view, we can trigger manually if needed.
+      // await this.delay(10); // permet la mise à jour progressive (optionnel)
+    }
+
+    this.isLoadingSummarizingText = false;
+  }
+
   traductionTextByAi() {
     this.isListModalOpenTranslate = true;
   }
@@ -773,6 +824,8 @@ export class ListPagesByLivre {
     const puter = (window as any).puter;
     // this.deepseekChatOutput = '<h1>DeepSeek Chat:</h1>\n';
     // + this.selectedListeLangue + ' : ' + this.note;
+
+    this.textTranslat = '';
 
     const prompt =
       ' traduire ce texte en ' +

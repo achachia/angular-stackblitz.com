@@ -340,6 +340,14 @@
         >
           Traduire le texte
         </button>
+        <button
+          type="button"
+          (click)="SummarizingTextByAi()"
+          class="save-btn"
+          style="margin-left: 2%"
+        >
+          Résumer le texte
+        </button>
         <button type="button" class="cancel-btn" (click)="closeListModalEdit()">
           Annuler
         </button>
@@ -350,7 +358,7 @@
   </div>
 </div>
 
-<!-- Modal Translation Text-->
+<!-- Modal Translation Text Ai-->
 <div
   class="modal-backdrop"
   *ngIf="isListModalOpenTranslate"
@@ -437,6 +445,72 @@
     </form>
 
     <button class="close-btn" (click)="closeListModalTranslate()">
+      Fermer
+    </button>
+  </div>
+</div>
+
+<!-- Modal Resumé Text Ai-->
+<div
+  class="modal-backdrop"
+  *ngIf="isListModalOpenSummarizingText"
+  (click)="closeListModalSummarizingText()"
+>
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3 class="modal-title">Ajouter un résumé du texte</h3>
+
+    <div *ngIf="isLoadingSummarizingText" class="loader-container">
+      <div class="spinner"></div>
+    </div>
+
+    <form
+      (ngSubmit)="SummarizingTextForm()"
+      #listForm="ngForm"
+      *ngIf="!isLoadingSummarizingText"
+    >
+      <div class="form-group">
+        <label for="listName">Résumé&nbsp;:</label>
+        <!-- <textarea
+          id="note"
+          name="note"
+          [(ngModel)]="note"
+          required
+          minlength="3"
+          #nameInput="ngModel"
+          class="form-control"
+          rows="10"
+        ></textarea>-->
+        <angular-editor
+          [(ngModel)]="summarizingText"
+          [config]="config"
+          name="summarizingText"
+        ></angular-editor>
+      <!--  <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">
+            Le résumé est requise.
+          </div>
+        </div>-->
+      </div>
+
+      <div class="form-actions" style="margin-top: 2%">
+        <button type="submit" [disabled]="!listForm.valid" class="save-btn">
+          Enregistrer
+        </button>
+
+        <button
+          type="button"
+          class="cancel-btn"
+          (click)="closeListModalSummarizingText()"
+        >
+          Annuler
+        </button>
+      </div>
+    </form>
+
+    <button class="close-btn" (click)="closeListModalSummarizingText()">
       Fermer
     </button>
   </div>
