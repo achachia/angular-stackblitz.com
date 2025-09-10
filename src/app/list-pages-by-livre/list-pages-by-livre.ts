@@ -30,6 +30,11 @@ interface ListNote {
   notesListe: [];
 }
 
+interface ListLangue {
+  _id?: string;
+  label: string;
+}
+
 @Component({
   selector: 'app-list-pages-by-livre',
   imports: [
@@ -146,6 +151,10 @@ export class ListPagesByLivre {
       value: 'Custom-ai-o3-mini',
       label: 'Custom-ai (o3-mini)',
     },
+    {
+      value: 'Custom-ai-gpt-5-nano',
+      label: 'Custom-ai (gpt-5-nano)',
+    },
   ];
 
   selectedModel =
@@ -159,7 +168,23 @@ export class ListPagesByLivre {
 
   isListModalOpenEdit: boolean = false;
 
+  isListModalOpenTranslate: boolean = false;
+
+  langue_id: any = 'anglais';
+
+  listsLangues: ListLangue[] = [
+    { _id: 'francais', label: 'Francais' },
+    { _id: 'englais', label: 'Englais' },
+    { _id: 'arabe', label: 'Arabe' },
+  ]; // Tableau qui contiendra tes listes
+
+  selectedListeLangue: any = 'anglais';
+
+  isLoadingTranslat: boolean = false;
+
   note: any = '';
+
+  textTranslat: any = '';
 
   source: any = '';
 
@@ -708,6 +733,71 @@ export class ListPagesByLivre {
     console.log('this.selectedListeNote =', this.selectedListeNote);
 
     this.updateDataListeNote();
+  }
+
+  traductionTextByAi() {
+    this.isListModalOpenTranslate = true;
+  }
+
+  closeListModalTranslate() {
+    this.isListModalOpenTranslate = false;
+  }
+
+  translateTextOcrForm() {
+    /*this.selectedListeNote.notesListe.push({
+      note: this.note,
+      source: this.source,
+    });
+
+    console.log('this.selectedListeNote =', this.selectedListeNote);
+
+     this.updateDataListeNote(); */
+  }
+
+  onSelectLangueChange(event: Event) {
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    // Par exemple, retrouver l'objet ListNote sélectionné :
+    const selectedLangue = this.listsLangues.find(
+      (langue) => langue._id === selectedValue
+    );
+    if (selectedLangue) {
+      // Vous pouvez aussi mettre à jour d'autres propriétés selon vos besoins
+      console.log('selectedLangue affichées :', selectedLangue);
+      this.selectedListeLangue = selectedLangue;
+      this.isLoadingTranslat = true;
+      this.runTranslateTextChatAi();
+    }
+  }
+
+  async runTranslateTextChatAi() {
+    const puter = (window as any).puter;
+    // this.deepseekChatOutput = '<h1>DeepSeek Chat:</h1>\n';
+    // + this.selectedListeLangue + ' : ' + this.note;
+
+    const prompt =
+      ' traduire ce texte en ' +
+      this.selectedListeLangue._id +
+      ' : [translate:' +
+      this.note +
+      '] ';
+
+    console.log('prompt = ', prompt);
+
+    const chatResp = await puter.ai.chat(prompt, {
+      model: this.model,
+      stream: true,
+    });
+
+    // console.log('chatResp =', chatResp);
+
+    for await (const part of chatResp) {
+      const text = part?.text?.replace(/\n/g, '<br>') ?? '';
+      this.textTranslat += text;
+      // For Angular change detection to update view, we can trigger manually if needed.
+      // await this.delay(10); // permet la mise à jour progressive (optionnel)
+    }
+
+    this.isLoadingTranslat = false;
   }
 
   // Annuler le suivi ocr (fermer le modal)

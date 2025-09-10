@@ -332,6 +332,14 @@
         >
           Continuer OCR
         </button>
+        <button
+          type="button"
+          (click)="traductionTextByAi()"
+          class="save-btn"
+          style="margin-left: 2%"
+        >
+          Traduire le texte
+        </button>
         <button type="button" class="cancel-btn" (click)="closeListModalEdit()">
           Annuler
         </button>
@@ -339,6 +347,98 @@
     </form>
 
     <button class="close-btn" (click)="closeListModalEdit()">Fermer</button>
+  </div>
+</div>
+
+<!-- Modal Translation Text-->
+<div
+  class="modal-backdrop"
+  *ngIf="isListModalOpenTranslate"
+  (click)="closeListModalTranslate()"
+>
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3 class="modal-title">Ajouter une translation</h3>
+
+    <div *ngIf="isLoadingTranslat" class="loader-container">
+      <div class="spinner"></div>
+    </div>
+
+    <form
+      (ngSubmit)="translateTextOcrForm()"
+      #listForm="ngForm"
+      *ngIf="!isLoadingTranslat"
+    >
+      <div class="form-group">
+        <label for="LangueIdSelect">La langue :</label>
+        <select
+          id="LangueIdSelect"
+          name="LangueIdSelect"
+          [(ngModel)]="langue_id"
+          required
+          #nameInput="ngModel"
+          class="form-control"
+          (change)=" onSelectLangueChange($event)"
+        >
+          <option value="" disabled selected>Sélectionnez une langue</option>
+          <option *ngFor="let langue of listsLangues" [value]="langue._id">
+            {{ langue.label }}
+          </option>
+        </select>
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">
+            La langue est requise.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="listName">Translation&nbsp;:</label>
+        <!-- <textarea
+          id="note"
+          name="note"
+          [(ngModel)]="note"
+          required
+          minlength="3"
+          #nameInput="ngModel"
+          class="form-control"
+          rows="10"
+        ></textarea>-->
+        <angular-editor
+          [(ngModel)]="textTranslat"
+          [config]="config"
+          name="textTranslat"
+        ></angular-editor>
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">
+            La traduction est requise.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions" style="margin-top: 2%">
+        <button type="submit" [disabled]="!listForm.valid" class="save-btn">
+          Enregistrer
+        </button>
+
+        <button
+          type="button"
+          class="cancel-btn"
+          (click)="closeListModalTranslate()"
+        >
+          Annuler
+        </button>
+      </div>
+    </form>
+
+    <button class="close-btn" (click)="closeListModalTranslate()">
+      Fermer
+    </button>
   </div>
 </div>
 

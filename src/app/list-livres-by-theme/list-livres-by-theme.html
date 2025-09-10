@@ -27,7 +27,7 @@
   </div>
 
   <!-- Filters -->
-  <div class="filters"  *ngIf="listLivres.length > 0">
+  <div class="filters" *ngIf="listLivres.length > 0">
     <!-- Filtres par année -->
     <select
       [(ngModel)]="selectedPeriode"
@@ -46,7 +46,7 @@
     </select>
   </div>
 
-  <div class="magazine-grid"  *ngIf="listLivres.length > 0">
+  <div class="magazine-grid" *ngIf="listLivres.length > 0">
     <div class="magazine-card" *ngFor="let livre of listLivres">
       <div class="cover-container">
         <img
@@ -81,6 +81,14 @@
         </h2>
         <p class="magazine-type">
           <i class="fas fa-tag"></i> Année : <strong>{{ livre.year }}</strong>
+        </p>
+        <p class="magazine-type">
+          <i class="fas fa-tag"></i> Auteur :
+          <strong>{{ livre.auteur }}</strong>
+        </p>
+        <p class="magazine-type">
+          <i class="fas fa-tag"></i> Langue :
+          <strong>{{ livre.langue }}</strong>
         </p>
         <p class="magazine-pages">
           <i class="fas fa-file-alt"></i> {{ livre.nbr_pages }} pages
@@ -120,9 +128,18 @@
         </button>
       </div>
     </div>
-    <div class="magazine-grid" style="margin-left : 25%;margin-right :25%"  ></div>
-    <div class="magazine-grid" style="margin-left : 25%;margin-right :25%"  ></div>
-    <div class="magazine-grid" style="margin-left : 25%;margin-right :25%"  ></div>
+    <div
+      class="magazine-grid"
+      style="margin-left: 25%; margin-right: 25%"
+    ></div>
+    <div
+      class="magazine-grid"
+      style="margin-left: 25%; margin-right: 25%"
+    ></div>
+    <div
+      class="magazine-grid"
+      style="margin-left: 25%; margin-right: 25%"
+    ></div>
   </div>
 </div>
 
