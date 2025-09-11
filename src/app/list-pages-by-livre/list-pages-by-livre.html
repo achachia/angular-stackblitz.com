@@ -18,6 +18,9 @@
           📋 Associer à une liste (Pages)
         </li>
         <li (click)="getOCRPage(); menuOpen = false">📋 Récupérer le OCR</li>
+        <li (click)="getTranslatePage(); menuOpen = false">
+          📋 Afficher la traduction
+        </li>
       </ul>
     </div>
   </div>
@@ -485,7 +488,7 @@
           [config]="config"
           name="summarizingText"
         ></angular-editor>
-      <!--  <div
+        <!--  <div
           *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
           class="validation-message"
         >
@@ -584,5 +587,21 @@
     </form>
 
     <button class="close-btn" (click)="closeFormModalAddListe()">Fermer</button>
+  </div>
+</div>
+
+<div
+  class="modal-backdrop"
+  *ngIf="isShowTranslationModalPage"
+  (click)="closeShowTranslationModalPage()"
+>
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3 class="modal-form-title">La traduction</h3>
+
+    <p>{{translatePageText}}</p>
+
+    <button class="close-btn" (click)="closeShowTranslationModalPage()">
+      Fermer
+    </button>
   </div>
 </div>

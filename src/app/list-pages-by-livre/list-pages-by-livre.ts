@@ -175,6 +175,7 @@ export class ListPagesByLivre {
   langue_id: any = 'anglais';
 
   listsLangues: ListLangue[] = [
+    { _id: '', label: '' },
     { _id: 'francais', label: 'Francais' },
     { _id: 'anglais', label: 'Anglais' },
     { _id: 'arabe', label: 'Arabe' },
@@ -183,6 +184,10 @@ export class ListPagesByLivre {
   selectedListeLangue: any = 'anglais';
 
   isLoadingTranslat: boolean = false;
+
+  isShowTranslationModalPage: boolean = false;
+
+  translatePageText = '';
 
   isListModalOpenSummarizingText: boolean = false;
 
@@ -634,6 +639,17 @@ export class ListPagesByLivre {
       //console.log('this.magazines =', this.magazines)
 
       // alert(response.reponse)
+    },  (error) => {
+      // Ici, tu interceptes les erreurs réseau ou serveur
+      console.error(error);
+      if (
+        error.error.msg === 'token_not_valid' ||
+        error.error.msg === 'token_required'
+      ) {
+        this.showSessionExpiredModa = true;
+      }
+      this.extractText();
+      // this.errorMessage = "Impossible d'accéder au service. Veuillez vérifier votre connexion ou réessayer plus tard.";
     });
   }
 
@@ -788,6 +804,8 @@ export class ListPagesByLivre {
 
   traductionTextByAi() {
     this.isListModalOpenTranslate = true;
+    this.isLoadingTranslat = true;
+    this.runTranslateTextChatAi();
   }
 
   closeListModalTranslate() {
@@ -795,14 +813,22 @@ export class ListPagesByLivre {
   }
 
   translateTextOcrForm() {
-    /*this.selectedListeNote.notesListe.push({
-      note: this.note,
-      source: this.source,
-    });
+    const _token = this.authService.getTokenStorage;
+    const dataPage: any = {
+      page_id: this.listPagesByLivre[this.currentIndex]._id,
+      token: _token,
+      traductionText: this.textTranslat,
+    };
 
-    console.log('this.selectedListeNote =', this.selectedListeNote);
+    this.magazineService
+      .updateDataPageByLivre(dataPage)
+      .subscribe((data: any) => {
+        if (data.reponse) {
+          this.showToast(`La traduction à été bien enregistré`);
 
-     this.updateDataListeNote(); */
+          this.translatePageText = this.textTranslat;
+        }
+      });
   }
 
   onSelectLangueChange(event: Event) {
@@ -851,6 +877,21 @@ export class ListPagesByLivre {
     }
 
     this.isLoadingTranslat = false;
+  }
+
+  getTranslatePage() {
+    if (this.listPagesByLivre[this.currentIndex].traductionText && this.listPagesByLivre[this.currentIndex].traductionText != '') {
+      this.isShowTranslationModalPage = true;
+
+      this.translatePageText =
+        this.listPagesByLivre[this.currentIndex].traductionText;
+    } else {
+      this.showToast(`Aucune traduction à été trouvé`);
+    }
+  }
+
+  closeShowTranslationModalPage() {
+    this.isShowTranslationModalPage = false;
   }
 
   // Annuler le suivi ocr (fermer le modal)

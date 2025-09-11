@@ -65,19 +65,19 @@ export class MagazineService {
   }
 
   getListRecomandationsLivres(infos: any): Observable<any[]> {
-    const body = {token : infos.token};
+    const body = { token: infos.token };
     const Url = this.apiUrl + '/getListRecommandationsLectureLivre';
     return this.http.post<any[]>(Url, body);
   }
 
   getListRecomandationsMagazines(infos: any): Observable<any[]> {
-    const body = {token : infos.token, keyTheme: infos.keyTheme};
+    const body = { token: infos.token, keyTheme: infos.keyTheme };
     const Url = this.apiUrl + '/getListRecommandationsLectureMagazine';
     return this.http.post<any[]>(Url, body);
   }
 
   getListHistoriquesConsultation(infos: any): Observable<any[]> {
-    const body = {token : infos.token};
+    const body = { token: infos.token };
     const Url = this.apiUrl + '/getListHistoriqueNavigationLecture';
     return this.http.post<any[]>(Url, body);
   }
@@ -127,6 +127,12 @@ export class MagazineService {
   listLivresByTheme(keyTheme: any): Observable<any[]> {
     const body = { keyTheme: keyTheme };
     const Url = this.apiUrl + '/listLivresBytheme';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  updateDataPageByLivre(dataPage: any): Observable<any[]> {
+    const body = { dataPage };
+    const Url = this.apiUrl + '/updateDataPageByLivre';
     return this.http.post<any[]>(Url, body);
   }
 
