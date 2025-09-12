@@ -47,7 +47,7 @@
   </div>
 
   <div class="magazine-grid" *ngIf="listLivres.length > 0">
-    <div class="magazine-card" *ngFor="let livre of listLivres">
+    <div class="magazine-card" *ngFor="let livre of listLivres; let i = index">
       <div class="cover-container">
         <img
           [src]="livre.cover"
@@ -123,9 +123,29 @@
           <div class="progress-text">{{ getProgress(livre.token) }}%</div>
         </div>
 
-        <button class="btn-read" (click)="selectLivre(livre)">
-          <i class="fas fa-book-open"></i> Lire ce numéro
+        <button class="btn-read" (click)="selectLivre(i, livre)">
+          <i class="fas fa-book-open"></i> Actions
         </button>
+      </div>
+      <div *ngIf="livre.traductionEnCours" class="progress-container">
+        <label>Taux progression de la traduction :</label>
+        <div class="progress-bar">
+          <div
+            class="progress-bar-fill"
+            [style.width.%]="livre.tauxPagesTranslate"
+          ></div>
+        </div>
+        <span>{{ livre.tauxPagesTranslate }}%</span>
+      </div>
+      <div *ngIf="livre.traductionEnCours" class="progress-container">
+        <label>Progression de la traduction :</label>
+        <div class="progress-bar">
+          <div
+            class="progress-bar-fill"
+            [style.width.%]="livre.progressionTraduction"
+          ></div>
+        </div>
+        <span>{{ livre.progressionTraduction }}%</span>
       </div>
     </div>
     <div
@@ -172,6 +192,10 @@
     <i [class]="isFavori(selectedLivre) ? 'fas fa-star' : 'far fa-star'"></i>
     {{ isFavori(selectedLivre) ? 'Retirer d\'une liste(Livres)' : 'Ajouter à une
     liste (Livres)' }}
+  </button>
+  <button (click)="actionTranslateLivre()">
+    <i class="fas fa-book-open"></i>
+    Traduire le livre
   </button>
   <button class="btn-cancel" (click)="closeActionSheet()">
     <i class="fas fa-times"></i> Annuler

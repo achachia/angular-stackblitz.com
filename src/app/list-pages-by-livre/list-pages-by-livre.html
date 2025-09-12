@@ -598,7 +598,7 @@
   <div class="modal-content" (click)="$event.stopPropagation()">
     <h3 class="modal-form-title">La traduction</h3>
 
-    <p>{{translatePageText}}</p>
+    <p [innerHTML]="translatePageText"></p>
 
     <button class="close-btn" (click)="closeShowTranslationModalPage()">
       Fermer

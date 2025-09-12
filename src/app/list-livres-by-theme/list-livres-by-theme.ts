@@ -49,6 +49,12 @@ export class ListLivresByTheme {
 
   listLivresTemp: any[] = [];
 
+  listPagesByLivreSelected: any[] = [];
+
+  progressionTraduction: number = 0; // En pourcentage (0 à 100)
+
+  traductionEnCours: boolean = false;
+
   periodes: number[] = [];
 
   types: string[] = [];
@@ -66,6 +72,8 @@ export class ListLivresByTheme {
   readonly circumference = 2 * Math.PI * this.radius;
 
   selectedLivre: any = null;
+
+  selectIndex: number = 0;
 
   isListModalOpen = false;
 
@@ -220,6 +228,12 @@ export class ListLivresByTheme {
 
         console.log('this.listLivres =', this.listLivres);
 
+        this.listLivres.forEach((livre, index) => {
+          livre.traductionEnCours = false;
+
+          livre.progressionTraduction = 0;
+        });
+
         this.listLivresTemp = [...this.listLivres];
 
         this.periodes = [
@@ -305,8 +319,9 @@ export class ListLivresByTheme {
     }
   }
 
-  selectLivre(livre: any) {
+  selectLivre(index: number, livre: any) {
     this.selectedLivre = livre;
+    this.selectIndex = index;
   }
 
   applyFiltersType() {}
@@ -375,4 +390,168 @@ export class ListLivresByTheme {
       this.toastMessage = '';
     }, duration);
   }
+
+  /******************************************************************** */
+
+  async actionTranslateLivre() {
+    await this.loadPuterScript();
+  }
+
+  // Chargement dynamique du script Puter
+  loadPuterScript(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      if (document.getElementById('puterjs')) {
+        resolve();
+        return;
+      }
+      const script = document.createElement('script');
+      script.id = 'puterjs';
+      script.src = 'https://js.puter.com/v2/';
+      script.async = true;
+      script.onload = () => resolve();
+      script.onerror = () =>
+        reject(new Error('Chargement du script Puter échoué'));
+      document.body.appendChild(script);
+      this.getListPagesByLivre();
+    });
+  }
+
+  getListPagesByLivre() {
+    this.magazineService
+      .listPagesByLivre(this.selectedLivre._id)
+      .subscribe((response: any) => {
+        console.log('Réponse JSON complète:', response);
+        this.listPagesByLivreSelected = response.listPageByLivre; // si la réponse EST directement un tableau de magazines
+
+        this.listPagesByLivreSelected = response.listPageByLivre.filter(
+          (page: any) =>
+            !page.traductionText || page.traductionText.trim() == ''
+        );
+
+        this.listLivres[this.selectIndex].countPagesTranslate = 0;
+
+        this.listLivres[this.selectIndex].countPagesTranslate =
+          response.listPageByLivre.filter(
+            (page: any) =>
+              page.traductionText && page.traductionText.trim() != ''
+          ).length;
+
+        this.listLivres[this.selectIndex].tauxPagesTranslate = Math.round(
+          (this.listLivres[this.selectIndex].countPagesTranslate /
+            this.listPagesByLivreSelected.length) *
+            100
+        );
+
+        this.traductionEnCours = true;
+
+        this.listLivres[this.selectIndex].traductionEnCours =
+          this.traductionEnCours;
+
+        this.closeActionSheet();
+
+        this.extractText(0);
+
+        // console.log('this.listPagesByLivre =', this.listPagesByLivre);
+
+        // alert(response.reponse)
+      });
+  }
+
+  async extractText(currentIndex: number) {
+    console.log('index-page = ', currentIndex);
+
+    if (!(window as any).puter) {
+      // this.result =   "Le script Puter n'est pas encore chargé. Veuillez essayer dans un instant.";
+      return;
+    }
+
+    // this.result = 'Extraction en cours...';
+
+    try {
+      const puter = (window as any).puter;
+      // Appel à img2txt avec URL de l'image
+      const texte = await puter.ai.img2txt(
+        this.listPagesByLivreSelected[currentIndex].url
+      );
+
+      this.runTranslateTextChatAi(currentIndex, texte);
+    } catch (error: any) {
+      // this.result =  "Erreur lors de l'extraction du texte : " + (error.message || error);
+    }
+  }
+
+  async runTranslateTextChatAi(currentIndex: number, _text: string) {
+    const puter = (window as any).puter;
+    // this.deepseekChatOutput = '<h1>DeepSeek Chat:</h1>\n';
+    // + this.selectedListeLangue + ' : ' + this.note;
+
+    let _model: string = 'deepseek-chat'; // deepseek-chat / gemini-2.0-flash / gemini-1.5-flash / grok-beta / claude-sonnet-4 / o3-mini
+
+    let selectedListeLangue: string = 'francais'; // francais
+
+    let textTranslat: string = '';
+
+    const prompt =
+      ' traduire ce texte en ' +
+      selectedListeLangue +
+      ' : [translate:' +
+      _text +
+      '] ';
+
+    console.log('prompt = ', prompt);
+
+    const chatResp = await puter.ai.chat(prompt, {
+      model: _model,
+      stream: true,
+    });
+
+    // console.log('chatResp =', chatResp);
+
+    for await (const part of chatResp) {
+      const text = part?.text?.replace(/\n/g, '<br>') ?? '';
+      textTranslat += text;
+      // For Angular change detection to update view, we can trigger manually if needed.
+      // await this.delay(10); // permet la mise à jour progressive (optionnel)
+    }
+
+    this.translateTextOcrForm(currentIndex, textTranslat);
+  }
+
+  translateTextOcrForm(currentIndex: number, textTranslate: string) {
+    const _token = this.authService.getTokenStorage;
+    const dataPage: any = {
+      page_id: this.listPagesByLivreSelected[currentIndex]._id,
+      token: _token,
+      traductionText: textTranslate,
+    };
+
+    this.magazineService
+      .updateDataPageByLivre(dataPage)
+      .subscribe((data: any) => {
+        if (data.reponse) {
+          currentIndex++;
+          this.progressionTraduction = Math.round(
+            (currentIndex / this.listPagesByLivreSelected.length) * 100
+          );
+          // Eventuellement, désactiver traductionEnCours à la fin
+          if (this.progressionTraduction === 100) {
+            this.traductionEnCours = false;
+          }
+
+          this.listLivres[this.selectIndex].progressionTraduction =
+            this.progressionTraduction;
+
+          this.listLivres[this.selectIndex].traductionEnCours =
+            this.traductionEnCours;
+
+          console.log('textTranslat =', textTranslate);
+
+          if (currentIndex < this.listPagesByLivreSelected.length) {
+            this.extractText(currentIndex);
+          }
+        }
+      });
+  }
+
+  /******************************************************************** */
 }
