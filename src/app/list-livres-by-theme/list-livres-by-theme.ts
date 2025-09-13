@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ActivatedRoute, Router, Routes } from '@angular/router';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { MagazineService } from './../../api.service';
-import { NgIf, NgFor } from '@angular/common';
+import { NgIf, NgFor, NgClass } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import {
   trigger,
@@ -24,7 +24,7 @@ interface List {
 
 @Component({
   selector: 'app-list-livres-by-theme',
-  imports: [NgIf, NgFor, FormsModule, Header],
+  imports: [NgIf, NgFor, NgClass, FormsModule, Header],
   templateUrl: './list-livres-by-theme.html',
   styleUrl: './list-livres-by-theme.css',
   animations: [
@@ -36,6 +36,27 @@ interface List {
       ]),
       transition('* => void', [
         animate('200ms', style({ opacity: 0, transform: 'translateY(-20px)' })),
+      ]),
+    ]),
+    trigger('fadeImage', [
+      transition(':enter', [
+        style({ opacity: 0 }),
+        animate('300ms ease-in', style({ opacity: 1 })),
+      ]),
+    ]),
+    trigger('fadeInOut', [
+      transition(':enter', [
+        style({ opacity: 0, transform: 'translateY(-20px)' }),
+        animate(
+          '300ms ease-out',
+          style({ opacity: 1, transform: 'translateY(0)' })
+        ),
+      ]),
+      transition(':leave', [
+        animate(
+          '300ms ease-in',
+          style({ opacity: 0, transform: 'translateY(-20px)' })
+        ),
       ]),
     ]),
   ],
@@ -80,6 +101,8 @@ export class ListLivresByTheme {
   listsLectureLivres: List[] = []; // Tableau qui contiendra tes listes
 
   toastMessage = '';
+
+  toastType: 'success' | 'error' | 'warning' = 'success';
 
   showSessionExpiredModa: any = false;
 
@@ -423,9 +446,16 @@ export class ListLivresByTheme {
         console.log('Réponse JSON complète:', response);
         this.listPagesByLivreSelected = response.listPageByLivre; // si la réponse EST directement un tableau de magazines
 
+        const countAllPages = response.listPageByLivre.length;
+
         this.listPagesByLivreSelected = response.listPageByLivre.filter(
           (page: any) =>
             !page.traductionText || page.traductionText.trim() == ''
+        );
+
+        console.log(
+          'this.listPagesByLivreSelected.length non-traduit= ',
+          this.listPagesByLivreSelected.length
         );
 
         this.listLivres[this.selectIndex].countPagesTranslate = 0;
@@ -436,9 +466,14 @@ export class ListLivresByTheme {
               page.traductionText && page.traductionText.trim() != ''
           ).length;
 
+        console.log(
+          'this.listLivres[this.selectIndex].countPagesTranslate -traduit= ',
+          this.listLivres[this.selectIndex].countPagesTranslate
+        );
+
         this.listLivres[this.selectIndex].tauxPagesTranslate = Math.round(
           (this.listLivres[this.selectIndex].countPagesTranslate /
-            this.listPagesByLivreSelected.length) *
+            countAllPages) *
             100
         );
 
@@ -475,8 +510,12 @@ export class ListLivresByTheme {
       );
 
       this.runTranslateTextChatAi(currentIndex, texte);
-    } catch (error: any) {
-      // this.result =  "Erreur lors de l'extraction du texte : " + (error.message || error);
+    } catch (objectError: any) {
+      console.log('error.message =', objectError.error.message);
+      const result =
+        "Erreur lors de l'extraction du texte : " + objectError.error.message;
+
+      this.showToastCustom(result, 'error', 4000);
     }
   }
 
@@ -554,4 +593,16 @@ export class ListLivresByTheme {
   }
 
   /******************************************************************** */
+
+  showToastCustom(
+    message: string,
+    type: 'success' | 'error' | 'warning' = 'success',
+    duration: number = 3000
+  ) {
+    this.toastMessage = message;
+    this.toastType = type;
+    setTimeout(() => {
+      this.toastMessage = '';
+    }, duration);
+  }
 }

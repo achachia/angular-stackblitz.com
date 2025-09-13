@@ -128,7 +128,7 @@
         </button>
       </div>
       <div *ngIf="livre.traductionEnCours" class="progress-container">
-        <label>Taux progression de la traduction :</label>
+        <label>Taux progression de la traduction globale :</label>
         <div class="progress-bar">
           <div
             class="progress-bar-fill"
@@ -138,7 +138,7 @@
         <span>{{ livre.tauxPagesTranslate }}%</span>
       </div>
       <div *ngIf="livre.traductionEnCours" class="progress-container">
-        <label>Progression de la traduction :</label>
+        <label>Progression de la traduction en cours :</label>
         <div class="progress-bar">
           <div
             class="progress-bar-fill"
@@ -228,4 +228,13 @@
   <h2>Session expirée</h2>
   <p>Votre session a expiré.<br />Veuillez vous reconnecter pour continuer.</p>
   <button (click)="goToLogin()">Se connecter</button>
+</div>
+
+<div
+  class="toast-notification"
+  *ngIf="toastMessage"
+  [ngClass]="['toast-' + toastType]"
+  [@fadeInOut]
+>
+  {{ toastMessage }}
 </div>
