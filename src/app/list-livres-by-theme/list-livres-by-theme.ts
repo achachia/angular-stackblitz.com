@@ -453,10 +453,10 @@ export class ListLivresByTheme {
             !page.traductionText || page.traductionText.trim() == ''
         );
 
-        console.log(
+        /*console.log(
           'this.listPagesByLivreSelected.length non-traduit= ',
           this.listPagesByLivreSelected.length
-        );
+        );*/
 
         this.listLivres[this.selectIndex].countPagesTranslate = 0;
 
@@ -466,10 +466,10 @@ export class ListLivresByTheme {
               page.traductionText && page.traductionText.trim() != ''
           ).length;
 
-        console.log(
+        /* console.log(
           'this.listLivres[this.selectIndex].countPagesTranslate -traduit= ',
           this.listLivres[this.selectIndex].countPagesTranslate
-        );
+        );*/
 
         this.listLivres[this.selectIndex].tauxPagesTranslate = Math.round(
           (this.listLivres[this.selectIndex].countPagesTranslate /
@@ -584,6 +584,12 @@ export class ListLivresByTheme {
             this.traductionEnCours;
 
           console.log('textTranslat =', textTranslate);
+
+          this.showToastCustom(
+            'currentIndex =' + currentIndex,
+            'success',
+            4000
+          );
 
           if (currentIndex < this.listPagesByLivreSelected.length) {
             this.extractText(currentIndex);
