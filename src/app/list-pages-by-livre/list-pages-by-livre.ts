@@ -1180,6 +1180,65 @@ export class ListPagesByLivre {
     }
   }
 
+  nextPageTranslate() {
+    if (this.currentIndex < this.listPagesByLivre.length - 1) {
+      this.currentIndex++;
+
+      /********************************************************************* */
+
+      this.hist_nav_json[this.indexLivreHistNav].currentIndex =
+        this.currentIndex;
+      this.hist_nav_json[this.indexLivreHistNav].date = new Date();
+
+      if (
+        this.hist_nav_json[this.indexLivreHistNav].currentIndexMax <
+        this.currentIndex
+      ) {
+        this.hist_nav_json[this.indexLivreHistNav].currentIndexMax =
+          this.currentIndex;
+      }
+
+      localStorage.setItem(
+        'historique-navigation-livres',
+        JSON.stringify(this.hist_nav_json)
+      );
+
+      /********************************************************************* */
+
+      this.getTranslatePage();
+    }
+  }
+
+  prevPageTranslate() {
+    if (this.currentIndex > 0) {
+      this.currentIndex--;
+
+      /********************************************************************* */
+
+      this.hist_nav_json[this.indexLivreHistNav].currentIndex =
+        this.currentIndex;
+
+      this.hist_nav_json[this.indexLivreHistNav].date = new Date();
+
+      if (
+        this.hist_nav_json[this.indexLivreHistNav].currentIndexMax <
+        this.currentIndex
+      ) {
+        this.hist_nav_json[this.indexLivreHistNav].currentIndexMax =
+          this.currentIndex;
+      }
+
+      localStorage.setItem(
+        'historique-navigation-livres',
+        JSON.stringify(this.hist_nav_json)
+      );
+
+      this.getTranslatePage();
+
+      /********************************************************************* */
+    }
+  }
+
   goToPage(index: number) {
     this.currentIndex = index;
   }

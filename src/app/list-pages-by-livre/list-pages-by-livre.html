@@ -600,8 +600,33 @@
 
     <p [innerHTML]="translatePageText"></p>
 
-    <button class="close-btn" (click)="closeShowTranslationModalPage()">
-      Fermer
-    </button>
+    <div class="form-actions" style="margin-top: 2%">
+      <button
+        type="button"
+        (click)="prevPageTranslate()"
+        class="save-btn"
+        style="margin-left: 2%"
+      >
+        <-- Précedant
+      </button>
+
+      <button
+        type="button"
+        (click)="nextPageTranslate()"
+        class="save-btn"
+        style="margin-left: 2%"
+      >
+        Suivant -->
+      </button>
+
+      <button
+        type="button"
+        (click)="closeShowTranslationModalPage()"
+        class="close-btn"
+        style="margin-left: 2%"
+      >
+        Fermer
+      </button>
+    </div>
   </div>
 </div>
