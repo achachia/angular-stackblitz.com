@@ -76,6 +76,8 @@ export class ListLivresByTheme {
 
   traductionEnCours: boolean = false;
 
+  countAllPages: number = 0;
+
   periodes: number[] = [];
 
   types: string[] = [];
@@ -446,7 +448,7 @@ export class ListLivresByTheme {
         console.log('Réponse JSON complète:', response);
         this.listPagesByLivreSelected = response.listPageByLivre; // si la réponse EST directement un tableau de magazines
 
-        const countAllPages = response.listPageByLivre.length;
+        this.countAllPages = response.listPageByLivre.length;
 
         this.listPagesByLivreSelected = response.listPageByLivre.filter(
           (page: any) =>
@@ -473,7 +475,7 @@ export class ListLivresByTheme {
 
         this.listLivres[this.selectIndex].tauxPagesTranslate = Math.round(
           (this.listLivres[this.selectIndex].countPagesTranslate /
-            countAllPages) *
+            this.countAllPages) *
             100
         );
 
@@ -611,6 +613,15 @@ export class ListLivresByTheme {
 
           if (currentIndex < this.listPagesByLivreSelected.length) {
             // this.extractText(currentIndex);
+
+            this.listLivres[this.selectIndex].countPagesTranslate++;
+
+            this.listLivres[this.selectIndex].tauxPagesTranslate = Math.round(
+              (this.listLivres[this.selectIndex].countPagesTranslate /
+                this.countAllPages) *
+                100
+            );
+
             this.getTranslateTextByOcrPage(currentIndex);
           }
         }
