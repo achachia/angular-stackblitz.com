@@ -477,19 +477,37 @@ export class ListLivresByTheme {
             100
         );
 
-        this.traductionEnCours = true;
+        console.log(
+          'this.listLivres[this.selectIndex].tauxPagesTranslate =',
+          this.listLivres[this.selectIndex].tauxPagesTranslate
+        );
 
-        this.listLivres[this.selectIndex].traductionEnCours =
-          this.traductionEnCours;
+        if (this.listLivres[this.selectIndex].tauxPagesTranslate === 100) {
+          this.traductionEnCours = true;
+          this.listLivres[this.selectIndex].traductionEnCours =
+            this.traductionEnCours;
+        } else {
+          this.traductionEnCours = true;
+
+          this.listLivres[this.selectIndex].traductionEnCours =
+            this.traductionEnCours;
+
+          // this.extractText(0);
+          this.getTranslateTextByOcrPage(0);
+        }
 
         this.closeActionSheet();
-
-        this.extractText(0);
 
         // console.log('this.listPagesByLivre =', this.listPagesByLivre);
 
         // alert(response.reponse)
       });
+  }
+
+  getTranslateTextByOcrPage(currentIndex: number) {
+    const texte = this.listPagesByLivreSelected[currentIndex].ocrText;
+
+    this.runTranslateTextChatAi(currentIndex, texte);
   }
 
   async extractText(currentIndex: number) {
@@ -592,7 +610,8 @@ export class ListLivresByTheme {
           );
 
           if (currentIndex < this.listPagesByLivreSelected.length) {
-            this.extractText(currentIndex);
+            // this.extractText(currentIndex);
+            this.getTranslateTextByOcrPage(currentIndex);
           }
         }
       });

@@ -137,7 +137,10 @@
         </div>
         <span>{{ livre.tauxPagesTranslate }}%</span>
       </div>
-      <div *ngIf="livre.traductionEnCours" class="progress-container">
+      <div
+        *ngIf="livre.traductionEnCours && livre.tauxPagesTranslate < 100"
+        class="progress-container"
+      >
         <label>Progression de la traduction en cours :</label>
         <div class="progress-bar">
           <div
