@@ -494,8 +494,11 @@ export class ListLivresByTheme {
           this.listLivres[this.selectIndex].traductionEnCours =
             this.traductionEnCours;
 
-          // this.extractText(0);
-          this.getTranslateTextByOcrPage(0);
+          if (this.listPagesByLivreSelected[0].ocrText != '') {
+            this.getTranslateTextByOcrPage(0);
+          } else {
+            this.extractText(0);
+          }
         }
 
         this.closeActionSheet();
@@ -622,7 +625,11 @@ export class ListLivresByTheme {
                 100
             );
 
-            this.getTranslateTextByOcrPage(currentIndex);
+            if (this.listPagesByLivreSelected[currentIndex].ocrText != '') {
+              this.getTranslateTextByOcrPage(currentIndex);
+            } else {
+              this.extractText(currentIndex);
+            }
           }
         }
       });
