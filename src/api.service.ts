@@ -100,9 +100,21 @@ export class MagazineService {
     return this.http.post<any[]>(Url, body);
   }
 
-  getLastMagazinesByTheme(): Observable<any[]> {
-    const body = { keyTheme: 'Science' };
+  getLastMagazinesByTheme(infosLivre: any): Observable<any[]> {
+    const body = { infosLivre};
     const Url = this.apiUrl + '/getLastCyclesMagazines';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  updateDataLivre(infosLivre: any, token: any): Observable<any[]> {
+    const body = { infosLivre};
+    const Url = this.apiUrl + '/updateDataLivre';
+    return this.http.post<any[]>(Url, body);
+  }
+
+  getDataLivre( _livre_id: any, token: any): Observable<any[]> {
+    const body = { livre_id: _livre_id};
+    const Url = this.apiUrl + '/getDataLivre';
     return this.http.post<any[]>(Url, body);
   }
 

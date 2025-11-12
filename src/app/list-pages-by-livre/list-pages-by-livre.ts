@@ -74,6 +74,8 @@ interface ListLangue {
   ],
 })
 export class ListPagesByLivre {
+  infosLivre: any = { _id: null, listSommaires: [] };
+
   listPagesByLivre: any[] = [];
 
   listRocommandationsLivre: any[] = [];
@@ -157,8 +159,62 @@ export class ListPagesByLivre {
     },
   ];
 
+  listModelsIA = [
+    {
+      value: 'deepseek-chat',
+      label: 'Custom-ai (deepseek-chat)',
+    },
+    {
+      value: 'gemini-2.0-flash',
+      label: 'Custom-ai (gemini-2.0-flash)',
+    },
+    {
+      value: 'gemini-1.5-flash',
+      label: 'Custom-ai (gemini-1.5-flash)',
+    },
+    {
+      value: 'grok-beta',
+      label: 'Custom-ai (grok-beta)',
+    },
+    {
+      value: 'claude-sonnet-4',
+      label: 'Custom-ai (claude-sonnet-4)',
+    },
+    {
+      value: 'o3-mini',
+      label: 'Custom-ai (o3-mini)',
+    },
+  ]; // 'deepseek-chat'; // deepseek-chat / gemini-2.0-flash / gemini-1.5-flash / grok-beta / claude-sonnet-4 / o3-mini
+
+  listTypesPromptsModelsIA = [
+    {
+      value:
+        "Veuillez lire le texte suivant et en résumer brièvement les points principaux. Concentrez-vous uniquement sur les thèmes, idées ou événements clés présentés. N'incluez aucune explication ou description supplémentaire en dehors du résumé lui-même. Voici le texte.[texte: {text}]",
+      label:
+        "Veuillez lire le texte suivant et en résumer brièvement les points principaux. Concentrez-vous uniquement sur les thèmes, idées ou événements clés présentés. N'incluez aucune explication ou description supplémentaire en dehors du résumé lui-même. Voici le texte.[texte: {text}]",
+    },
+    {
+      value:
+        'Peux-tu extraire et mettre en évidence les idées principales de ce texte .[texte: {text}]',
+      label:
+        'Peux-tu extraire et mettre en évidence les idées principales de ce texte .[texte: {text}]',
+    },
+    {
+      value:
+        'Résume ce texte sous forme de bullet points clairs et concis .[texte: {text}]',
+      label:
+        'Résume ce texte sous forme de bullet points clairs et concis .[texte: {text}]',
+    },
+  ];
+
+  typePrompt: any = '';
+
+  textPrompt: any = '';
+
   selectedModel =
     'https://app.vectorshift.ai/chatbots/deployed/685c47a653eb91b72fc8d3e6';
+
+  isListModelsIAModalOpen: any = false;
 
   isListModalOpen = false;
 
@@ -265,6 +321,21 @@ export class ListPagesByLivre {
 
   isLoading: boolean = false;
 
+  isListModalOpenSommaire: boolean = false;
+
+  nouveauTitreSommaire: string = '';
+
+  nouveauNumeroPage: number | null = null;
+
+  isModalEditItemSommaire: boolean = false;
+
+  currentItemSommaire = {
+    curentIndex: 0,
+    titre: '',
+    page: 0,
+    resumeText: '',
+  }; // L'objet Item Sommaire  au formulaire
+
   constructor(
     private route: ActivatedRoute,
     private magazineService: MagazineService,
@@ -277,6 +348,8 @@ export class ListPagesByLivre {
       this.keyTheme = params.get('keyTheme');
       this.nomTheme = params.get('nomTheme');
       this.livre_id = params.get('livre_id');
+      this.infosLivre._id = params.get('livre_id');
+      this.getDataLivreApi();
       console.log('this.livre_id=', this.livre_id);
       this.cover_livre = params.get('cover_livre');
       const nomLivreEncoded = params.get('nom_livre');
@@ -290,6 +363,8 @@ export class ListPagesByLivre {
       /******************************************************* */
 
       // localStorage.removeItem('historique-navigation-livres'); // test
+
+      this.nouveauNumeroPage = this.currentIndex;
 
       const hist_nav = localStorage.getItem('historique-navigation-livres');
       if (hist_nav) {
@@ -314,6 +389,8 @@ export class ListPagesByLivre {
           );
 
           this.currentIndex = filtreLivre[0].currentIndex;
+
+          this.nouveauNumeroPage = this.currentIndex;
 
           console.log('filtreLivre =', filtreLivre, this.currentIndex);
         } else {
@@ -400,6 +477,174 @@ export class ListPagesByLivre {
       this.showToast('Erreur: Script Puter non chargé.', 'error');
       return;
     }
+  }
+
+  getSommaireLivre() {
+    this.isListModalOpenSommaire = true;
+  }
+
+  ajouterSommaire() {
+    if (!this.nouveauTitreSommaire || !this.nouveauNumeroPage) {
+      alert('Merci de remplir le titre et le numéro de page.');
+      return;
+    }
+
+    this.infosLivre.listSommaires.push({
+      titre: this.nouveauTitreSommaire,
+      page: this.nouveauNumeroPage,
+    });
+
+    this.updateDataLivreApi();
+
+    // Réinitialiser les champs de saisie
+    this.nouveauTitreSommaire = '';
+    this.nouveauNumeroPage = null;
+  }
+
+  // Méthode appelée par le bouton "Modifier"
+  modifierSommaire(item: { titre: string; page: number }) {
+    // Exemple simple d'édition dans une prompt
+    const nouveauTitre = prompt('Modifier le titre', item.titre);
+    const nouvellePageStr = prompt(
+      'Modifier le numéro de page',
+      item.page.toString()
+    );
+    const nouvellePage = Number(nouvellePageStr);
+
+    if (
+      nouveauTitre &&
+      nouvellePage &&
+      !isNaN(nouvellePage) &&
+      nouvellePage > 0
+    ) {
+      item.titre = nouveauTitre;
+      item.page = nouvellePage;
+      this.updateDataLivreApi();
+    } else {
+      alert('Modification annulée ou valeurs invalides.');
+    }
+  }
+
+  modifierSommaireFormModal(index: number) {
+    this.isModalEditItemSommaire = true;
+
+    this.currentItemSommaire.curentIndex = index;
+
+    this.currentItemSommaire.titre = this.infosLivre.listSommaires[index].titre;
+
+    this.currentItemSommaire.page = this.infosLivre.listSommaires[index].page;
+
+    this.currentItemSommaire.resumeText =
+      this.infosLivre.listSommaires[index].resumeText;
+  }
+
+  submitFormEditItemSommaire() {
+    console.log('this.currentItemSommaire =', this.currentItemSommaire);
+
+    const _index = this.currentItemSommaire.curentIndex;
+
+    this.infosLivre.listSommaires[_index].titre =
+      this.currentItemSommaire.titre;
+
+    this.infosLivre.listSommaires[_index].page = this.currentItemSommaire.page;
+
+    this.infosLivre.listSommaires[_index].resumeText =
+      this.currentItemSommaire.resumeText;
+
+    this.updateDataLivreApi();
+  }
+
+  closeModalEditItemSommaire() {
+    this.isModalEditItemSommaire = false;
+  }
+
+  // Méthode appelée par le bouton "Supprimer"
+  supprimerSommaire(item: { titre: string; page: number }) {
+    const confirmSupp = confirm(
+      `Supprimer la section "${item.titre}" (page ${item.page}) ?`
+    );
+    if (confirmSupp) {
+      const index = this.infosLivre.listSommaires.indexOf(item);
+      if (index > -1) {
+        this.infosLivre.listSommaires.splice(index, 1);
+        this.updateDataLivreApi();
+      }
+    }
+  }
+
+  getDataLivreApi() {
+    const _token = this.authService.getTokenStorage;
+
+    this.magazineService.getDataLivre(this.infosLivre._id, _token).subscribe(
+      (dataRep: any) => {
+        console.log('Réponse JSON complète:', dataRep);
+
+        if (dataRep.reponse) {
+          this.infosLivre.listSommaires = dataRep.dataLivre.listSommaires;
+
+          //console.log('this.magazines =', this.magazines)
+
+          // alert(response.reponse)
+        }
+      },
+      (error) => {
+        // Ici, tu interceptes les erreurs réseau ou serveur
+        console.error(error);
+        if (
+          error.error.msg === 'token_not_valid' ||
+          error.error.msg === 'token_required'
+        ) {
+          this.showSessionExpiredModa = true;
+        }
+        // this.errorMessage = "Impossible d'accéder au service. Veuillez vérifier votre connexion ou réessayer plus tard.";
+      }
+    );
+  }
+
+  updateDataLivreApi() {
+    const _token = this.authService.getTokenStorage;
+
+    this.magazineService.updateDataLivre(this.infosLivre, _token).subscribe(
+      (dataResponse: any) => {
+        console.log('Réponse JSON complète:', dataResponse);
+
+        if (dataResponse.reponse) {
+          this.listsNotes = dataResponse.data;
+
+          this.getDataLivreApi();
+
+          this.isModalEditItemSommaire = false;
+
+          //console.log('this.magazines =', this.magazines)
+
+          // alert(response.reponse)
+        }
+      },
+      (error) => {
+        // Ici, tu interceptes les erreurs réseau ou serveur
+        console.error(error);
+        if (
+          error.error.msg === 'token_not_valid' ||
+          error.error.msg === 'token_required'
+        ) {
+          this.showSessionExpiredModa = true;
+        }
+        // this.errorMessage = "Impossible d'accéder au service. Veuillez vérifier votre connexion ou réessayer plus tard.";
+      }
+    );
+  }
+
+  accederPage(numeroPage: number) {
+    // Ici, logique pour accéder à la page :
+    // par exemple, navigation dans l'application ou affichage du contenu de la page
+    console.log('Accès à la page', numeroPage);
+    // Exemple : this.router.navigate(['/page', numeroPage]);
+
+    this.currentIndex = numeroPage;
+  }
+
+  closeShowSommaireLivre() {
+    this.isListModalOpenSommaire = false;
   }
 
   // Chargement dynamique du script Puter
@@ -620,37 +865,44 @@ export class ListPagesByLivre {
       token: _token,
     };
 
-    this.magazineService.getOCRPage(infosOcr).subscribe((response: any) => {
-      console.log('Réponse JSON complète-OCR:', response);
+    this.magazineService.getOCRPage(infosOcr).subscribe(
+      (response: any) => {
+        console.log('Réponse JSON complète-OCR:', response);
 
-      if (!response.ParsedText.IsErroredOnProcessing) {
-        console.log('ocr = ', response.ParsedText.ParsedResults[0].ParsedText);
-        // alert(response.ParsedText.ParsedResults[0].ParsedText);
+        if (!response.ParsedText.IsErroredOnProcessing) {
+          console.log(
+            'ocr = ',
+            response.ParsedText.ParsedResults[0].ParsedText
+          );
+          // alert(response.ParsedText.ParsedResults[0].ParsedText);
 
-        this.note = this.note + response.ParsedText.ParsedResults[0].ParsedText;
+          this.note =
+            this.note + response.ParsedText.ParsedResults[0].ParsedText;
 
-        this.source = this.nom_livre + ' (livre)';
+          this.source = this.nom_livre + ' (livre)';
 
-        this.isListModalOpenEdit = true;
-      } else {
+          this.isListModalOpenEdit = true;
+        } else {
+          this.extractText();
+        }
+
+        //console.log('this.magazines =', this.magazines)
+
+        // alert(response.reponse)
+      },
+      (error) => {
+        // Ici, tu interceptes les erreurs réseau ou serveur
+        console.error(error);
+        if (
+          error.error.msg === 'token_not_valid' ||
+          error.error.msg === 'token_required'
+        ) {
+          this.showSessionExpiredModa = true;
+        }
         this.extractText();
+        // this.errorMessage = "Impossible d'accéder au service. Veuillez vérifier votre connexion ou réessayer plus tard.";
       }
-
-      //console.log('this.magazines =', this.magazines)
-
-      // alert(response.reponse)
-    },  (error) => {
-      // Ici, tu interceptes les erreurs réseau ou serveur
-      console.error(error);
-      if (
-        error.error.msg === 'token_not_valid' ||
-        error.error.msg === 'token_required'
-      ) {
-        this.showSessionExpiredModa = true;
-      }
-      this.extractText();
-      // this.errorMessage = "Impossible d'accéder au service. Veuillez vérifier votre connexion ou réessayer plus tard.";
-    });
+    );
   }
 
   closeFormModalAddListe(): void {
@@ -746,6 +998,34 @@ export class ListPagesByLivre {
     this.isListModalOpenEdit = false;
   }
 
+  closeListModelsIAModal() {
+    this.isListModelsIAModalOpen = false;
+  }
+
+  onSelectModelIAChange(event: Event) {
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    // Par exemple, retrouver l'objet ListNote sélectionné :
+  }
+
+  onSelectTypePromptModelIAChange(event: Event) {
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    // Par exemple, retrouver l'objet ListNote sélectionné :
+
+    this.textPrompt = this.typePrompt.replace('{text}', this.note);
+
+    console.log('typePrompt =', this.typePrompt);
+  }
+
+  saveSettingModelsIAForm() {
+    this.isListModalOpenSummarizingText = true;
+
+    this.isLoadingSummarizingText = true;
+
+    this.runSummarizingTextChatAi();
+
+    // this.SummarizingTextByAi();
+  }
+
   editNoteForm() {
     this.selectedListeNote.notesListe.push({
       note: this.note,
@@ -758,11 +1038,7 @@ export class ListPagesByLivre {
   }
 
   SummarizingTextByAi() {
-    this.isListModalOpenSummarizingText = true;
-
-    this.isLoadingSummarizingText = true;
-
-    this.runSummarizingTextChatAi();
+    this.isListModelsIAModalOpen = true;
   }
 
   closeListModalSummarizingText() {
@@ -778,14 +1054,7 @@ export class ListPagesByLivre {
 
     this.summarizingText = '';
 
-    const prompt =
-      "Veuillez lire le texte suivant et en résumer brièvement les points principaux. Concentrez-vous uniquement sur les thèmes, idées ou événements clés présentés. N'incluez aucune explication ou description supplémentaire en dehors du résumé lui-même. Voici le texte.[texte:" +
-      this.note +
-      '] ';
-
-    console.log('prompt = ', prompt);
-
-    const chatResp = await puter.ai.chat(prompt, {
+    const chatResp = await puter.ai.chat(this.textPrompt, {
       model: this.model,
       stream: true,
     });
@@ -880,7 +1149,10 @@ export class ListPagesByLivre {
   }
 
   getTranslatePage() {
-    if (this.listPagesByLivre[this.currentIndex].traductionText && this.listPagesByLivre[this.currentIndex].traductionText != '') {
+    if (
+      this.listPagesByLivre[this.currentIndex].traductionText &&
+      this.listPagesByLivre[this.currentIndex].traductionText != ''
+    ) {
       this.isShowTranslationModalPage = true;
 
       this.translatePageText =
@@ -1129,6 +1401,8 @@ export class ListPagesByLivre {
     if (this.currentIndex < this.listPagesByLivre.length - 1) {
       this.currentIndex++;
 
+      this.nouveauNumeroPage = this.currentIndex;
+
       /********************************************************************* */
 
       this.hist_nav_json[this.indexLivreHistNav].currentIndex =
@@ -1155,6 +1429,8 @@ export class ListPagesByLivre {
   prevPage() {
     if (this.currentIndex > 0) {
       this.currentIndex--;
+
+      this.nouveauNumeroPage = this.currentIndex;
 
       /********************************************************************* */
 
@@ -1241,6 +1517,7 @@ export class ListPagesByLivre {
 
   goToPage(index: number) {
     this.currentIndex = index;
+    this.nouveauNumeroPage = this.currentIndex;
   }
 
   toggleMenu() {

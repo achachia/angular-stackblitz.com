@@ -159,7 +159,9 @@ export class App {
     public router: Router,
     private storage: StorageService,
     private authService: AuthService
-  ) {}
+  ) {
+    this.checkUserInStorage();
+  }
 
   checkUserInStorage(): void {
     const user = this.storage.get<any>('user');
@@ -175,9 +177,7 @@ export class App {
     }
   }
 
-  ngOnInit() {
-    this.checkUserInStorage();
-  }
+  ngOnInit() {}
 
   getLastMagazinesLivres() {
     /************************************************** */
@@ -307,6 +307,8 @@ export class App {
       });
 
     /********************************************** */
+
+    console.log('toto');
 
     this.isLoading = false;
   }

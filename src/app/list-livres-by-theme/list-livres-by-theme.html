@@ -8,26 +8,15 @@
 <div class="container" *ngIf="!isLoading">
   <h1 class="title">Les livres ({{nomTheme}})</h1>
 
-  <div *ngIf="listLivres.length === 0" class="no-lists-message">
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="120"
-      height="120"
-      fill="none"
-      viewBox="0 0 64 64"
-      stroke="#999"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      <path d="M32 12v40M12 32h40" />
-      <circle cx="32" cy="32" r="30" />
-    </svg>
-    <p>Aucun livre disponible pour le moment.</p>
-  </div>
-
   <!-- Filters -->
-  <div class="filters" *ngIf="listLivres.length > 0">
+  <div class="filters" *ngIf="listLivresTemp.length > 0">
+    <!-- Champ de recherche -->
+    <input
+      type="text"
+      placeholder="Rechercher un livre..."
+      [(ngModel)]="searchText"
+      (input)="applyFilters()"
+    />
     <!-- Filtres par année -->
     <select
       [(ngModel)]="selectedPeriode"
@@ -44,6 +33,24 @@
       <option value="">-- Filtrer par type --</option>
       <option *ngFor="let t of types" [value]="t">{{ t }}</option>
     </select>
+  </div>
+
+  <div *ngIf="listLivres.length === 0" class="no-lists-message">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="120"
+      height="120"
+      fill="none"
+      viewBox="0 0 64 64"
+      stroke="#999"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="M32 12v40M12 32h40" />
+      <circle cx="32" cy="32" r="30" />
+    </svg>
+    <p>Aucun livre disponible pour le moment.</p>
   </div>
 
   <div class="magazine-grid" *ngIf="listLivres.length > 0">

@@ -108,6 +108,10 @@ export class ListLivresByTheme {
 
   showSessionExpiredModa: any = false;
 
+  searchText: string = '';
+
+  listLivresFiltered: any[] = [...this.listLivres]; // initialisé avec tous les livres
+
   constructor(
     private route: ActivatedRoute,
     private magazineService: MagazineService,
@@ -126,6 +130,19 @@ export class ListLivresByTheme {
   ngOnInit() {
     // const fav = localStorage.getItem('favorites-livres');
     // this.favorites = fav ? JSON.parse(fav) : [];
+  }
+
+  applyFilters() {
+    this.listLivres = this.listLivresTemp.filter((livre) => {
+      const matchesSearch =
+        this.searchText === '' ||
+        livre.titre.toLowerCase().includes(this.searchText.toLowerCase());
+      const matchesPeriode =
+        this.selectedPeriode === '' || livre.annee === this.selectedPeriode;
+      const matchesType =
+        this.selectedType === '' || livre.type === this.selectedType;
+      return matchesSearch && matchesPeriode && matchesType;
+    });
   }
 
   goToLogin() {

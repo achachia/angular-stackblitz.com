@@ -21,6 +21,9 @@
         <li (click)="getTranslatePage(); menuOpen = false">
           📋 Afficher la traduction
         </li>
+        <li (click)="getSommaireLivre(); menuOpen = false">
+          📋 Afficher le sommaire
+        </li>
       </ul>
     </div>
   </div>
@@ -361,6 +364,89 @@
   </div>
 </div>
 
+<!-- Modal list Models ia -->
+<div
+  class="modal-backdrop"
+  *ngIf="isListModelsIAModalOpen"
+  (click)="closeListModelsIAModal()"
+>
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3 class="modal-title">Paramétrage Modéle IA</h3>
+
+    <form (ngSubmit)="saveSettingModelsIAForm()" #listModelsIAForm="ngForm">
+      <div class="form-group">
+        <label for="NoteIdSelect">Le modéle :</label>
+        <select
+          id="nameModelSelect"
+          name="nameModelSelect"
+          [(ngModel)]="model"
+          required
+          #nameInput="ngModel"
+          class="form-control"
+          (change)="onSelectModelIAChange($event)"
+        >
+          <option value="" disabled selected>Sélectionnez un modéle</option>
+          <option *ngFor="let model of listModelsIA" [value]="model.value">
+            {{ model.label }}
+          </option>
+        </select>
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">
+            Le modéle est requis.
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label d-block mb-2">Sélectionnez le type de prompt :</label>
+      
+        <div class="radio-group">
+          <label
+            *ngFor="let model of listTypesPromptsModelsIA"
+            class="radio-button"
+            [class.active]="typePrompt === model.value"
+          >
+            <input
+              type="radio"
+              name="typePromptModelSelect"
+              [value]="model.value"
+              [(ngModel)]="typePrompt"
+              required
+              (change)="onSelectTypePromptModelIAChange($event)"
+            />
+            <span>{{ model.label }}</span>
+          </label>
+        </div>
+      </div>
+              
+      
+
+
+      <div class="form-actions" style="margin-top: 2%">
+        <button
+          type="submit"
+          [disabled]="!listModelsIAForm.valid"
+          class="save-btn"
+        >
+          Enregistrer
+        </button>
+
+        <button
+          type="button"
+          class="cancel-btn"
+          (click)="closeListModelsIAModal()"
+        >
+          Annuler
+        </button>
+      </div>
+    </form>
+
+    <button class="close-btn" (click)="closeListModelsIAModal()">Fermer</button>
+  </div>
+</div>
+
 <!-- Modal Translation Text Ai-->
 <div
   class="modal-backdrop"
@@ -628,5 +714,181 @@
         Fermer
       </button>
     </div>
+  </div>
+</div>
+
+<div
+  class="modal-backdrop"
+  *ngIf="isListModalOpenSommaire"
+  (click)="closeShowSommaireLivre()"
+>
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3 class="modal-form-title">Le sommaire</h3>
+
+    <!-- Formulaire ajout sommaire -->
+    <div class="sommaire-form">
+      <input
+        type="text"
+        placeholder="Nom de la section"
+        [(ngModel)]="nouveauTitreSommaire"
+      />
+      <input
+        type="number"
+        placeholder="Numéro de page"
+        [(ngModel)]="nouveauNumeroPage"
+        min="1"
+      />
+      <button (click)="ajouterSommaire()">Ajouter</button>
+    </div>
+
+    <!-- Liste sommaire affichée -->
+    <!--<ul class="liste-sommaire">
+      <li *ngFor="let item of infosLivre.listSommaires">
+        {{ item.titre }} - page {{ item.page }}
+        <button (click)="accederPage(item.page)">Aller à la page</button>
+      </li>
+    </ul>-->
+
+    <ul class="liste-sommaire">
+      <li
+        *ngFor="let item of infosLivre.listSommaires; let i = index"
+        class="item-sommaire"
+      >
+        <span class="texte-sommaire">{{ item.titre }} </span>
+
+        <div class="btn-group">
+          <button class="btn-aller" (click)="accederPage(item.page)">
+            Aller à la page ({{ item.page }})
+          </button>
+          <button class="btn-modifier" (click)="modifierSommaireFormModal(i)">
+            Modifier
+          </button>
+          <button class="btn-supprimer" (click)="supprimerSommaire(item)">
+            Supprimer
+          </button>
+        </div>
+      </li>
+    </ul>
+
+    <button
+      type="button"
+      (click)="closeShowSommaireLivre()"
+      class="close-btn"
+      style="margin-left: 2%"
+    >
+      Fermer
+    </button>
+  </div>
+</div>
+
+<!-- Modal Edit item sommaire-->
+<div
+  class="modal-backdrop"
+  *ngIf="isModalEditItemSommaire"
+  (click)="closeModalEditItemSommaire()"
+>
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3 class="modal-title">Editer le sommaire</h3>
+
+    <form
+      (ngSubmit)="submitFormEditItemSommaire()"
+      #FormEditItemSommaire="ngForm"
+    >
+      <div class="form-group">
+        <label for="nameItemSommaire">Nom de sommaire:</label>
+        <input
+          type="text"
+          id="nameItemSommaire"
+          name="nameItemSommaire"
+          [(ngModel)]="currentItemSommaire.titre"
+          required
+          minlength="3"
+          #nameInput="ngModel"
+          class="form-control"
+        />
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">
+            Le nom de sommaire est requis.
+          </div>
+          <div *ngIf="nameInput.errors?.['minlength']">
+            Le nom doit contenir au moins 3 caractères.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="listName">Page de sommaire:</label>
+        <input
+          type="number"
+          id="pageItemSommaire"
+          name="pageItemSommaire"
+          [(ngModel)]="currentItemSommaire.page"
+          required
+          minlength="3"
+          #nameInput="ngModel"
+          class="form-control"
+        />
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">
+            La page de sommaire est requis.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="listName">Résumé&nbsp;:</label>
+        <!-- <textarea
+          id="note"
+          name="note"
+          [(ngModel)]="note"
+          required
+          minlength="3"
+          #nameInput="ngModel"
+          class="form-control"
+          rows="10"
+        ></textarea>-->
+        <angular-editor
+          [(ngModel)]="currentItemSommaire.resumeText"
+          [config]="config"
+          name="resumeTextItemSommaire"
+        ></angular-editor>
+        <!--  <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">
+            Le résumé est requise.
+          </div>
+        </div>-->
+      </div>
+
+      <div class="form-actions" style="margin-top: 2%">
+        <button
+          type="submit"
+          [disabled]="!FormEditItemSommaire.valid"
+          class="save-btn"
+        >
+          Enregistrer
+        </button>
+
+        <button
+          type="button"
+          class="cancel-btn"
+          (click)="closeModalEditItemSommaire()"
+        >
+          Annuler
+        </button>
+      </div>
+    </form>
+
+    <button class="close-btn" (click)="closeModalEditItemSommaire()">
+      Fermer
+    </button>
   </div>
 </div>
