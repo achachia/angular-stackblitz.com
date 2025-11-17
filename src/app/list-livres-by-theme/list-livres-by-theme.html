@@ -176,10 +176,10 @@
 <!-- Menu d'actions ActionSheet -->
 <div
   class="actionsheet-backdrop"
-  *ngIf="selectedLivre"
+  *ngIf="isModalOpenSheetAction"
   (click)="closeActionSheet()"
 ></div>
-<div class="actionsheet" *ngIf="selectedLivre">
+<div class="actionsheet" *ngIf="isModalOpenSheetAction">
   <h3>Actions pour : {{ selectedLivre.titre }}</h3>
   <!-- <button (click)="actionLire()">Lire</button>
   <button (click)="actionPartager()">Partager</button>
@@ -190,6 +190,12 @@
   <button class="btn-cancel" (click)="closeActionSheet()">Annuler</button>-->
 
   <button (click)="actionLire()"><i class="fas fa-book-open"></i> Lire</button>
+  <button (click)="editdataLivre()">
+    <i class="fas fa-edit"></i> Modifier infos livre
+  </button>
+  <button (click)="getdataSommaireLivre()">
+    <i class="fas fa-book-open"></i> Explorer le sommaire
+  </button>
   <button (click)="actionPartager()">
     <i class="fas fa-share-alt"></i> Partager
   </button>
@@ -247,4 +253,244 @@
   [@fadeInOut]
 >
   {{ toastMessage }}
+</div>
+
+<!-- Modal Edit livre -->
+<div
+  class="modal-backdrop"
+  *ngIf="isModalEditLivre"
+  (click)="closeModalEditLivre()"
+>
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3 class="modal-title">Editer le livre</h3>
+
+    <form (ngSubmit)="submitFormEditLivre()" #FormEditLivre="ngForm">
+      <div class="form-group">
+        <label for="nameLivre">Nom:</label><br />
+        <input
+          type="text"
+          id="nameLivre"
+          name="nameLivre"
+          [(ngModel)]="selectedLivre.titre"
+          required
+          minlength="3"
+          #nameInput="ngModel"
+          class="form-control"
+        />
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">
+            Le nom de livre est requis.
+          </div>
+          <div *ngIf="nameInput.errors?.['minlength']">
+            Le nom doit contenir au moins 3 caractères.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="listName">Année:</label><br />
+        <input
+          type="number"
+          id="yearLivre"
+          name="yearLivre"
+          [(ngModel)]="selectedLivre.year"
+          required
+          minlength="4"
+          #nameInput="ngModel"
+          class="form-control"
+        />
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">
+            L'année du livre est requis.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="listName">Couverture:</label><br />
+        <input
+          type="text"
+          id="coverLivre"
+          name="coverLivre"
+          [(ngModel)]="selectedLivre.cover"
+          required
+          minlength="4"
+          #nameInput="ngModel"
+          class="form-control"
+        />
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">
+            La couverture du livre est requis.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="listName">Nombre de pages:</label><br />
+        <input
+          type="number"
+          id="nbrPagesLivre"
+          name="nbrPagesLivre"
+          [(ngModel)]="selectedLivre.nbr_pages"
+          required
+          #nameInput="ngModel"
+          class="form-control"
+        />
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">
+            Le nombre de pages du livre est requis.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="listName">Auteur:</label><br />
+        <input
+          type="text"
+          id="auteurLivre"
+          name="auteurLivre"
+          [(ngModel)]="selectedLivre.auteur"
+          required
+          minlength="4"
+          #nameInput="ngModel"
+          class="form-control"
+        />
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">
+            L'auteur du livre est requis.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="listName">Thème:</label><br />
+        <input
+          type="text"
+          id="themeLivre"
+          name="themeLivre"
+          [(ngModel)]="selectedLivre.keyTheme"
+          required
+          minlength="4"
+          #nameInput="ngModel"
+          class="form-control"
+        />
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">
+            Le thème du livre est requis.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="listName">Langue:</label><br />
+        <input
+          type="text"
+          id="langueLivre"
+          name="langueLivre"
+          [(ngModel)]="selectedLivre.langue"
+          required
+          minlength="4"
+          #nameInput="ngModel"
+          class="form-control"
+        />
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">
+            La langue du livre est requis.
+          </div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="listName">Description&nbsp;:</label>
+        <angular-editor
+          [(ngModel)]="selectedLivre.subtitle"
+          [config]="config"
+          name="subtitleLivre"
+        ></angular-editor>
+        <div
+          *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+          class="validation-message"
+        >
+          <div *ngIf="nameInput.errors?.['required']">
+            La description du livre est requise.
+          </div>
+        </div>
+      </div>
+      <br /><br />
+      <div class="form-actions" style="margin-top: 2%">
+        <button
+          type="submit"
+          [disabled]="!FormEditLivre.valid"
+          class="save-btn"
+        >
+          Enregistrer
+        </button>
+
+        <button
+          type="button"
+          class="cancel-btn"
+          (click)="closeModalEditLivre()"
+        >
+          Annuler
+        </button>
+      </div>
+    </form>
+
+    <button class="close-btn" (click)="closeModalEditLivre()">Fermer</button>
+  </div>
+</div>
+
+<div
+  class="modal-backdrop"
+  *ngIf="isListModalOpenSommaireLivre"
+  (click)="closeShowSommaireLivre()"
+>
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <h3 class="modal-title">Le sommaire</h3>
+
+    <ul class="liste-sommaire">
+      <li
+        *ngFor="let item of selectedLivre.listSommaires; let i = index"
+        class="item-sommaire"
+      >
+        <div class="texte-sommaire">
+          <span style="font-weight: bold; font-size: 1.5rem; color: blue"
+            >{{ item.titre }}</span
+          >
+
+          <div class="resume-sommaire" [innerHTML]="item.resumeText"></div>
+        </div>
+      </li>
+    </ul>
+
+    <button
+      type="button"
+      (click)="closeShowSommaireLivre()"
+      class="close-btn"
+      style="margin-left: 2%"
+    >
+      Fermer
+    </button>
+  </div>
 </div>

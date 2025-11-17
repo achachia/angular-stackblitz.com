@@ -400,8 +400,10 @@
         </div>
       </div>
       <div class="form-group">
-        <label class="form-label d-block mb-2">Sélectionnez le type de prompt :</label>
-      
+        <label class="form-label d-block mb-2"
+          >Sélectionnez le type de prompt :</label
+        >
+
         <div class="radio-group">
           <label
             *ngFor="let model of listTypesPromptsModelsIA"
@@ -420,9 +422,6 @@
           </label>
         </div>
       </div>
-              
-      
-
 
       <div class="form-actions" style="margin-top: 2%">
         <button
@@ -550,6 +549,35 @@
 
     <div *ngIf="isLoadingSummarizingText" class="loader-container">
       <div class="spinner"></div>
+    </div>
+
+    <div *ngIf="!isLoadingSummarizingText" class="form-group">
+      <label for="LangueIdSelect">Le sommaire :</label>
+      <select
+        id="itemSommaireIdSelect"
+        name="itemSommaireIdSelect"
+        [(ngModel)]="selectedSommaire"
+        required
+        #nameInput="ngModel"
+        class="form-control"
+        (change)=" onSelectItemSommaireChange($event)"
+      >
+        <option value="" disabled selected>Sélectionnez un sommaire</option>
+        <option
+          *ngFor="let item of infosLivre.listSommaires"
+          [value]="item.titre"
+        >
+          {{ item.titre }}
+        </option>
+      </select>
+      <div
+        *ngIf="nameInput.invalid && (nameInput.dirty || nameInput.touched)"
+        class="validation-message"
+      >
+        <div *ngIf="nameInput.errors?.['required']">
+          Le sommaire est requis.
+        </div>
+      </div>
     </div>
 
     <form
@@ -723,7 +751,7 @@
   (click)="closeShowSommaireLivre()"
 >
   <div class="modal-content" (click)="$event.stopPropagation()">
-    <h3 class="modal-form-title">Le sommaire</h3>
+    <h3 class="modal-title">Le sommaire</h3>
 
     <!-- Formulaire ajout sommaire -->
     <div class="sommaire-form">
@@ -890,5 +918,22 @@
     <button class="close-btn" (click)="closeModalEditItemSommaire()">
       Fermer
     </button>
+  </div>
+</div>
+
+<!-- Modal confirmation suppression -->
+<div class="confirm-backdrop" *ngIf="isConfirmOpen" (click)="cancelDelete()">
+  <div class="confirm-modal" (click)="$event.stopPropagation()">
+    <h3>Confirmation</h3>
+    <p>
+      Êtes-vous sûr de vouloir supprimer le sommaire
+      <strong>"{{ selectedSommaire?.titre }}"</strong> ?
+    </p>
+    <div class="confirm-actions">
+      <button class="btn btn-cancel" (click)="cancelDelete()">Annuler</button>
+      <button class="btn btn-confirm" (click)="confirmDeleteSommaire()">
+        Supprimer
+      </button>
+    </div>
   </div>
 </div>

@@ -336,6 +336,12 @@ export class ListPagesByLivre {
     resumeText: '',
   }; // L'objet Item Sommaire  au formulaire
 
+  selectedSommaire: any = null;
+
+  selectedIndexItemSommaire: any = null;
+
+  isConfirmOpen: boolean = false;
+
   constructor(
     private route: ActivatedRoute,
     private magazineService: MagazineService,
@@ -560,7 +566,7 @@ export class ListPagesByLivre {
 
   // Méthode appelée par le bouton "Supprimer"
   supprimerSommaire(item: { titre: string; page: number }) {
-    const confirmSupp = confirm(
+  /*  const confirmSupp = confirm(
       `Supprimer la section "${item.titre}" (page ${item.page}) ?`
     );
     if (confirmSupp) {
@@ -569,7 +575,11 @@ export class ListPagesByLivre {
         this.infosLivre.listSommaires.splice(index, 1);
         this.updateDataLivreApi();
       }
-    }
+    }*/
+
+    this.selectedSommaire = item;
+
+    this.isConfirmOpen = true;
   }
 
   getDataLivreApi() {
@@ -1045,7 +1055,12 @@ export class ListPagesByLivre {
     this.isListModalOpenSummarizingText = false;
   }
 
-  SummarizingTextForm() {}
+  SummarizingTextForm() {
+    this.infosLivre.listSommaires[this.selectedIndexItemSommaire].resumeText =
+      this.summarizingText;
+    this.updateDataLivreApi();
+    this.showToast('Enregistré avec succès!', 'success');
+  }
 
   async runSummarizingTextChatAi() {
     const puter = (window as any).puter;
@@ -1098,6 +1113,29 @@ export class ListPagesByLivre {
           this.translatePageText = this.textTranslat;
         }
       });
+  }
+
+  onSelectItemSommaireChange(event: Event) {
+    const selectedValue = (event.target as HTMLSelectElement).value;
+    // Par exemple, retrouver l'objet ListNote sélectionné :
+
+    console.log(
+      'selectedValue =',
+      selectedValue,
+      this.infosLivre.listSommaires
+    );
+    const selectedIndexItemSommaire = this.infosLivre.listSommaires.findIndex(
+      (item: any) => item.titre === selectedValue
+    );
+    if (selectedIndexItemSommaire) {
+      // Vous pouvez aussi mettre à jour d'autres propriétés selon vos besoins
+      console.log(
+        'selectedIndexItemSommaire affichées :',
+        selectedIndexItemSommaire
+      );
+
+      this.selectedIndexItemSommaire = selectedIndexItemSommaire;
+    }
   }
 
   onSelectLangueChange(event: Event) {
@@ -1638,4 +1676,28 @@ export class ListPagesByLivre {
       this.toastMessage = '';
     }, duration);
   }
+
+    // Annuler la suppression (fermer le modal)
+    cancelDelete(): void {
+      this.isConfirmOpen = false;
+    }
+
+      // Méthode appelée si l'utilisateur confirme
+  confirmDeleteSommaire(): void {
+    if (this.selectedSommaire) {
+      /*this.lists = this.lists.filter(
+          (l) => l.titre !== this.listToDelete!.titre
+        );*/
+        const index = this.infosLivre.listSommaires.indexOf(this.selectedSommaire);
+        if (index > -1) {
+          this.infosLivre.listSommaires.splice(index, 1);
+          this.updateDataLivreApi();
+          this.showToast(`La liste "${this.selectedSommaire.titre}" a été supprimée.`);
+          this.selectedSommaire = null;
+          this.isConfirmOpen = false;
+        }      
+    
+    }
+  }
+
 }

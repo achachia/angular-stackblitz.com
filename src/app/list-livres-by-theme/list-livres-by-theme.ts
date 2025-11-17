@@ -14,6 +14,11 @@ import {
 import { Header } from '../header/header';
 import { AuthService } from '../../auth.service';
 
+import {
+  AngularEditorConfig,
+  AngularEditorModule,
+} from '@kolkov/angular-editor';
+
 interface List {
   _id?: string;
   titre: string;
@@ -24,7 +29,7 @@ interface List {
 
 @Component({
   selector: 'app-list-livres-by-theme',
-  imports: [NgIf, NgFor, NgClass, FormsModule, Header],
+  imports: [NgIf, NgFor, NgClass, FormsModule, Header, AngularEditorModule],
   templateUrl: './list-livres-by-theme.html',
   styleUrl: './list-livres-by-theme.css',
   animations: [
@@ -112,6 +117,39 @@ export class ListLivresByTheme {
 
   listLivresFiltered: any[] = [...this.listLivres]; // initialisé avec tous les livres
 
+  isModalEditLivre: any = false;
+
+  isModalOpenSheetAction: any = false;
+
+  config: AngularEditorConfig = {
+    editable: true,
+    spellcheck: true,
+    height: '15rem',
+    minHeight: '5rem',
+    placeholder: 'Enter text here...',
+    translate: 'no',
+    defaultParagraphSeparator: 'p',
+    defaultFontName: 'Arial',
+    toolbarHiddenButtons: [['bold']],
+    customClasses: [
+      {
+        name: 'quote',
+        class: 'quote',
+      },
+      {
+        name: 'redText',
+        class: 'redText',
+      },
+      {
+        name: 'titleText',
+        class: 'titleText',
+        tag: 'h1',
+      },
+    ],
+  };
+
+  isListModalOpenSommaireLivre: boolean = false;
+
   constructor(
     private route: ActivatedRoute,
     private magazineService: MagazineService,
@@ -130,6 +168,16 @@ export class ListLivresByTheme {
   ngOnInit() {
     // const fav = localStorage.getItem('favorites-livres');
     // this.favorites = fav ? JSON.parse(fav) : [];
+  }
+
+  getdataSommaireLivre() {
+    this.isModalOpenSheetAction = false;
+
+    this.isListModalOpenSommaireLivre = true;
+  }
+
+  closeShowSommaireLivre() {
+    this.isListModalOpenSommaireLivre = false;
   }
 
   applyFilters() {
@@ -364,6 +412,7 @@ export class ListLivresByTheme {
   selectLivre(index: number, livre: any) {
     this.selectedLivre = livre;
     this.selectIndex = index;
+    this.isModalOpenSheetAction = true;
   }
 
   applyFiltersType() {}
@@ -392,6 +441,14 @@ export class ListLivresByTheme {
 
   closeActionSheet() {
     this.selectedLivre = null;
+  }
+
+  editdataLivre() {
+    console.log('Lire', this.selectedLivre);
+
+    this.isModalEditLivre = true;
+
+    this.isModalOpenSheetAction = false;
   }
 
   actionLire() {
@@ -664,5 +721,84 @@ export class ListLivresByTheme {
     setTimeout(() => {
       this.toastMessage = '';
     }, duration);
+  }
+
+  closeModalEditLivre() {
+    this.isModalEditLivre = false;
+  }
+
+  submitFormEditLivre() {
+    this.updateDataLivreApi();
+  }
+
+  updateDataLivreApi() {
+    /*
+  {
+    "date": "2022-11-13T07:22:23.102Z",
+    "activation": 1,
+    "langue": "Français",
+    "listSommaires": [
+        {
+            "titre": "Un livre optimiste",
+            "page": 7
+        },
+        {
+            "titre": "Un monde sans maitre",
+            "page": 26
+        },
+        {
+            "titre": "Take back control!",
+            "page": 53
+        },
+        {
+            "titre": "Bienvenue à l'inflation !",
+            "page": 84
+        },
+        {
+            "titre": "La revanche du salarié",
+            "page": 110
+        },
+        {
+            "titre": "Trois tournants à venir",
+            "page": 135
+        },
+        {
+            "titre": "Notes",
+            "page": 145
+        }
+    ],
+    "_id": "63709b3e950ec77a9cd3fbb7",
+    "titre": "Rien Ne Va",
+    "token": "01458d96-cd37-43cd-9787-befd9c01b21f",
+    "cover": "https://i.gyazo.com/2d4cfc1b9a5474666014c3cd7aaca661.png",
+    "auteur": "Francois Lenglet",
+    "year": "2022",
+    "keyTheme": "Societe",
+    "nbr_pages": 148
+}
+    */
+    const _token = this.authService.getTokenStorage;
+
+    this.magazineService.updateDataLivre(this.selectedLivre, _token).subscribe(
+      (dataResponse: any) => {
+        console.log('Réponse JSON complète:', dataResponse);
+
+        if (dataResponse.reponse) {
+          //console.log('this.magazines =', this.magazines)
+          // alert(response.reponse)
+        }
+      },
+      (error) => {
+        // Ici, tu interceptes les erreurs réseau ou serveur
+        console.error(error);
+        if (
+          error.error.msg === 'token_not_valid' ||
+          error.error.msg === 'token_required'
+        ) {
+          this.showSessionExpiredModa = true;
+        }
+        // this.errorMessage = "Impossible d'accéder au service. Veuillez vérifier votre connexion ou réessayer plus tard.";
+      }
+    );
   }
 }
